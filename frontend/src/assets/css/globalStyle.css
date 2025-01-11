@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* 
+    font-family: "Montserrat", serif;
+    font-family: "Hind", serif;
+*/
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root { 
+    --white: #F0EDEA;
+    --white-2a: rgba(240, 237, 234, 2);
+    --white-5a: rgba(240, 237, 234, 5);
+    --white-7a: rgba(240, 237, 234, 7);
+    --black: #181818;
+
+    --primary: #FF9A9E;
+    --secondary: #FAD0C4;
+    --accent: #FF9F4F;
+    --gradient-angle: linear-gradient(142deg, #FF9A9E 4.66%, #FAD0C4 95.51%);
+    --gradient-straight: linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 100%);
+ 
+    --red: #E5585D;
+    --green: #1DB949;
+    --blue: #2BA8DE;
+}
+
+html {
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100svh;
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    color: var(--black);
+    font-family: "Hind", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+p, h1, h2, h3, h4, h5, h6, ul, li, a {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Montserrat", serif;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+.color-primary { color: var(--primary); }
+
+.font-thin { font-weight: 100; }
+.font-extra_light { font-weight: 200; } 
+.font-light { font-weight: 300; }
+.font-medium { font-weight: 500; }
+.font-semi_bold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extra_bold { font-weight: 800; }
+.font-black { font-weight: 900; }
+
+.flex-1 { flex: 1 !important; }
+.flex-2 { flex: 2 !important; }
+.flex-3 { flex: 3 !important; }
+.gap-4 { gap: 4px !important; }
+.gap-8 { gap: 8px !important; }
+.gap-16 { gap: 16px !important; }
+.gap-24 { gap: 24px !important; }
+.gap-32 { gap: 32px !important; }
+.gap-48 { gap: 48px !important; }
+.gap-64 { gap: 64px !important; }
+.gap-72 { gap: 72px !important; }
+.gap-96 { gap: 96px !important; }
+
+.pos-relative { position: relative; }
+
+.text-left { text-align: left; }
+
+.Vue-Toastification__toast--info {
+    background-color: var(--primary) !important;
+}
+
+body.openedSidebar {
+    overflow: hidden !important;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
