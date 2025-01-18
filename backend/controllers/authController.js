@@ -2,7 +2,11 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { 
+        username, 
+        email, 
+        password 
+    } = req.body;
 
     try {
         const user = new User({ username, email, password });
@@ -14,7 +18,10 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const { 
+        email, 
+        password 
+    } = req.body;
 
     try {
         const user = await User.findOne({ email });
@@ -31,9 +38,7 @@ exports.login = async (req, res) => {
 
 exports.authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
-    if (!token) {
-        return res.sendStatus(403); // Forbidden
-    }
+    if (!token) return res.sendStatus(403); // Forbidden
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {

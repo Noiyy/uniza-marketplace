@@ -5,9 +5,10 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
 const cors = require('cors');
-const projectRoutes = require('./routes/projectApi');
  
 const authRoutes = require('./routes/authApi');
+const userRoutes = require("./routes/userApi");
+const productRoutes = require("./routes/productApi");
 
 const app = express();
  
@@ -21,8 +22,9 @@ app.use((req, res, next) => {
 })
  
 // routes
-app.use('/api/projects', projectRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/product", productRoutes);
  
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)

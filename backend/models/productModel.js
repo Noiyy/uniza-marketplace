@@ -1,18 +1,22 @@
 const mongoose = require('mongoose');
  
 const productSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  seenCount: {
-    type: Number,
-    required: true, default: 0
-  },
+	title: {
+		type: String,
+		required: true
+	},
+	seenCount: {
+		type: Number,
+		required: true, default: 0
+	},
 	description: {
-    type: String,
-    required: false
-  },
+		type: String,
+		required: false
+	},
+	createdAt: {
+        type: Date, 
+        required: true, default: Date.now
+    },
 	images: [{ type: String }],
 	category: {
 		mainCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
