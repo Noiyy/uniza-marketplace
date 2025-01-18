@@ -1,6 +1,6 @@
 const express = require('express');
 const { getAllUsers, getUser, updateUser, deleteUser } = require("../controllers/userController");
-const { getAllAddresses, getAddress, updateAddress, deleteAddress } = require("../controllers/addressController");
+const { getAllAddresses, getAddress, addAddress, updateAddress, deleteAddress } = require("../controllers/addressController");
 const router = express.Router();
 
 // User
@@ -10,9 +10,10 @@ router.patch('/update/:id', updateUser);
 router.delete('/delete/:id', deleteUser);
 
 // Address
-router.get("/getAddresses", getAllAddresses);
-router.get("/getAddress/:id", getAddress);
-router.patch('/updateAddress/:id', updateAddress);
-router.delete('/deleteAddress/:id', deleteAddress);
+router.get("/address/getAll", getAllAddresses);
+router.get("/address/:id", getAddress);
+router.post("/address/add", addProduct);
+router.patch('/address/update/:id', updateAddress);
+router.delete('/address/delete/:id', deleteAddress);
 
 module.exports = router;

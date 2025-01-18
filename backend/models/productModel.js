@@ -5,6 +5,10 @@ const productSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	sellerId: {
+		type: mongoose.Schema.Types.ObjectId, ref: 'Category', 
+		required: true
+	},
 	seenCount: {
 		type: Number,
 		required: true, default: 0
@@ -20,15 +24,17 @@ const productSchema = new mongoose.Schema({
 	images: [{ type: String }],
 	category: {
 		mainCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-		subCategpry: {  type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: false }
+		subCategory: {  type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: false }
 	},
 	price: {
 		value: { type: mongoose.Schema.Types.Decimal128 },
-		specialValue: { enum: ["agreement", "in text"] }
+		specialValue: { enum: ["agreement", "offer", "in text", "free" ] },
+		required: true
 	},
 	address: {
 		asProfile: { type: Boolean, default: true },
-		custom: { type: String }
+		custom: { type: String },
+		required: true
 	},
 	count: {
 		available: { type: Number, default: 1, required: true },

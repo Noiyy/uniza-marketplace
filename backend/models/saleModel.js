@@ -24,5 +24,9 @@ const saleSchema = new mongoose.Schema({
         required: true
     }
 });
+
+saleSchema.methods.confirmSale = () => {
+    this.confirmed = true;
+}
  
 module.exports = mongoose.model('Sale', saleSchema);

@@ -12,11 +12,11 @@ const addressSchema = new mongoose.Schema({
   },
   city: {
     type: String,
-    required: false
+    required: true
   },
   postalCode: {
     type: String,
-    required: false
+    required: true
   }
 });
  

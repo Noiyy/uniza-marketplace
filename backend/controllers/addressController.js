@@ -17,6 +17,27 @@ exports.getAddress = async (req, res) => {
     res.status(200).json(address);
 };
 
+exports.addAddress = async (req, res) => {
+    const { 
+        dorm, 
+        street, 
+        city,
+        postalCode 
+    } = req.body;
+
+    try {
+        const post = { city, postalCode };
+        if (dorm) post.dorm = dorm;
+        if (street) post.street = street;
+
+        const address = new Address(post);
+        await address.save();
+        res.status(201).json({ message: 'Address added successfully', id: address._id });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 exports.updateAddress = async (req, res) => {
     const { id } = req.params;
     const { 
@@ -26,8 +47,12 @@ exports.updateAddress = async (req, res) => {
         postalCode 
     } = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No address found for id ' + id});
+
+    const post = { city, postalCode };
+    if (dorm) post.dorm = dorm;
+    if (street) post.street = street;
  
-    const address = await Address.findOneAndUpdate({_id: id}, {dorm, street, city, postalCode}, {returnOriginal: false});
+    const address = await Address.findOneAndUpdate(post, {returnOriginal: false});
     if (!address) return res.status(404).json({error: 'No address found for id ' + id});
  
     res.status(200).json(address)

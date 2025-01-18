@@ -62,16 +62,22 @@ userSchema.methods.comparePassword = (password) => {
     return bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.boughtProduct = () => {
-
+userSchema.methods.ban = (reason) => {
+    this.ban.isBanned = true;
+    this.ban.bannedAt = new Date.now();
+    this.ban.reason = reason;
 }
 
-userSchema.methods.soldProduct = () => {
-
+userSchema.methods.boughtProduct = (productId) => {
+    this.boughtProducts.push(productId);
 }
 
-userSchema.methods.addedProduct = () => {
-    
+userSchema.methods.soldProduct = (productId) => {
+    this.soldProducts.push(productId);
+}
+
+userSchema.methods.addedProduct = (productId) => {
+    this.onSaleProducts.push(productId);
 }
 
 module.exports = mongoose.model('User', userSchema);

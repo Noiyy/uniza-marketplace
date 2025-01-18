@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ratingSchema = new mongoose.Schema({
   description: {
     type: String,
-    required: true
+    required: false
   },
   title: {
     type: String,

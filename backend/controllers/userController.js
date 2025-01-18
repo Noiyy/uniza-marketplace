@@ -38,7 +38,16 @@ exports.changeUserPassword = async (req, res) => {
 }
 
 exports.banUser = async (req, res) => {
-
+    const { id } = req.params;
+    const { reason } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + id});
+    
+    const user = await User.findById({_id: id});
+    if(!user) return res.status(404).json({error: 'No user found for id ' + id});
+    
+    user.ban(reason);
+    await user.save();
+    res.status(200).json({message: 'User banned for: ' + reason});
 }
 
 exports.deleteUser = async (req, res) => {
