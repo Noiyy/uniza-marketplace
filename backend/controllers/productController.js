@@ -80,3 +80,71 @@ exports.deleteProduct = async (req, res) => {
    
     res.status(200).json({message: 'Product deleted.'});
 }
+
+async function initTestProducts() {
+    const products = [
+        {
+            title: "Product a",
+            sellerId: "678f6b895072aacad19cdb6e",
+            description: "nejaka test desc",
+            images: ["testProductImg.png", "testProductImg2.png"],
+            category: {
+                mainCategory: "678f6ba719ca0d2f3b0e8232"
+            },
+            price: {
+                value: 27,
+            }
+        },
+        {
+            title: "Product b",
+            sellerId: "678f6b895072aacad19cdb6e",
+            description: "nejaka test desc dalsia haha",
+            category: {
+                mainCategory: "678f6ba719ca0d2f3b0e8232"
+            },
+            price: {
+                value: 11
+            }
+        },
+        {
+            title: "Product c",
+            sellerId: "678f6b895072aacad19cdb6e",
+            description: "nejaka test desc is it",
+            images: ["testProductImg.png"],
+            category: {
+                mainCategory: "678f6ba719ca0d2f3b0e8232",
+                subCategory: "678f6ba719ca0d2f3b0e8233"
+            },
+            price: {
+                value: 3
+            }
+        },
+        {
+            title: "Product d",
+            sellerId: "678f6b895072aacad19cdb6e",
+            description: "nejaka test desc dalsia haha xd",
+            category: {
+                mainCategory: "678f6ba719ca0d2f3b0e8232"
+            },
+            price: {
+                specialValue: "free"
+            }
+        },
+        {
+            title: "Product e",
+            sellerId: "678f6b895072aacad19cdb6e",
+            description: "nejaka test desc dalsia haha hehe",
+            category: {
+                mainCategory: "678f6ba719ca0d2f3b0e8239"
+            },
+            price: {
+                specialValue: "agreement"
+            }
+        },
+    ];
+
+    await Product.deleteMany({});
+    await Product.insertMany(products);
+}
+
+// initTestProducts().catch(err => console.error(err));

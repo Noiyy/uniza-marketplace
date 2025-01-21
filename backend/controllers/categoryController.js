@@ -60,4 +60,4 @@ async function initCategories() {
     await Category.insertMany(categories);
 }
 
-initCategories().catch(err => console.error(err));
+// initCategories().catch(err => console.error(err));

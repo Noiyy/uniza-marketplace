@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
 		required: true
 	},
 	sellerId: {
-		type: mongoose.Schema.Types.ObjectId, ref: 'Category', 
+		type: mongoose.Schema.Types.ObjectId, ref: 'User', 
 		required: true
 	},
 	seenCount: {
@@ -15,7 +15,6 @@ const productSchema = new mongoose.Schema({
 	},
 	description: {
 		type: String,
-		required: false
 	},
 	createdAt: {
         type: Date, 
@@ -24,22 +23,20 @@ const productSchema = new mongoose.Schema({
 	images: [{ type: String }],
 	category: {
 		mainCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-		subCategory: {  type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: false }
+		subCategory: {  type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
 	},
 	price: {
-		value: { type: mongoose.Schema.Types.Decimal128 },
-		specialValue: { enum: ["agreement", "offer", "in text", "free" ] },
-		required: true
+		value: { type: mongoose.Schema.Types.Decimal128, required: true, default: 0 }, // 0 -> use specialValue
+		specialValue: { type: String, enum: ["agreement", "offer", "in text", "free" ] },
 	},
 	address: {
 		asProfile: { type: Boolean, default: true },
 		custom: { type: String },
-		required: true
 	},
 	count: {
 		available: { type: Number, default: 1, required: true },
 		sold: { type: Number, default: 0, required: true },
-		deleteOnZero: { type: Boolean, default: false }
+		deleteOnZero: { type: Boolean }
 	},
 	history: [{ type: String }]
 });

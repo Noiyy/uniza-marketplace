@@ -12,7 +12,7 @@ router.delete('/delete/:id', deleteUser);
 // Address
 router.get("/address/getAll", getAllAddresses);
 router.get("/address/:id", getAddress);
-router.post("/address/add", addProduct);
+router.post("/address/add", addAddress);
 router.patch('/address/update/:id', updateAddress);
 router.delete('/address/delete/:id', deleteAddress);
 

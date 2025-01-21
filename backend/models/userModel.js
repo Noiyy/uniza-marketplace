@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: false, unique: true
+        unique: true
     },
     registeredAt: {
         type: Date, 
@@ -24,30 +24,26 @@ const userSchema = new mongoose.Schema({
     },
     avatarPath: {
         type: String,
-        required: false, default: ""
     },
     addressId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Address',
-        required: true
+        required: false
     },
     rating: {
         total: { type:  mongoose.Schema.Types.Decimal128 }, // mongoose.Types.Decimal128.fromString(asdjasfhnas.toString()), // Convert to Decimal128
         average: { type:  mongoose.Schema.Types.Decimal128 }, // product.price.toString(); // Convert Decimal128 to string
         count: { type: Number },
-        required: false
     },
     boughtProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     soldProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     onSaleProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     isAdmin: {
-        type: Boolean,
-        required: false, default: false
+        type: Boolean
     },
     ban: {
-        isBanned: { type: Boolean, default: false },
+        isBanned: { type: Boolean },
         bannedAt: { type: Date },
-        reason: { type: String },
-        required: false
+        reason: { type: String }
     }
 });
 
@@ -62,7 +58,7 @@ userSchema.methods.comparePassword = (password) => {
     return bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.ban = (reason) => {
+userSchema.methods.banUser = (reason) => {
     this.ban.isBanned = true;
     this.ban.bannedAt = new Date.now();
     this.ban.reason = reason;

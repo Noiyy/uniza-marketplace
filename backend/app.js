@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
-aap.use("/api/feedback", feedbackRoutes);
+app.use("/api/feedback", feedbackRoutes);
  
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
