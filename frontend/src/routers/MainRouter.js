@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router';
 
-export default function (BASE_PATH, emitter) {
+export default function (emitter) {
     
     const routes = [
         {
@@ -9,9 +9,9 @@ export default function (BASE_PATH, emitter) {
             component: () => import('../../views/404-PageNotFound.vue')
         },
         {
-            path: BASE_PATH + '',
+            path: '',
             name: 'Home',
-            alias: BASE_PATH + 'home',
+            alias: '/home',
             component: () => import ('../../views/home/HomeView.vue'),
             children: []
         },

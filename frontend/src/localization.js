@@ -3,10 +3,10 @@ const i18nOptions = {
   fallbackLocale: "en",
   messages: {
     sk: {
-      Text: "TextSK",
+      Menu: "Menu",
     },
     en: {
-      Text: "TextEN",
+      Menu: "Menu",
     },
   },
 };

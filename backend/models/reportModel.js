@@ -12,7 +12,7 @@ const reportSchema = new mongoose.Schema({
 	},
 	toUserId: {
 		type: mongoose.Schema.Types.ObjectId, ref: 'User',
-		required: false
+		required: true
 	},
 	toProductId: {
 		type: mongoose.Schema.Types.ObjectId, ref: 'Product',

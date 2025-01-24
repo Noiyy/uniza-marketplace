@@ -1,8 +1,14 @@
 <template>
-    a
+    <div class="home-content">
+        <HomeHero></HomeHero>
+    
+        <Footer></Footer>
+    </div>
 </template>
 
 <script>
+import Footer from '../Footer.vue'
+import HomeHero from './HomeHero.vue';
 // import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -16,7 +22,8 @@ export default {
     },
 
     components: {
-
+        HomeHero,
+        Footer
     },
 
     data() {
@@ -52,5 +59,8 @@ export default {
 </script>
 
 <style scoped>
-
+.home-content {
+    min-height: 100vh;
+    min-height: 100svh;
+}
 </style>

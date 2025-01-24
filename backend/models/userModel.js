@@ -58,6 +58,13 @@ userSchema.methods.comparePassword = (password) => {
     return bcrypt.compare(password, this.password);
 };
 
+userSchema.set("toJSON", {
+    transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+    }
+});
+
 userSchema.methods.banUser = (reason) => {
     this.ban.isBanned = true;
     this.ban.bannedAt = new Date.now();

@@ -16,7 +16,7 @@ import { Icon } from '@iconify/vue';
 export default {
   name: "MainApp",
 
-  inject: ['emitter', 'axios'], // 'adminRoute'
+  inject: ['emitter', 'userApi'],
 
   components: {
     Icon
@@ -104,6 +104,9 @@ export default {
 
     // this.getLoggedInUser();
     this.isLoaded = true;
+
+    const usersResp = await this.userApi.getAllUsers();
+    console.log("users", usersResp);
   },
 
   unmounted() {
@@ -144,5 +147,23 @@ export default {
 }
 .scroll-to-top.light .scroll-btn-img {
   filter: invert(1);
+}
+
+/* Scrollbar
+width */
+.scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+/* Track */
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--black);
+}
+/* Handle */
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+/* Handle on hover */
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d57579;
 }
 </style>

@@ -8,7 +8,8 @@
             <section id="error-404" class="d-flex flex-1 justify-content-center align-items-center text-center">
                 <div class="container">
                     <div class="content">
-                        <h1 class="section-heading"> <span>404</span> Page not found </h1>
+                        404
+                        <!-- <h1 class="section-heading"> <span>404</span> Page not found </h1>
                         <p> {{ $t("Err404Text1") }} </p>
                         <h4> {{ $t("Err404Text2") }} </h4>
                         <button class="btn btn-primary dark"
@@ -18,7 +19,7 @@
                         </button>
 
                         <div class="img-cont-404">
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </section>
@@ -29,10 +30,9 @@
 </template>
 
 <script>
-import Header from '../components/Header.vue';
-import Footer from '../components/Footer.vue';
+import Header from '../src/components/Header.vue';
+import Footer from '../src/components/Footer.vue';
 
-import { useToast } from 'vue-toastification';
 import { Icon } from '@iconify/vue';
 
 export default {
@@ -58,7 +58,7 @@ export default {
 
     data() {
         return {
-            toast: useToast(),
+
         }
     },
 }
