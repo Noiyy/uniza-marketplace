@@ -180,4 +180,8 @@ width */
 .scrollbar::-webkit-scrollbar-thumb:hover {
   background: #d57579;
 }
+
+.vue-slider .vue-slider-process {
+  background-color: var(--primary);
+}
 </style>

@@ -41,29 +41,55 @@
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                                 <div class="filters-dropdown-content scrollbar">
-                                    <div class="option" :class="!selectedSearchCategory ? 'selected' : ''" 
-                                        @click="selectedSearchCategory = null">
-                                        All main categories 
-                                    </div>
                                     <div class="option" v-for="(ctg, index) in getMainCategories" :key="index"
                                         :class="selectedSearchCategory && selectedSearchCategory == ctg.name ? 'selected' : ''"
                                         @click="selectedSearchCategory = ctg.name"> 
                                         {{ ctg.name }}
                                     </div>
+                                    <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedSearchCategory = null" />
                                 </div>
                             </div>
-                            <div class="price d-flex gap-8 align-items-center" :class="{ open: isOpen['price'] }" @click="toggleDropdown('price')"> 
-                                Price
-                                <div class="d-flex align-items-center">
-                                    <span> > 0€ </span>
-                                    <!-- <div class="d-flex gap-8 price-range align-items-center">
-                                        30€
-                                        <span> - </span>
-                                        50€
-                                    </div> -->
-                                    <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+
+                            <div class="price" :class="{ open: isOpen['price'] }" @click="toggleDropdown('price')"> 
+                                <div class="d-flex gap-8 align-items-center">
+                                    Price
+                                    <div class="d-flex align-items-center">
+                                        <span v-if="selectedPriceRange[0] == 0 && selectedPriceRange[1] == 9999"> > 0€ </span>
+                                        <div class="d-flex gap-8 price-range align-items-center" v-else>
+                                            {{ selectedPriceRange[0] }}€
+                                            <span> - </span>
+                                            {{ selectedPriceRange[1] }}€
+                                        </div>
+                                        <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                                    </div>
+                                </div>
+                                <div class="filters-dropdown-content scrollbar" @click="(e) => e.stopPropagation()">
+                                    <div class="price-range-info d-flex justify-content-between gap-32">
+                                        <div class="price-input-cont d-flex gap-8 align-items-center">
+                                            <input type="number" min="0" :value="selectedPriceRange[0]" @input="(e) => setPriceRange('from', e)">
+                                            €
+                                        </div>
+                                        <div class="price-input-cont d-flex gap-8 align-items-center">
+                                            <input type="number" max="9999" :value="selectedPriceRange[1]" @input="(e) => setPriceRange('to', e)">
+                                            €
+                                        </div>
+                                        <Icon icon="formkit:arrowright" class="arrow-icon" />
+                                    </div>
+                                    <div class="slider-container">
+                                        <VueSlider
+                                            v-model="selectedPriceRange"
+                                            :min-range="2"
+                                            :min="0"
+                                            :max="9999"
+                                            @change="sliderChange"
+                                            tooltip="none"
+                                            @click="(e) => e.stopPropagation()">
+                                        </VueSlider>
+                                    </div>
+                                    <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedPriceRange = [0, 9999]" />
                                 </div>
                             </div>
+
                             <div class="location" :class="{ open: isOpen['location'] }" @click="toggleDropdown('location')">
                                 <div class="selected">
                                     {{ selectedLocation ? selectedLocation : 'Anywhere' }}
@@ -77,7 +103,8 @@
                                         <input type="text" placeholder="search" v-model="locationSearch" @input="filterLocations()">
                                     </div>
                                     <div class="search-options" v-if="locationSearch">
-                                        <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`">
+                                        <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`"
+                                            :class="selectedLocation && selectedLocation == `${loc.city}, ${loc.postalCode}` ? 'selected' : ''">
                                             {{ loc.city }} - {{ loc.postalCode }} - {{ loc.region }}
                                         </div>
                                     </div>
@@ -89,7 +116,7 @@
                     </div>
         
                     <div class="right">
-                        <button class="btn"> Search </button>
+                        <button class="btn" @click="doSearch"> Search </button>
                     </div>
                 </div>
             </div>
@@ -102,8 +129,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Icon } from '@iconify/vue';
-// import VueSlider from 'vue-slider-component'
-// import 'vue-slider-component/theme/default.css'
+import VueSlider from 'vue-3-slider-component';
 
 import SidebarMenu from './SidebarMenu.vue';
 import LangSelector from './LangSelector.vue';
@@ -122,7 +148,7 @@ export default {
         SidebarMenu,
         LangSelector,
         Icon,
-
+        VueSlider
     },
 
     data() {
@@ -131,10 +157,7 @@ export default {
             glassImgSrc: this.getAssetUrl("img/header_texture.png"),
 
             selectedSearchCategory: null,
-            selectedPriceRange: {
-                from: 0,
-                to: 0
-            },
+            selectedPriceRange: [0, 9999],
             selectedLocation: null,
             isOpen: {
                 categories: false,
@@ -200,6 +223,22 @@ export default {
             } else {
                 console.log("Geolocation is not supported by this browser.");
             }
+        },
+
+        sliderChange(val, index) {
+            // console.log("oi", val);
+        },
+
+        setPriceRange(type, e) {
+            if (type == "from") { 
+                this.selectedPriceRange[0] = e.target.value ? e.target.value : 0;
+            } else {
+                this.selectedPriceRange[1] = e.target.value ? e.target.value : 0;
+            }
+        },
+
+        doSearch() {
+            
         }
     },
     
@@ -345,12 +384,12 @@ export default {
     position: absolute;
     background-color: var(--black);
     color: var(--white);
-    min-width: 100%;
+    min-width: 250px;
     box-shadow: 0px 8px 16px rgba(255, 154, 158, 0.1); 
     z-index: 1;
     max-height: 250px;
     overflow-y: auto;
-    padding: 8px;
+    padding: 16px;
 }
 
 .filters-dropdown-content .option {
@@ -359,6 +398,10 @@ export default {
 }
 .filters-dropdown-content .option:hover {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+.filters-dropdown-content .option:nth-child(1) {
+    margin-top: 16px;
 }
 
 .filters-dropdown-content .option.selected {
@@ -382,6 +425,7 @@ export default {
     border: none;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     margin: 8px 0;
+    width: 100%;
 }
 
 .filters-dropdown-content .refresh-icon {
@@ -389,5 +433,67 @@ export default {
     top: 8px;
     right: 8px;
     font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.4s ease-out;
+}
+.filters-dropdown-content .refresh-icon:hover {
+    transform: rotate(360deg);
+}
+
+.filters .price-range-info {
+    margin-top: 32px;
+    position: relative;
+}
+
+.filters .price-range-info .arrow-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--white);
+    opacity: 0.5;
+}
+
+.filters .price .slider-container {
+    margin: 16px 0;
+    padding: 0 8px;
+}
+
+.filters .price .filters-dropdown-content {
+    cursor: initial;
+}
+
+.filters .price-input-cont input {
+    max-width: 66px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+    font-weight: 600;
+    outline: none;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+}
+
+.filters .price-input-cont input::-webkit-outer-spin-button,
+.filters .price-input-cont input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.filters .price-input-cont input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.header-search .right .btn:hover {
+    background-color: #2c251f;
+}
+
+.filters .location .search-options .option,
+.filters .categories .option {
+    color: var(--primary);
+}
+.filters .location .search-options .option:nth-child(even),
+.filters .categories .option:nth-child(even) {
+    color: var(--secondary);
 }
 </style>
