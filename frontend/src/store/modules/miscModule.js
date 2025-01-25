@@ -4,13 +4,13 @@ export default {
     state() {
         return {
             isMobile: screen.width <= 760,
-            newItemName: null,
+            allPSC: []
         }
     },
 
     getters: {
-        getNewItemName(state) {
-            return state.newItemName;
+        getAllPSC(state) {
+            return state.allPSC;
         },
 
         getIsMobile(state) {
@@ -19,8 +19,8 @@ export default {
     },
 
     actions: {
-        setNewItemName ({commit}, name) {
-            commit('setNewItemName', name);
+        setAllPSC ({commit}, pscs) {
+            commit('setAllPSC', pscs);
         },
 
         setIsMobile ({commit}, name) {
@@ -29,8 +29,8 @@ export default {
     },
 
     mutations: {
-        setNewItemName(state, data) {
-            state.newItemName = data;
+        setAllPSC(state, data) {
+            state.allPSC = data;
         },
 
         setIsMobile(state, flag) {

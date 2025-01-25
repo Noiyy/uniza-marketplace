@@ -4,16 +4,16 @@ const { getAllRatings, getRating, addRating, updateRating, deleteRating } = requ
 const router = express.Router();
 
 // Report
-router.get("/report/getAll", getAllReports);
-router.get("/report/:id", getReport);
-router.post("/report/add", addReport);
-router.delete('/report/delete/:id', deleteReport);
+router.get("/reports/getAll", getAllReports);
+router.get("/reports/:id", getReport);
+router.post("/reports/add", addReport);
+router.delete('/reports/delete/:id', deleteReport);
 
 // Rating
-router.get("/rating/getAll", getAllRatings);
-router.get("/rating/:id", getRating);
-router.post("/rating/add", addRating);
-router.patch('/rating/:id', updateRating);
-router.delete('/rating/delete/:id', deleteRating);
+router.get("/ratings/getAll", getAllRatings);
+router.get("/ratings/:id", getRating);
+router.post("/ratings/add", addRating);
+router.patch('/ratings/update/:id', updateRating);
+router.delete('/ratings/delete/:id', deleteRating);
 
 module.exports = router;

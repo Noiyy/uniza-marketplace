@@ -7,6 +7,18 @@ exports.getAllCategories = async (req, res) => {
     res.status(200).json(categories);
 };
 
+exports.getMainCategories = async (req, res) => {
+    const categories = await Category.find({ parentName: { $exists: false } });
+
+    res.status(200).json(categories);
+};
+
+exports.getSubCategories = async (req, res) => {
+    const categories = await Category.find({ parentName: { $exists: true } });
+
+    res.status(200).json(categories);
+};
+
 exports.getCategory = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No category found for id ' + id});

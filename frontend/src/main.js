@@ -18,6 +18,9 @@ import { globalMixin } from './mixins/globalMixin';
 import { createHead, VueHeadMixin } from '@unhead/vue';
 
 import UserService from './services/userService';
+import FeedbackService from './services/feedbackService';
+import ProductService from './services/productService';
+import MiscService from './services/miscService';
 
 const head = createHead();
 const isDev = true;
@@ -54,6 +57,9 @@ app.mixin(VueHeadMixin);
 
 app.provide("axios", axiosInstance);
 app.provide("userApi", new UserService(isDev, "api"));
+app.provide("feedbackApi", new FeedbackService(isDev, "api/feedback"));
+app.provide("productApi", new ProductService(isDev, "api/product"));
+app.provide("miscApi", new MiscService(isDev, "api/misc"));
 app.provide("emitter", emitter);
 
 const toastInstance = useToast();

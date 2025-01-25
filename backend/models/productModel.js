@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const addressSchema = require('./addressModel');
  
 const productSchema = new mongoose.Schema({
 	title: {
@@ -31,14 +32,20 @@ const productSchema = new mongoose.Schema({
 	},
 	address: {
 		asProfile: { type: Boolean, default: true },
-		custom: { type: String },
+		custom: addressSchema,
 	},
 	count: {
 		available: { type: Number, default: 1, required: true },
 		sold: { type: Number, default: 0, required: true },
-		deleteOnZero: { type: Boolean }
+		deleteOnZero: { type: Boolean, default: false, required: true }
 	},
-	history: [{ type: String }]
+	history: [
+		{ 
+			historyType: { type: String, enum: ["create", "count", "sale", "end"], required: true },
+			info: { type: String, required: true },
+			count: { type: Number }
+		}
+	]
 });
  
 module.exports = mongoose.model('Product', productSchema);

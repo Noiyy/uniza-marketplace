@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authApi');
 const userRoutes = require("./routes/userApi");
 const productRoutes = require("./routes/productApi");
 const feedbackRoutes = require("./routes/feedbackApi");
+const miscRoutes = require("./routes/miscApi");
 
 const app = express();
  
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/misc/", miscRoutes);
  
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)

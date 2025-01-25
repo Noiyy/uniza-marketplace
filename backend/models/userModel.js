@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const addressSchema = require('./addressModel');
 
 const userSchema = new mongoose.Schema({
     username: { 
@@ -25,10 +26,7 @@ const userSchema = new mongoose.Schema({
     avatarPath: {
         type: String,
     },
-    addressId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Address',
-        required: false
-    },
+    address: addressSchema,
     rating: {
         total: { type:  mongoose.Schema.Types.Decimal128 }, // mongoose.Types.Decimal128.fromString(asdjasfhnas.toString()), // Convert to Decimal128
         average: { type:  mongoose.Schema.Types.Decimal128 }, // product.price.toString(); // Convert Decimal128 to string

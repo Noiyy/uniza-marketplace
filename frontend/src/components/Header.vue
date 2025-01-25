@@ -35,26 +35,24 @@
                             <input type="text" class="search-input" name="searchQuery">
                         </div>
                         <div class="filters d-flex gap-32 align-items-center">
-                            <div class="categories"> 
+                            <div class="categories" :class="{ open: isOpen['categories'] }" @click="toggleDropdown('categories')"> 
                                 <div class="selected">
-                                    All main categories
+                                    {{ selectedSearchCategory ? selectedSearchCategory : 'All main categories' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                                 <div class="filters-dropdown-content scrollbar">
-                                    <div class="option"> Clothing </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
-                                    <div class="option"> Tickets </div>
+                                    <div class="option" :class="!selectedSearchCategory ? 'selected' : ''" 
+                                        @click="selectedSearchCategory = null">
+                                        All main categories 
+                                    </div>
+                                    <div class="option" v-for="(ctg, index) in getMainCategories" :key="index"
+                                        :class="selectedSearchCategory && selectedSearchCategory == ctg.name ? 'selected' : ''"
+                                        @click="selectedSearchCategory = ctg.name"> 
+                                        {{ ctg.name }}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="price d-flex gap-8 align-items-center"> 
+                            <div class="price d-flex gap-8 align-items-center" :class="{ open: isOpen['price'] }" @click="toggleDropdown('price')"> 
                                 Price
                                 <div class="d-flex align-items-center">
                                     <span> > 0€ </span>
@@ -66,9 +64,26 @@
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                             </div>
-                            <div class="location"> 
-                                Anywhere
-                                <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                            <div class="location" :class="{ open: isOpen['location'] }" @click="toggleDropdown('location')">
+                                <div class="selected">
+                                    {{ selectedLocation ? selectedLocation : 'Anywhere' }}
+                                    <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                                </div>
+                                <div class="filters-dropdown-content scrollbar">
+                                    <div class="option" @click="selectNearMeLocation">
+                                        Near me
+                                    </div>
+                                    <div class="location-input-cont" @click="(e) => { e.preventDefault(); e.stopPropagation(); }">
+                                        <input type="text" placeholder="search" v-model="locationSearch" @input="filterLocations()">
+                                    </div>
+                                    <div class="search-options" v-if="locationSearch">
+                                        <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`">
+                                            {{ loc.city }} - {{ loc.postalCode }} - {{ loc.region }}
+                                        </div>
+                                    </div>
+
+                                   <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedLocation = null" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -87,6 +102,8 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Icon } from '@iconify/vue';
+// import VueSlider from 'vue-slider-component'
+// import 'vue-slider-component/theme/default.css'
 
 import SidebarMenu from './SidebarMenu.vue';
 import LangSelector from './LangSelector.vue';
@@ -104,17 +121,44 @@ export default {
     components: {
         SidebarMenu,
         LangSelector,
-        Icon
+        Icon,
+
     },
 
     data() {
         return {
             sidebarMenuOpened: false,
-            glassImgSrc: this.getAssetUrl("img/header_texture.png")
+            glassImgSrc: this.getAssetUrl("img/header_texture.png"),
+
+            selectedSearchCategory: null,
+            selectedPriceRange: {
+                from: 0,
+                to: 0
+            },
+            selectedLocation: null,
+            isOpen: {
+                categories: false,
+                price: false,
+                location: false
+            },
+            locationSearch: "",
+
+            filteredLocations: [],
+            userDeviceLocation: null,
         }
     },
 
     methods: {
+        toggleDropdown(dropdown) {
+            for (const key in this.isOpen) {
+                if (key !== dropdown) {
+                this.isOpen[key] = false;
+                }
+            }
+            
+            this.isOpen[dropdown] = !this.isOpen[dropdown];
+        },
+
         toggleSidebarMenu() {
             const sidebarMenu = document.getElementById("sidebar-menu");
             const menuBtn = document.querySelector(".menu-icon");
@@ -127,12 +171,44 @@ export default {
                 this.sidebarMenuOpened = !this.sidebarMenuOpened;
             }, 350);
         },
+
+        filterLocations() {
+            if (!this.getAllPSC || !this.getAllPSC.length) return [];
+
+            const filterByValue = (array, value) => {
+                const regex = new RegExp(value.replace(/([!@#$%^&*()+=\[\]\\',./{}":<>?~_-])/g, "\\$1"));
+                return array.filter(obj =>
+                    Object.values(obj).some(val =>
+                        (typeof val === 'string' || typeof val === 'number') &&
+                        (regex.test(val.toString().toLowerCase()))
+                    )
+                );
+            };
+
+            this.filteredLocations = filterByValue(this.getAllPSC, this.locationSearch);
+        },
+
+        selectNearMeLocation() {
+            this.selectedLocation = 'nearMe';
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    console.log("Latitude: " + position.coords.latitude);
+                    console.log("Longitude: " + position.coords.longitude);
+                }, (error) => {
+                    console.error("Error obtaining location: ", error);
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
     },
     
     computed: {
         ...mapGetters(
             {
-                IS_MOBILE: 'misc/getIsMobile'
+                IS_MOBILE: 'misc/getIsMobile',
+                getMainCategories: 'product/getMainCategories',
+                getAllPSC: 'misc/getAllPSC'
             }
         ),
 
@@ -256,7 +332,11 @@ export default {
     position: relative;
 }
 
-.filters .categories:hover .filters-dropdown-content {
+.filters > div {
+    user-select: none;
+}
+
+.filters > .open .filters-dropdown-content {
     display: block;
 }
 
@@ -281,13 +361,33 @@ export default {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
+.filters-dropdown-content .option.selected {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .filters .open .chevron-icon {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
 }
 .filters .price .price-range {
     font-weight: 700;
 }
 .filters .price .price-range span {
     font-weight: initial;
+}
+
+.filters .location input {
+    background-color: var(--black);
+    color: var(--white);
+    outline: none;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
+}
+
+.filters-dropdown-content .refresh-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
 }
 </style>

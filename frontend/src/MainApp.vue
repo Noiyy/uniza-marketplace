@@ -16,7 +16,7 @@ import { Icon } from '@iconify/vue';
 export default {
   name: "MainApp",
 
-  inject: ['emitter', 'userApi'],
+  inject: ['emitter', 'userApi', 'productApi', 'miscApi'],
 
   components: {
     Icon
@@ -35,7 +35,9 @@ export default {
   methods: {
     ...mapActions(
       {
-        setIsMobile: "misc/setIsMobile"
+        setIsMobile: "misc/setIsMobile",
+        setCategories: "product/setAllCategories",
+        setAllPSC: "misc/setAllPSC"
       }
     ),
 
@@ -107,6 +109,18 @@ export default {
 
     const usersResp = await this.userApi.getAllUsers();
     console.log("users", usersResp);
+
+    const categoriesResp = await this.productApi.getAllCategories();
+    if (categoriesResp.data) {
+      this.setCategories(categoriesResp.data);
+    }
+    console.log("ctg", categoriesResp)
+
+    const pscResp = await this.miscApi.getAllPSC();
+    console.log("psc", pscResp);
+    if (pscResp.data) {
+      this.setAllPSC(pscResp.data);
+    }
   },
 
   unmounted() {
