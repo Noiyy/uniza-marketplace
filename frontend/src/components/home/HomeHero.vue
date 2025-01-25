@@ -6,7 +6,7 @@
             <div class="content d-flex flex-column flex-1">
 
                 <div class="hero-content d-flex flex-1 flex-column justify-content-center align-items-center text-center">
-
+                    hero
                 </div>
             </div>
         </div>

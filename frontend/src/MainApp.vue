@@ -63,6 +63,7 @@ export default {
     },
 
     scrollToHeader() {
+      if (!scrollToTopBtn) return;
       if (!scrollToTopBtn.classList.contains("active")) return;
       document.querySelector('header').scrollIntoView({ 
           behavior: 'smooth' 
@@ -134,20 +135,19 @@ export default {
 .scroll-to-top {
     position: fixed;
     border-radius: 50%;
-    border: 1px solid var(--black);
+    border: 1px solid var(--primary);
     padding: 5px;
     bottom: 32px;
-    right: 32px;
+    left: 32px;
     opacity: 0;
     z-index: 10;
     display: flex;
     transition: opacity 0.2s ease-in-out;
+    color: var(--secondary);
+    filter: drop-shadow(0px 0px 15px #fff);
 }
 .scroll-to-top.active {
     opacity: 0.33;
-}
-.scroll-to-top.light {
-  border: 1px solid var(--white);
 }
 
 .scroll-to-top.active:hover {
@@ -158,9 +158,6 @@ export default {
 .scroll-btn-img {
     width: 24px;
     height: 24px;
-}
-.scroll-to-top.light .scroll-btn-img {
-  filter: invert(1);
 }
 
 /* Scrollbar
@@ -183,5 +180,15 @@ width */
 
 .vue-slider .vue-slider-process {
   background-color: var(--primary);
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.content-wrapper > section {
+  min-height: 100vh;
+  min-height: 100svh;
 }
 </style>

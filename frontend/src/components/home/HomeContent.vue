@@ -1,5 +1,5 @@
 <template>
-    <div class="home-content">
+    <div class="home-content content-wrapper">
         <HomeHero></HomeHero>
     
         <Footer></Footer>
@@ -59,8 +59,13 @@ export default {
 </script>
 
 <style scoped>
-.home-content {
+/* .home-content {
     min-height: 100vh;
     min-height: 100svh;
 }
+
+.home-content > section {
+    min-height: 100vh;
+    min-height: 100svh;
+} */
 </style>
