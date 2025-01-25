@@ -109,6 +109,14 @@ body.openedSidebar {
     text-transform: uppercase;
 }
 
+.btn {
+    padding: 8px 24px;
+    color: var(--white);
+    border: 1px solid var(--white);
+    border-radius: 8px;
+    text-transform: uppercase;
+}
+
 /* SMALL - Mobile */
 @media(max-width: 640px) { 
 
