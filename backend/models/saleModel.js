@@ -25,7 +25,7 @@ const saleSchema = new mongoose.Schema({
     }
 });
 
-saleSchema.methods.confirmSale = () => {
+saleSchema.methods.confirmSale = function() {
     this.confirmed = true;
 }
  

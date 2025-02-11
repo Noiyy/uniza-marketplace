@@ -26,6 +26,9 @@ class UserService extends DefaultService {
     async loginUser(userData) {
         return await this.apiClient.post('/auth/login', userData);
     }
+    async authToken() {
+        return await this.apiClient.get('auth/authToken');
+    }
 }
 
 export default UserService;

@@ -1,25 +1,21 @@
 <template>
     <div class="error-content d-flex flex-1 flex-column justify-content-between">
         <div class="error-content-wrapper d-flex flex-column flex-1">
-            <div class="container">
-                <Header></Header>
-            </div>
+            <Header></Header>
         
             <section id="error-404" class="d-flex flex-1 justify-content-center align-items-center text-center">
                 <div class="container">
                     <div class="content">
-                        404
-                        <!-- <h1 class="section-heading"> <span>404</span> Page not found </h1>
-                        <p> {{ $t("Err404Text1") }} </p>
-                        <h4> {{ $t("Err404Text2") }} </h4>
-                        <button class="btn btn-primary dark"
-                            @click="$router.back()"> 
-                            <Icon icon="iconamoon:arrow-left-2" />
-                            {{ $t("Back") }}
-                        </button>
+                        <h1 class="section-heading"> <span>404</span> Page not found </h1>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn primary" @click="$router.back()"> 
+                                {{ $t("Back") }}
+                            </button>
+                        </div>
 
                         <div class="img-cont-404">
-                        </div> -->
+                            <Icon icon="game-icons:capybara" class="capy-icon" />
+                        </div>
                     </div>
                 </div>
             </section>
@@ -38,7 +34,7 @@ import { Icon } from '@iconify/vue';
 export default {
     head() {
         return {
-            title: `404 - UNIZA MARKETPLACE`,
+            title: `404 - UNIZA Marketplace`,
             meta: [
                 { name: "robots", content: "noindex, nofollow" },
             ]
@@ -99,6 +95,10 @@ h4 {
     font-size: 320px;
     color: var(--primary);
     z-index: -1;
+}
+
+footer {
+    margin-top: 32px;
 }
 
 /* SMALL - Mobile */

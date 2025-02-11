@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 exports.getAllProducts = async (req, res) => {
@@ -64,21 +65,43 @@ exports.updateProduct = async (req, res) => {
         count
     } = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        res.status(401).json({error: 'Auth user not found'});
  
-    const product = await Product.findOneAndUpdate({_id: id}, { title, description, images, category, price, address, count }, {returnOriginal: false});
-    if (!product) return res.status(404).json({error: 'No product found for id ' + id});
- 
-    res.status(200).json(user)
+    const productCheck = await Product.findById(id);
+    if (!productCheck) return res.status(404).json({error: 'No product found for id ' + id});
+
+    // Only owner or admin is allowed to
+    if (productCheck.sellerId.toString() !== user.id && !user.isAdmin) 
+        res.status(401).json({error: 'Auth user not authorized'});
+
+    const product = await Product.findOneAndUpdate(
+        { _id: id },
+        { title, description, images, category, price, address, count },
+        { new: true, runValidators: true }
+    );
+    res.status(200).json(product);
 }
 
 exports.deleteProduct = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});
-    
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        res.status(401).json({error: 'User not found'});
+
+    const productCheck = await Product.findById(id);
+    if (!productCheck) return res.status(404).json({error: 'No product found for id ' + id});
+
+    // Only owner or admin is allowed to
+    if (productCheck.sellerId.toString() !== user.id && !user.isAdmin)  
+        res.status(401).json({error: 'User not authorized'});
+
     const product = await Product.findOneAndDelete({_id: id});
-    if(!product) return res.status(404).json({error: 'No product found for id ' + id});
-   
-    res.status(200).json({message: 'Product deleted.'});
+    res.status(200).json({ message: 'Product deleted.', delProductId: product.id });
 }
 
 async function initTestProducts() {

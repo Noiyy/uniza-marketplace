@@ -10,9 +10,9 @@
 
 :root { 
     --white: #F0EDEA;
-    --white-2a: rgba(240, 237, 234, 2);
-    --white-5a: rgba(240, 237, 234, 5);
-    --white-7a: rgba(240, 237, 234, 7);
+    --white-2a: rgba(240, 237, 234, 0.2);
+    --white-5a: rgba(240, 237, 234, 0.5);
+    --white-7a: rgba(240, 237, 234, 0.7);
     --black: #1A1512;
     /* --black: #0F0B07 */
 
@@ -63,6 +63,10 @@ ul {
 a {
     color: var(--white);
     text-decoration: none;
+    transition: color 0.2s ease-out;
+}
+a:hover {
+    color: var(--primary);
 }
 
 .color-primary { color: var(--primary); }
@@ -98,7 +102,8 @@ a {
 }
 
 body.openedSidebar {
-    overflow: hidden !important;
+    overflow-y: scroll;
+    position: fixed;
 }
 
 .section-heading {
@@ -112,9 +117,79 @@ body.openedSidebar {
 .btn {
     padding: 8px 24px;
     color: var(--white);
-    border: 1px solid var(--white);
     border-radius: 8px;
     text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-weight: 600;
+    transition: all 0.2s ease-out;
+}
+a.btn.primary:hover {
+    color: var(--black);
+}
+a.btn.secondary:hover {
+    color: var(--white);
+}
+
+.btn.primary {
+    background: var(--gradient-angle);
+    color: var(--black);
+    font-weight: 700;
+    border: 2px solid transparent;
+}
+.btn.primary:hover {
+    border: 2px solid var(--black);
+}
+
+.btn.secondary {
+    background-color: var(--black);
+    background-clip: padding-box;
+    border: solid 1px transparent;
+}
+.btn.secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -1px;
+    border-radius: inherit;
+    background: var(--gradient-angle);
+}
+
+.btn.secondary:hover {
+    background-color: rgba(26, 21, 18, 0.9);
+}
+
+input.styled {
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--primary);
+    position: relative;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+input.styled:focus-visible {
+    border: 2px solid var(--secondary);
+    outline: none !important;
+}
+
+.form-row {
+    position: relative;
+}
+
+.form-row .input-tag {
+    position: absolute;
+    top: -16px;
+    left: 24px;
+    padding: 4px 24px;
+    color: var(--primary);
+    background-color: var(--black);
+    z-index: 1;
 }
 
 /* SMALL - Mobile */

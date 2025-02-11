@@ -105,6 +105,10 @@ export default {
     this.emitter.on('show-loader', this.showLoader);
     this.emitter.on('hide-loader', this.hideLoader);
 
+    this.emitter.on("logged", () => {
+      console.log(":/");
+      this.userApi.authToken();
+    });
     // this.getLoggedInUser();
     this.isLoaded = true;
 

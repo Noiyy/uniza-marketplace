@@ -13,11 +13,14 @@ const feedbackRoutes = require("./routes/feedbackApi");
 const miscRoutes = require("./routes/miscApi");
 
 const app = express();
+const isDev = true;
  
 // middleware
-app.use(express.json());
-app.use(cors());
 app.use(cookieParser());
+app.use(express.json());
+app.use(cors({
+    credentials: true
+}));
 app.use((req, res, next) => {
   console.log(req.path, req.method);
   next();

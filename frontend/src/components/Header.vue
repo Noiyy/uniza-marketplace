@@ -123,7 +123,7 @@
         </div>
     </header>
 
-    <!-- <SidebarMenu></SidebarMenu> -->
+    <SidebarMenu></SidebarMenu>
 </template>
 
 <script>
@@ -189,7 +189,7 @@ export default {
             sidebarMenu.classList.toggle("open");
             menuBtn.classList.toggle("animate");
             document.body.classList.toggle("openedSidebar");
-            menuBtn.style = "color: var(--white);";
+
             setTimeout(() => {
                 this.sidebarMenuOpened = !this.sidebarMenuOpened;
             }, 350);
@@ -310,6 +310,7 @@ export default {
     border-image-slice: 1;
     border-width: 1px;
     border-image-source: linear-gradient(to right, rgba(255, 154, 158, 0), rgba(255, 154, 158, 1));
+    z-index: 3;
 }
 .header-search .glass {
     display: flex;
@@ -386,7 +387,7 @@ export default {
     color: var(--white);
     min-width: 250px;
     box-shadow: 0px 8px 16px rgba(255, 154, 158, 0.1); 
-    z-index: 1;
+    z-index: 5;
     max-height: 250px;
     overflow-y: auto;
     padding: 16px;
@@ -480,9 +481,6 @@ export default {
     -webkit-appearance: none;
     margin: 0;
 }
-.filters .price-input-cont input[type=number] {
-    -moz-appearance: textfield;
-}
 
 .header-search .right .btn:hover {
     background-color: #2c251f;
@@ -495,5 +493,9 @@ export default {
 .filters .location .search-options .option:nth-child(even),
 .filters .categories .option:nth-child(even) {
     color: var(--secondary);
+}
+
+.header-right .menu-btn {
+    z-index: 16;
 }
 </style>

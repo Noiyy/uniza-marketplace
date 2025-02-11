@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     try {
         const user = new User({ username, email, password });
         await user.save();
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ success: true, message: 'User registered successfully' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -28,9 +28,10 @@ exports.login = async (req, res) => {
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie("token", token, { httpOnly: true, secure: true });
-        res.json({ token });
+        const token = jwt.sign({ id: user._id, userName: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // res.cookie("token", token, { httpOnly: false, secure: false }); // pri prod secure: true
+        // console.log("login token",req.cookies.token);
+        res.json({ success: true, token, user });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -38,13 +39,21 @@ exports.login = async (req, res) => {
 
 exports.authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
-    if (!token) return res.sendStatus(403); // Forbidden
+    console.log("serus ne", req.cookies.test);
+    res.cookie('test', '12345', { httpOnly: true, secure: false });
+    console.log(req.cookies.test);
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.sendStatus(403);
-        }
-        req.user = user;
-        next();
-    });
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) {
+                return res.status(403).json({ message: 'Forbidden' });
+            }
+            req.user = user;
+            next();
+        });
+    } catch (error) {
+        res.status(401).json({ error: 'Invalid token' });
+    }
 };

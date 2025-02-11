@@ -15,6 +15,18 @@ export default function (emitter) {
             component: () => import ('../../views/home/HomeView.vue'),
             children: []
         },
+        {
+            path: '/login',
+            name: "Login",
+            component: () => import ('../../views/AuthView.vue'),
+            props: { mode: "login" }
+        },
+        {
+            path: '/signUp',
+            name: "SignUp",
+            component: () => import ('../../views/AuthView.vue'),
+            props: { mode: "signup" }
+        },
     ];
 
     const router = createRouter({
@@ -24,13 +36,19 @@ export default function (emitter) {
 
     router.beforeEach((to, from, next) => {
         console.log('Navigating to:', to.path);
-        if(to.matched.length === 0) {
-            window.location.reload();
-        }
+
+        const isAuthenticated = !!document.cookie.split('; ').find(row => row.startsWith('token='));
+        if (to.meta.requiresAuth && !isAuthenticated)
+            next({ path: '/' });
         else {
-            emitter.emit('show-loader');
-            next();
-            emitter.emit('hide-loader');
+            if(to.matched.length === 0) {
+                window.location.reload();
+            }
+            else {
+                emitter.emit('show-loader');
+                next();
+                emitter.emit('hide-loader');
+            }
         }
     })
 

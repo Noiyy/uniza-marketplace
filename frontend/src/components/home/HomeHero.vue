@@ -295,7 +295,7 @@ export default {
 }
 
 .hero-grid .item:nth-child(4) .icon {
-    font-size: 17vw;
+    font-size: 25vh;
     opacity: 0.2;
     position: absolute;
     top: 50%;

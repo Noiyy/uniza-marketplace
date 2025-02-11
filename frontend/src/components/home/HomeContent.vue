@@ -9,17 +9,17 @@
                     <div class="pattern" :style="patternBgStyle"></div>
 
                     <div class="left d-flex flex-column align-items-center gap-16">
-                        <button class="btn"> browse </button>
+                        <button class="btn secondary"> browse </button>
                         171 products sold in last 96 hours
                     </div>
     
                     <div class="mid d-flex flex-column align-items-center gap-16">
                         frequently asked questions
-                        <button class="btn"> faq </button>
+                        <button class="btn secondary"> faq </button>
                     </div>
     
                     <div class="right d-flex flex-column align-items-center gap-16">
-                        <button class="btn"> support </button>
+                        <button class="btn secondary"> support </button>
                         contact us in case of need
                     </div>
                 </div>

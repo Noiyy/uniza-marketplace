@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        unique: true
     },
     registeredAt: {
         type: Date, 
@@ -46,13 +45,16 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function(next) {
+    console.log("serus ne");
     if (!this.isModified('password')) return next();
+    console.log("serus ne 2", this);
 
     this.password = await bcrypt.hash(this.password, 10);
+    console.log("serus ne 3", this);
     next();
 });
 
-userSchema.methods.comparePassword = (password) => {
+userSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };
 
@@ -63,21 +65,21 @@ userSchema.set("toJSON", {
     }
 });
 
-userSchema.methods.banUser = (reason) => {
+userSchema.methods.banUser = function (reason) {
     this.ban.isBanned = true;
     this.ban.bannedAt = new Date.now();
     this.ban.reason = reason;
 }
 
-userSchema.methods.boughtProduct = (productId) => {
+userSchema.methods.boughtProduct = function (productId) {
     this.boughtProducts.push(productId);
 }
 
-userSchema.methods.soldProduct = (productId) => {
+userSchema.methods.soldProduct = function (productId) {
     this.soldProducts.push(productId);
 }
 
-userSchema.methods.addedProduct = (productId) => {
+userSchema.methods.addedProduct = function (productId) {
     this.onSaleProducts.push(productId);
 }
 
