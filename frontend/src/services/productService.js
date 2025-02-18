@@ -7,7 +7,7 @@ class ProductService extends DefaultService {
 
     /* PRODUCT ROUTES */
     async getAllProducts() {
-        return await this.apiClient.get('/getAll');
+        return await this.apiClient.get('/getAllProducts');
     }
     async getProduct(productId) {
         return await this.apiClient.get(`/${productId}`);
@@ -27,7 +27,7 @@ class ProductService extends DefaultService {
 
     /* CATEGORY ROUTES */
     async getAllCategories() {
-        return await this.apiClient.get('/categories/getAll');
+        return await this.apiClient.get('/categories/getAllCategories');
     }
     async getMainCategories() {
         return await this.apiClient.get('/categories/getMain');
@@ -41,7 +41,7 @@ class ProductService extends DefaultService {
 
     /* SALE ROUTES */
     async getAllSales() {
-        return await this.apiClient.get('/sales/getAll');
+        return await this.apiClient.get('/sales/getAllSales');
     }
     async getProductSales(productId) {
         return await this.apiClient.get(`/${productId}/sales`);

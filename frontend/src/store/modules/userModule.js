@@ -21,6 +21,7 @@ export default {
 
     mutations: {
         setUser(state, data) {
+            console.log("saving user");
             state.user = data;
         },
     }

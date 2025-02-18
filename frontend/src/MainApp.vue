@@ -37,7 +37,9 @@ export default {
       {
         setIsMobile: "misc/setIsMobile",
         setCategories: "product/setAllCategories",
-        setAllPSC: "misc/setAllPSC"
+        setAllPSC: "misc/setAllPSC",
+
+        setUser: 'user/setUser'
       }
     ),
 
@@ -69,23 +71,6 @@ export default {
           behavior: 'smooth' 
       });
     },
-
-    // async getLoggedInUser() {
-    //   if (this.$isAdmin) return;
-    //   try {
-    //       const response = await this.axios.get(`${this.adminRoute}/getSessionUser`, { withCredentials: true });
-    //       const respData = response.data;
-
-    //       if (respData.user && respData.user.isAdmin) {
-    //           this.emitter.emit('update-isAdmin', true);
-    //           console.log("isAdmin",this.$isAdmin);
-    //       }
-
-    //   } catch (error) {
-    //       console.log("err:", error);
-    //       this.toast.error(error);
-    //   }
-    // },
   },
 
   created() {
@@ -105,11 +90,6 @@ export default {
     this.emitter.on('show-loader', this.showLoader);
     this.emitter.on('hide-loader', this.hideLoader);
 
-    this.emitter.on("logged", () => {
-      console.log(":/");
-      this.userApi.authToken();
-    });
-    // this.getLoggedInUser();
     this.isLoaded = true;
 
     const usersResp = await this.userApi.getAllUsers();

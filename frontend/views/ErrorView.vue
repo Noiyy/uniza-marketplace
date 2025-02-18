@@ -3,18 +3,18 @@
         <div class="error-content-wrapper d-flex flex-column flex-1">
             <Header></Header>
         
-            <section id="error-404" class="d-flex flex-1 justify-content-center align-items-center text-center">
+            <section id="error-section" class="d-flex flex-1 justify-content-center align-items-center text-center">
                 <div class="container">
                     <div class="content">
-                        <h1 class="section-heading"> <span>404</span> Page not found </h1>
+                        <h1 class="section-heading"> <span> {{ errorCode }} </span> {{ errorTitle }} </h1>
                         <div class="d-flex justify-content-center">
                             <button class="btn primary" @click="$router.back()"> 
                                 {{ $t("Back") }}
                             </button>
                         </div>
 
-                        <div class="img-cont-404">
-                            <Icon icon="game-icons:capybara" class="capy-icon" />
+                        <div class="img-cont-error">
+                            <Icon :icon="errorIcon" />
                         </div>
                     </div>
                 </div>
@@ -34,17 +34,15 @@ import { Icon } from '@iconify/vue';
 export default {
     head() {
         return {
-            title: `404 - UNIZA Marketplace`,
+            title: `Error - UNIZA Marketplace`,
             meta: [
                 { name: "robots", content: "noindex, nofollow" },
             ]
         }
     },
 
-    name: "404-PageNotFound",
-
-    inject: ['axios', 'emitter'],
-
+    name: "ErrorView",
+    
     components: {
         Header,
         Footer,
@@ -52,9 +50,20 @@ export default {
         Icon
     },
 
-    data() {
-        return {
+    props: {
+        errorCode: {
+            type: String,
+            required: true
+        },
 
+        errorTitle: {
+            type: String,
+            required: true
+        },
+
+        errorIcon: {
+            type: String,
+            required: true
         }
     },
 }
@@ -82,11 +91,11 @@ h4 {
     margin-bottom: 16px;
 }
 
-#error-404 {
+#error-section {
     position: relative;
 }
 
-.img-cont-404 {
+.img-cont-error {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -103,14 +112,14 @@ footer {
 
 /* SMALL - Mobile */
 @media(max-width: 640px) { 
-    .img-cont-404 {
+    .img-cont-error {
         font-size: 160px;
     }
 }
 
 /* MEDIUM - Tablet */
 @media(min-width: 641px) and (max-width: 992px) { 
-    .img-cont-404 {
+    .img-cont-error {
         font-size: 256px;
     }
 }

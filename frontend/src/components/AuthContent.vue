@@ -7,7 +7,7 @@
                 <div class="content d-flex flex-column align-items-center">
                     <h1> {{ mode == 'signup' ? 'Sign Up' : 'Login' }} </h1>
 
-                    <div class="form-wrapper d-flex flex-column gap-32">
+                    <form class="form-wrapper d-flex flex-column gap-32" @submit.prevent="null">
                         <div class="form-row d-flex flex-column gap-8" v-if="mode == 'signup'">
                             <div class="input-tag"> Username </div>
                             <input v-model="userName" type="text" class="styled" :placeholder="'Username'" required>
@@ -40,7 +40,7 @@
                                 {{ mode == 'signup' ? 'Sign Up' : 'Login' }}
                             </button>
                         </div>
-                    </div>
+                    </form>
 
                 </div>
             </div>

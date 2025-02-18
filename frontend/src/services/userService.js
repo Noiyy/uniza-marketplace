@@ -7,10 +7,13 @@ class UserService extends DefaultService {
 
     /* USER ROUTES */
     async getAllUsers() {
-        return await this.apiClient.get('/user/getAll');
+        return await this.apiClient.get('/user/getAllUsers');
     }
     async getUserById(userId) {
         return await this.apiClient.get(`/user/${userId}`);
+    }
+    async getLoggedUser() {
+        return await this.apiClient.get(`/user/getLoggedUser`, { withCredentials: true });
     }
     async updateUser(userId, userData) {
         return await this.apiClient.put(`/user/update/${userId}`, userData);
@@ -24,10 +27,7 @@ class UserService extends DefaultService {
         return await this.apiClient.post('/auth/register', userData);
     }
     async loginUser(userData) {
-        return await this.apiClient.post('/auth/login', userData);
-    }
-    async authToken() {
-        return await this.apiClient.get('auth/authToken');
+        return await this.apiClient.post('/auth/login', userData, { withCredentials: true });
     }
 }
 

@@ -5,7 +5,7 @@ const { getAllSales, getProductSales, getSale, addSale, confirmSale, deleteSale 
 const router = express.Router();
 
 // Product
-router.get("/getAll", getAllProducts);
+router.get("/getAllProducts", getAllProducts);
 router.get("/:id", getProduct);
 router.get("/userProducts/:userId", getUserProducts);
 router.post("/add", addProduct);
@@ -13,13 +13,13 @@ router.patch('/update/:id', updateProduct);
 router.delete('/delete/:id', deleteProduct);
 
 // Category
-router.get("/categories/getAll", getAllCategories);
+router.get("/categories/getAllCategories", getAllCategories);
 router.get("/categories/getMain", getMainCategories);
 router.get("/categories/getSub", getSubCategories);
 router.get("/categories/:id", getCategory);
 
 // Sale
-router.get("/sales/getAll", getAllSales);
+router.get("/sales/getAllSales", getAllSales);
 router.get("/:id/sales", getProductSales);
 router.get("/sales/:saleId", getSale);
 router.post("/:id/sales/add", addSale);

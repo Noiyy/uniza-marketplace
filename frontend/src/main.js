@@ -23,7 +23,7 @@ import ProductService from './services/productService';
 import MiscService from './services/miscService';
 
 const head = createHead();
-const isDev = true;
+const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
 
 const axiosInstance = axios.create({
     baseURL: isDev ? "http://localhost:4000/" : "https://uniza-marketplace.sk/",
@@ -36,7 +36,7 @@ const emitter = mitt();
 const app = createApp(MainApp);
 Object.assign(app.config.globalProperties, globals);
 
-const routerObj = router(emitter);
+const routerObj = router(emitter, isDev, axiosInstance);
 
 const toastOptions = {
     transition: "Vue-Toastification__slideBlurred",

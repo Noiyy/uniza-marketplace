@@ -12,14 +12,14 @@ import AuthContent from '../src/components/AuthContent.vue'
 export default {
     head() {
         return {
-            title: `UNIZA Marketplace`,
+            title: `Auth - UNIZA Marketplace`,
             meta: [
                 { name: "robots", content: "noindex, nofollow" },
             ]
         }
     },
 
-    name: "404-PageNotFound",
+    name: "AuthView",
 
     props: {
         mode: {

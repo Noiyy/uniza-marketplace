@@ -17,6 +17,11 @@ exports.getUser = async (req, res) => {
     res.status(200).json(user);
 };
 
+exports.getLoggedUser = async (req, res) => {
+    if (req.user) res.status(200).json({user: req.user});
+    else res.status(500).json({error: "No user data found!"});
+};
+
 exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { 

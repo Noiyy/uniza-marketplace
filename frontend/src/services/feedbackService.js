@@ -7,7 +7,7 @@ class FeedbackService extends DefaultService {
 
     /* REPORT ROUTES */
     async getAllReports() {
-        return await this.apiClient.get('/reports/getAll');
+        return await this.apiClient.get('/reports/getAllReports');
     }
     async getReport(reportId) {
         return await this.apiClient.get(`/reports/${reportId}`);
@@ -21,7 +21,7 @@ class FeedbackService extends DefaultService {
 
     /* RATING ROUTES */
     async getAllRatings() {
-        return await this.apiClient.get('/ratings/getAll');
+        return await this.apiClient.get('/ratings/getAllRatings');
     }
     async getRating(ratingId) {
         return await this.apiClient.get(`/ratings/${ratingId}`);
