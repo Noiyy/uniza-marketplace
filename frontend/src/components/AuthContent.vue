@@ -132,8 +132,6 @@ export default {
     
                         this.$toast.success("LoginSuccess");
                         this.$router.push({name: "Home"});
-    
-                        this.emitter.emit("logged");
                     } else {
                         this.$toast.error("LoginFailed");
                     }

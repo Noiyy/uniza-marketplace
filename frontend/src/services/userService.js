@@ -29,6 +29,9 @@ class UserService extends DefaultService {
     async loginUser(userData) {
         return await this.apiClient.post('/auth/login', userData, { withCredentials: true });
     }
+    async logoutUser() {
+        return await this.apiClient.post('/auth/logout');
+    }
 }
 
 export default UserService;

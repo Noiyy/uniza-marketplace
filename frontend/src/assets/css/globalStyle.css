@@ -10,9 +10,9 @@
 
 :root { 
     --white: #F0EDEA;
-    --white-2a: rgba(240, 237, 234, 0.2);
-    --white-5a: rgba(240, 237, 234, 0.5);
-    --white-7a: rgba(240, 237, 234, 0.7);
+    --white-2a: rgba(240, 237, 234, 0.02);
+    --white-5a: rgba(240, 237, 234, 0.05);
+    --white-7a: rgba(240, 237, 234, 0.07);
     --black: #1A1512;
     /* --black: #0F0B07 */
 

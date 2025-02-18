@@ -93,16 +93,13 @@ export default {
     this.isLoaded = true;
 
     const usersResp = await this.userApi.getAllUsers();
-    console.log("users", usersResp);
 
     const categoriesResp = await this.productApi.getAllCategories();
     if (categoriesResp.data) {
       this.setCategories(categoriesResp.data);
     }
-    console.log("ctg", categoriesResp)
 
     const pscResp = await this.miscApi.getAllPSC();
-    console.log("psc", pscResp);
     if (pscResp.data) {
       this.setAllPSC(pscResp.data);
     }
@@ -174,5 +171,18 @@ width */
 .content-wrapper > section {
   min-height: 100vh;
   min-height: 100svh;
+}
+
+.Vue-Toastification__toast.Vue-Toastification__toast--success {
+  background-color: var(--green) !important;
+}
+.Vue-Toastification__toast.Vue-Toastification__toast--error {
+  background-color: var(--red) !important;
+}
+.Vue-Toastification__toast.Vue-Toastification__toast--info {
+  background-color: var(--blue) !important;
+}
+.Vue-Toastification__toast.Vue-Toastification__toast--warning {
+  background-color: var(--accent) !important;
 }
 </style>
