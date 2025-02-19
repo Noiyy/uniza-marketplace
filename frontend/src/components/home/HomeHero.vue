@@ -236,6 +236,8 @@ export default {
     width: auto;
     height: 80%;
     opacity: 0.2;
+    user-drag: none;
+    -webkit-user-drag: none;
 }
 
 .hero-grid .item.mid h1 {

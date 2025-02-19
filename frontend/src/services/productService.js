@@ -9,6 +9,9 @@ class ProductService extends DefaultService {
     async getAllProducts() {
         return await this.apiClient.get('/getAllProducts');
     }
+    async getLatestProducts() {
+        return await this.apiClient.get("/getLatestProducts");
+    }
     async getProduct(productId) {
         return await this.apiClient.get(`/${productId}`);
     }

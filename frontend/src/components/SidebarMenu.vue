@@ -9,7 +9,7 @@
                 <router-link :to="user ? `/user/${user._id}` : ''" >
                     <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo" v-if="!user">
                     <template v-else>
-                        <img :src="getAssetUrl(`img/userAvatars/${user.avatarPath}`)" alt="User avatar" v-if="user.avatarPath">
+                        <img :src="getAssetUrl(`img/userAvatars/${user.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user.avatarPath">
                         <div class="default-avatar-cont" v-else>
                             <Icon icon="akar-icons:person" class="default-avatar-icon" />
                         </div>
@@ -196,6 +196,11 @@ nav a:hover {
 .avatar-wrapper img, .default-avatar-cont {
     width: 128px;
     height: 128px;
+}
+
+.user-avatar {
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .default-avatar-cont {

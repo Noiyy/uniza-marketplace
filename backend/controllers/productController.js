@@ -3,9 +3,15 @@ const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 exports.getAllProducts = async (req, res) => {
-    const users = await Product.find({}).sort({createdAt: -1});
+    const products = await Product.find({}).sort({createdAt: -1});
     
-    res.status(200).json(users);
+    res.status(200).json(products);
+};
+
+exports.getLatestProducts = async (req, res) => {
+    const products = await Product.find({}).sort({createdAt: -1}).limit(4);
+    
+    res.status(200).json(products);
 };
 
 exports.getProduct = async (req, res) => {

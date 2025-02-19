@@ -1,5 +1,7 @@
 <template>
-    <header class="d-flex flex-column">
+    <header class="d-flex flex-column pos-relative">
+        <div class="pattern" :style="patternBgStyle"></div>
+
         <div class="container">
             <div class="main-header d-flex justify-content-between align-items-center">
                 <router-link to="/" class="header-left d-flex a-plain">
@@ -158,6 +160,7 @@ export default {
         return {
             sidebarMenuOpened: false,
             glassImgSrc: this.getAssetUrl("img/header_texture.png"),
+            patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
 
             selectedSearchCategory: null,
             selectedPriceRange: [0, 9999],
@@ -259,6 +262,11 @@ export default {
             return `
                 background: url(${this.glassImgSrc}) 0% 0% / 1000px 1000px repeat,
                 linear-gradient(90deg, var(--primary) 0%, rgba(255, 154, 158, 0.50) 101.11%)`;
+        },
+
+        patternBgStyle() {
+            return `
+                background: url(${this.patternImgSrc}) 0% 0% / 80% 150% repeat`;
         }
     },
 
@@ -510,6 +518,32 @@ export default {
 }
 
 .header-right .menu-btn {
+    z-index: 16;
+}
+
+.pattern {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+.pattern::before {
+    content: "";
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background: rgba(26, 21, 18, 0.94);
+    backdrop-filter: blur(20px);
+}
+
+header > .container {
     z-index: 16;
 }
 </style>

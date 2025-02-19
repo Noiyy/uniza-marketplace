@@ -238,4 +238,10 @@ width */
 .Vue-Toastification__toast.Vue-Toastification__toast--warning {
   background-color: var(--accent) !important;
 }
+
+.line-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--white-15a);
+}
 </style>
