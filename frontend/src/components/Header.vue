@@ -17,8 +17,11 @@
                     <div class="d-flex align-items-center menu gap-8" @click="toggleSidebarMenu">
                         {{ $t("Menu").toUpperCase() }}
                         <div class="menu-btn">
-                            <Icon icon="material-symbols-light:menu" class="menu-icon open" v-if="!sidebarMenuOpened"/>
-                            <Icon icon="material-symbols-light:close" class="menu-icon close" v-else />
+                            <Icon 
+                                :icon="!sidebarMenuOpened ? 'material-symbols-light:menu' : 'material-symbols-light:close'"
+                                class="menu-icon"
+                                :class="!sidebarMenuOpened ? 'open' : 'close'" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -183,16 +186,17 @@ export default {
         },
 
         toggleSidebarMenu() {
+            console.log("toggle");
             const sidebarMenu = document.getElementById("sidebar-menu");
-            const menuBtn = document.querySelector(".menu-icon");
+            // const menuBtn = document.querySelector(".menu-btn");
 
             sidebarMenu.classList.toggle("open");
-            menuBtn.classList.toggle("animate");
+            // menuBtn.classList.toggle("animate");
             document.body.classList.toggle("openedSidebar");
 
             setTimeout(() => {
                 this.sidebarMenuOpened = !this.sidebarMenuOpened;
-            }, 350);
+            }, 200);
         },
 
         filterLocations() {
@@ -259,8 +263,13 @@ export default {
     },
 
     created() {
-        this.emitter.on('toggle-sidebarMenu', () => this.toggleSidebarMenu());
         this.emitter.on('close-sidebarMenu', () => {
+            const sidebarMenu = document.getElementById("sidebar-menu");
+            // const menuBtn = document.querySelector(".menu-icon");
+
+            sidebarMenu.classList.remove("open");
+            // menuBtn.classList.toggle("animate");
+
             document.body.classList.remove("openedSidebar");
             this.sidebarMenuOpened = false;
         });
@@ -299,6 +308,11 @@ export default {
 
 .header-right .menu-icon {
     font-size: 48px;
+    transition: transform 0.5s ease-in-out;
+}
+
+.header-right .menu-icon.animate {
+    transform: rotate(180deg);
 }
 
 .header-search {

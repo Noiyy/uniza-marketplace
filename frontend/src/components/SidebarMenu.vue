@@ -6,7 +6,7 @@
                     ADMIN
                 </div>
 
-                <router-link :to="user ? `/user/${user._id}` : ''" @click="emitter.emit('close-sidebarMenu')">
+                <router-link :to="user ? `/user/${user._id}` : ''" >
                     <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo" v-if="!user">
                     <template v-else>
                         <img :src="getAssetUrl(`img/userAvatars/${user.avatarPath}`)" alt="User avatar" v-if="user.avatarPath">
@@ -22,17 +22,17 @@
             <nav class="d-flex flex-column flex-1 align-items-end gap-64">
                 <div class="d-flex flex-column gap-32">
                     <div class="d-flex flex-column gap-16">
-                        <router-link to="/" @click="emitter.emit('close-sidebarMenu')"> Home </router-link>
-                        <router-link to="/browse" @click="emitter.emit('close-sidebarMenu')"> Browse </router-link>
+                        <router-link to="/" class="highlightActive" > Home </router-link>
+                        <router-link to="/browse" class="highlightActive" > Browse </router-link>
 
                         <template v-if="user">
-                            <router-link to="/favourites" @click="emitter.emit('close-sidebarMenu')"> Favourites </router-link>
-                            <!-- <router-link to="/browse" @click="emitter.emit('close-sidebarMenu')"> Auction </router-link> -->
-                            <router-link to="/myProducts" @click="emitter.emit('close-sidebarMenu')"> My products </router-link>
-                            <router-link to="/addProduct" @click="emitter.emit('close-sidebarMenu')" class="add-product-link">
+                            <router-link to="/favourites" class="highlightActive" > Favourites </router-link>
+                            <!-- <router-link to="/browse" > Auction </router-link> -->
+                            <router-link to="/myProducts" class="highlightActive" > My products </router-link>
+                            <router-link to="/addProduct"  class="add-product-link">
                                 <Icon icon="ic:baseline-plus" class="plus-icon" />
                             </router-link>
-                            <router-link to="/chat" @click="emitter.emit('close-sidebarMenu')" class="d-flex gap-8 align-items-center chat-link"> 
+                            <router-link to="/chat"  class="d-flex gap-8 align-items-center chat-link highlightActive"> 
                                 Chat
                                 <div class="notification-count"> 2 </div>
                             </router-link>
@@ -40,22 +40,21 @@
                     </div>
     
                     <div class="d-flex flex-column gap-16" v-if="!user">
-                        <router-link to="/login" class="btn primary" role="" @click="emitter.emit('close-sidebarMenu')"> Login </router-link>
-                        <router-link to="/signUp" class="btn secondary" @click="emitter.emit('close-sidebarMenu')"> Sign up </router-link>
+                        <router-link to="/login" class="btn primary" role="" > Login </router-link>
+                        <router-link to="/signUp" class="btn secondary" > Sign up </router-link>
                     </div>
                 </div>
     
                 <div>
                     <div class="d-flex flex-column gap-16">
-                        <router-link to="/admin" v-if="user && user.isAdmin" class="d-flex gap-8 align-items-center admin-panel-link"
-                            @click="emitter.emit('toggle-sidebarMenu')"> 
+                        <router-link to="/admin" v-if="user && user.isAdmin" class="d-flex gap-8 align-items-center admin-panel-link highlightActive"> 
                             ADMIN PANEL
                             <div class="notification"> ! </div>
                             <!-- <Icon icon="material-symbols:person" class="admin-icon" /> -->
                         </router-link>
 
-                        <router-link to="/support" @click="emitter.emit('close-sidebarMenu')"> Support </router-link>
-                        <router-link to="/faq" @click="emitter.emit('close-sidebarMenu')"> FAQ </router-link>
+                        <router-link to="/support" class="highlightActive" > Support </router-link>
+                        <router-link to="/faq" class="highlightActive" > FAQ </router-link>
                     </div>
                 </div>
             </nav>
@@ -100,17 +99,20 @@ export default {
         ),
 
         async logoutUser() {
+            this.emitter.emit("show-loader");
             const resp = await this.userApi.logoutUser();
 
             if (resp.data.success) {
                 this.setUser(null);
                 this.user = null;
 
+                this.emitter.emit('close-sidebarMenu')
                 this.$toast.success("LogoutSuccess");
                 this.$router.push({name: "Home"});
             } else {
                 this.$toast.error("LogoutFailed");
             }
+            this.emitter.emit("hide-loader");
         }
     },
     
@@ -254,13 +256,13 @@ nav a:hover {
     font-size: 40px;
 }
 
-nav .router-link-active {
+nav .highlightActive.router-link-active {
     font-weight: 800;
     display: flex;
     gap: 8px;
     justify-content: flex-end;
 }
-nav .router-link-active::after {
+nav .highlightActive.router-link-active::after {
     content: "";
     width: 8px;
     height: 100%;

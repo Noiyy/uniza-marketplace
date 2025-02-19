@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
         isBanned: { type: Boolean },
         bannedAt: { type: Date },
         reason: { type: String }
-    }
+    },
 });
 
 userSchema.pre('save', async function(next) {

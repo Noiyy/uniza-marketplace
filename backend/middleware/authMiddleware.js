@@ -9,7 +9,9 @@ exports.protect = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id);
+        const usr =  await User.findById(decoded.id);
+      
+        req.user = usr;
         next();
     } catch (error) {
         console.log("bro", error);
@@ -26,10 +28,12 @@ exports.protectAdmin = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id);
-        if (!req.user.isAdmin) 
-            return res.status(401).json({message: "Not authorized, not admin"})
+        const usr =  await User.findById(decoded.id);
 
+        if (!usr.isAdmin) 
+            return res.status(401).json({message: "Not authorized, not admin"});
+
+        req.user = usr;
         next();
     } catch (error) {
         console.log(error);

@@ -1,5 +1,6 @@
 <template>
-  <!-- <Loader v-show="isLoader"></Loader> -->
+  <Loader v-show="isLoader"></Loader>
+
   <router-view v-slot="{ Component, route }">
     <component :is="Component" :key="route.path" v-if="isLoaded"></component>
   </router-view>
@@ -7,11 +8,19 @@
   <div class="scroll-to-top" id="scrollToTopBtn" @click="scrollToHeader()">
     <Icon icon="mdi:arrow-up" class="scroll-btn-img" />
   </div>
+
+  <router-link to="/chat" class="chat-bubble" v-if="getUser">
+    <div class="notification-count d-flex justify-content-center align-items-center"> 2 </div>
+    <Icon icon="humbleicons:chat" class="chat-bubble-icon" />
+  </router-link>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+
+import Loader from './components/Loader.vue';
 import { Icon } from '@iconify/vue';
+import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 
 export default {
   name: "MainApp",
@@ -19,12 +28,13 @@ export default {
   inject: ['emitter', 'userApi', 'productApi', 'miscApi'],
 
   components: {
-    Icon
+    Icon,
+    Loader
   },
 
   data() {
     return {
-      isLoader: true,
+      isLoader: false,
       isLoaded: false,
       appName: this.APP_NAME,
 
@@ -92,6 +102,7 @@ export default {
 
     this.isLoaded = true;
 
+    this.emitter.emit("show-loader");
     const usersResp = await this.userApi.getAllUsers();
 
     const categoriesResp = await this.productApi.getAllCategories();
@@ -103,6 +114,15 @@ export default {
     if (pscResp.data) {
       this.setAllPSC(pscResp.data);
     }
+    this.emitter.emit("hide-loader");
+  },
+
+  computed: {
+    ...mapGetters(
+      {
+        getUser: 'user/getUser'
+      }
+    )
   },
 
   unmounted() {
@@ -139,6 +159,39 @@ export default {
 .scroll-btn-img {
     width: 24px;
     height: 24px;
+}
+
+.chat-bubble {
+  position: fixed;
+  border-radius: 50%;
+  padding: 4px;
+  bottom: 32px;
+  right: 32px;
+  z-index: 10;
+  display: flex;
+  color: var(--black);
+  background-color: var(--accent);
+  filter: drop-shadow(0px 0px 5px #fff);
+  font-size: 40px;
+  cursor: pointer;
+  transition: transform 0.2s ease-out;
+}
+.chat-bubble:hover {
+  color: var(--black);
+  transform: scale(1.2);
+}
+
+.chat-bubble .notification-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  color: var(--white);
+  background-color: var(--red);
+  font-size: 16px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
 
 /* Scrollbar

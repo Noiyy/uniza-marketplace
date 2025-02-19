@@ -58,6 +58,7 @@ export default function (emitter, isDev, axiosInstance) {
         }
         else {
             emitter.emit('show-loader');
+            emitter.emit("close-sidebarMenu");
             next();
             emitter.emit('hide-loader');
         }
@@ -82,9 +83,10 @@ export default function (emitter, isDev, axiosInstance) {
                 if (
                     (!user || !user._id) || // If user isn't logged or
                     (to.meta.requiresAdmin && !user || !user._id || !isAdmin) // user isn't admin and it's required
-                ) 
+                ) {
+                    emitter.emit("close-sidebarMenu");
                     next({ path: '/401' });
-                else 
+                } else 
                     // Successfully authenticated
                     defaultRouteHandler(to, from, next);
 

@@ -29,7 +29,10 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
         const token = jwt.sign(
-            { id: user._id, userName: user.username },
+            { 
+                id: user._id, 
+                userName: user.username
+            },
             process.env.JWT_SECRET, 
             { expiresIn: '1h' }
         );
@@ -48,11 +51,17 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-    res.clearCookie("token", { 
-        httpOnly: true, 
-        secure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production',
-        sameSite: 'Strict',
-        path: '/' 
-    });
-    res.json({ success: true, message: 'Logged out successfully' });
+    try {
+        res.clearCookie("token");
+        // res.clearCookie("token", { 
+        //     httpOnly: true, 
+        //     secure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production',
+        //     sameSite: 'Strict',
+        //     path: '/' 
+        // });
+        res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
+        console.error("Logout error:", error);
+        res.status(500).json({ message: 'Logout failed' });
+    }
 }

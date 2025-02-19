@@ -96,6 +96,7 @@ export default {
                 if (!this.password) this.$toast.error("InvalidPassword");
                 return;
             }
+            this.emitter.emit("show-loader");
 
             const post = {
                 email: this.email,
@@ -106,6 +107,7 @@ export default {
                 if (!this.userName || this.password != this.passwordRepeat) {
                     if (!this.userName) this.$toast.error("InvalidUsername");
                     if (this.password != this.passwordRepeat) this.$toast.error("PasswordsDontMatch");
+                    this.emitter.emit("hide-loader");
                     return;
                 }
                 post.username = this.userName;
@@ -118,6 +120,8 @@ export default {
                     } else {
                         this.$toast.error("RegisterFailed");
                     }
+                    this.emitter.emit("hide-loader");
+
                 } catch (error) {
                     console.error(error);
                     this.$toast.error("RegisterFailed");
@@ -135,6 +139,8 @@ export default {
                     } else {
                         this.$toast.error("LoginFailed");
                     }
+                    this.emitter.emit("hide-loader");
+                    
                 } catch (error) {
                     console.error(error);
                     this.$toast.error("InvalidCredentials");

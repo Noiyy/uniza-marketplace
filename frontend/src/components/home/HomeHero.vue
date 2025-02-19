@@ -8,14 +8,14 @@
                 <div class="hero-content d-flex flex-1 flex-column justify-content-center align-items-center text-center">
                     
                     <div class="hero-grid">
-                        <div class="item gradient-straight d-flex flex-column align-items-center justify-content-center gap-8">
+                        <div class="item animate gradient-straight d-flex flex-column align-items-center justify-content-center gap-8">
                             <div>
                                 <h1> Clothing </h1>
                                 <p> footwear, accessories ... </p>
                             </div>
                             <Icon icon="lsicon:clothes-filled" class="icon" />
                         </div>
-                        <div class="item pattern d-flex flex-column align-items-center justify-content-center gap-8">
+                        <div class="item animate pattern d-flex flex-column align-items-center justify-content-center gap-8">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass">
                                 <div>
@@ -25,7 +25,7 @@
                                 <Icon icon="mdi:ticket" class="icon" />
                             </div>
                         </div>
-                        <div class="item secondary d-flex align-items-center justify-content-around gap-8">
+                        <div class="item animate secondary d-flex align-items-center justify-content-around gap-8">
                             <div>
                                 <h1> Services </h1>
                                 <p> tutoring, accomodation ... </p>
@@ -33,7 +33,7 @@
                             <Icon icon="ri:service-fill" class="icon" />
                         </div>
 
-                        <div class="item gradient-angle d-flex align-items-center">
+                        <div class="item animate gradient-angle d-flex align-items-center">
                             <div class="info">
                                 <h1> Music </h1>
                                 <p> drums, keyboard ... </p>
@@ -45,7 +45,7 @@
                             <p> Products sold </p>
                             <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo">
                         </div>
-                        <div class="item secondary d-flex align-items-center justify-content-between gap-16">
+                        <div class="item animate secondary d-flex align-items-center justify-content-between gap-16">
                             <div class="text-left">
                                 <h1> Electronics </h1>
                                 <p> microwaves, refrigerators ... </p>
@@ -53,7 +53,7 @@
                             <Icon icon="material-symbols:microwave" class="icon" />
                         </div>
 
-                        <div class="item pattern d-flex">
+                        <div class="item animate pattern d-flex">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass d-flex flex-row-reverse justify-content-around flex-1">
                                 <div class="text-left">
@@ -63,14 +63,14 @@
                                 <Icon icon="ic:baseline-book" class="icon" />
                             </div>
                         </div>
-                        <div class="item primary d-flex flex-column-reverse align-items-center justify-content-center">
+                        <div class="item animate primary d-flex flex-column-reverse align-items-center justify-content-center">
                             <div>
                                 <h1> Furniture </h1>
                                 <p> chairs, tables, drawers ... </p>
                             </div>
                             <Icon icon="material-symbols:chair" class="icon" />
                         </div>
-                        <div class="item pattern d-flex align-items-center">
+                        <div class="item animate pattern d-flex align-items-center">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass d-flex flex-column flex-1">
                                 <div class="text-left">
@@ -176,6 +176,13 @@ export default {
     position: relative;
     color: var(--black);
     padding: 16px;
+    transition: transform 0.2s ease-out, filter 0.2s ease-out;
+}
+.hero-grid .item.animate:hover {
+    cursor: pointer;
+    transform: scale(1.1, 1.1);
+    filter: drop-shadow(0px 0px 10px #000000);
+    z-index: 5;
 }
 
 .hero-grid .item h1 {
