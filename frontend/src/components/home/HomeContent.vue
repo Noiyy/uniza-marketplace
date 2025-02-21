@@ -8,17 +8,17 @@
                     <div class="pattern" :style="patternBgStyle"></div>
 
                     <div class="left d-flex flex-column align-items-center gap-16">
-                        <button class="btn secondary"> browse </button>
+                        <router-link to="/browse" class="btn secondary"> browse </router-link>
                         171 products sold in last 96 hours
                     </div>
     
                     <div class="mid d-flex flex-column align-items-center gap-16">
                         frequently asked questions
-                        <button class="btn secondary"> faq </button>
+                        <router-link to="/faq" class="btn secondary"> faq </router-link>
                     </div>
     
                     <div class="right d-flex flex-column align-items-center gap-16">
-                        <button class="btn secondary"> support </button>
+                        <router-link to="/support" class="btn secondary"> support </router-link>
                         contact us in case of need
                     </div>
                 </div>
@@ -248,7 +248,7 @@ export default {
 
 .product .prod-price {
     padding: 16px; 
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 900;
 }
 
@@ -258,10 +258,11 @@ export default {
     aspect-ratio: 1 / 1;
     overflow: hidden;
     width: 100%;
+    width: 124px;
 }
 
 .product img {
-    max-width: 144px;
+    width: 124px;
     height: 100%;
     object-fit: cover;
     border-top-left-radius: 24px;
@@ -276,6 +277,10 @@ export default {
 .prod-description {
     font-size: 14px;
     line-height: 16px;
+    max-height: 50px;
+    overflow: hidden;
+    /* white-space: nowrap;
+    text-overflow: ellipsis; */
 }
 
 .prod-heading .title {

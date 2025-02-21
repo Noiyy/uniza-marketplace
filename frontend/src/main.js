@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import MainApp from './MainApp.vue'
 
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import "vue-toastification/dist/index.css";
 import './assets/css/globalStyle.css';
 

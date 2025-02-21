@@ -1,6 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import store from '../store/store';
-import axios from 'axios';
 
 export default function (emitter, isDev, axiosInstance) {
     const routes = [
@@ -42,8 +41,49 @@ export default function (emitter, isDev, axiosInstance) {
             path: '/admin',
             name: "Admin",
             component: () => import ('../../views/admin/AdminView.vue'),
-            meta: { requiresAuth: true }
-        }
+            meta: { requiresAdmin: true }
+        },
+        {
+            path: '/chat',
+            name: 'Chat',
+            component: () => import ('../../views/chat/ChatView.vue'),
+            meta: { requiresAuth: true },
+            props: { mode: "chat" }
+        },
+        {
+            path: '/support',
+            name: 'Support',
+            component: () => import ('../../views/chat/ChatView.vue'),
+            meta: { requiresAuth: true },
+            props: { mode: "support" }
+        },
+        {
+            path: '/faq',
+            name: 'FAQ',
+            component: () => import ('../../views/faq/FAQView.vue'),
+        },
+        {
+            path: '/product/:id/edit',
+            name: 'ProductEdit',
+            component: () => import ('../../views/product/ProductEditView.vue'),
+            meta: { requiresAuth: true, requiresOwner: true },
+        },
+        {
+            path: '/product/:id',
+            name: 'ProductDetail',
+            component: () => import ('../../views/product/ProductDetailView.vue'),
+        },
+        {
+            path: '/browse',
+            name: 'Browse',
+            alias: '/search',
+            component: () => import ('../../views/browse/BrowseView.vue'),
+        },
+        {
+            path: '/user/:id',
+            name: 'UserProfile',
+            component: () => import ('../../views/user/UserProfileView.vue'),
+        },
     ];
 
     const router = createRouter({
