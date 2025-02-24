@@ -132,6 +132,7 @@ export default function (emitter, isDev, axiosInstance) {
 
             } catch (error) {
                 console.log("err",error);
+                next({ path: '/401' });
             }
         } else
             defaultRouteHandler(to, from, next);

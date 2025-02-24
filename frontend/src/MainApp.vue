@@ -103,7 +103,7 @@ export default {
     this.isLoaded = true;
 
     this.emitter.emit("show-loader");
-    const usersResp = await this.userApi.getAllUsers();
+    // const usersResp = await this.userApi.getAllUsers();
 
     const categoriesResp = await this.productApi.getAllCategories();
     if (categoriesResp.data) {
