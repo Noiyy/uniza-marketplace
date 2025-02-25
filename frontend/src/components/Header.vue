@@ -4,7 +4,7 @@
 
         <div class="container">
             <div class="main-header d-flex justify-content-between align-items-center">
-                <router-link to="/" class="header-left d-flex a-plain">
+                <router-link to="/" class="header-left d-flex a-plain pos-relative">
                     <template v-if="!IS_MOBILE">
                         <img :src="getAssetUrl('img/logo-w_dark.svg')" alt="UNIZA Marketplace logo" class="img-fluid"> 
                     </template>
@@ -16,7 +16,7 @@
                 <div class="header-right d-flex align-items-center gap-48">
                     <LangSelector></LangSelector>
     
-                    <div class="d-flex align-items-center menu gap-8" @click="toggleSidebarMenu">
+                    <div class="d-flex align-items-center menu gap-8 pos-relative" @click="toggleSidebarMenu">
                         {{ $t("Menu").toUpperCase() }}
                         <div class="menu-btn">
                             <Icon 
@@ -40,7 +40,7 @@
                             <input type="text" class="search-input" name="searchQuery">
                         </div>
                         <div class="filters d-flex gap-32 align-items-center">
-                            <div class="categories" :class="{ open: isOpen['categories'] }" @click="toggleDropdown('categories')"> 
+                            <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
                                 <div class="selected">
                                     {{ selectedSearchCategory ? selectedSearchCategory : 'All main categories' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
@@ -55,8 +55,8 @@
                                 </div>
                             </div>
 
-                            <div class="price" :class="{ open: isOpen['price'] }" @click="toggleDropdown('price')"> 
-                                <div class="d-flex gap-8 align-items-center">
+                            <div class="price" :class="{ open: isOpen['price'] }" @click="(e) => toggleDropdown('price', e)"> 
+                                <div class="d-flex gap-8 align-items-center price-selected">
                                     Price
                                     <div class="d-flex align-items-center">
                                         <span v-if="selectedPriceRange[0] == 0 && selectedPriceRange[1] == 9999"> > 0€ </span>
@@ -95,7 +95,7 @@
                                 </div>
                             </div>
 
-                            <div class="location" :class="{ open: isOpen['location'] }" @click="toggleDropdown('location')">
+                            <div class="location" :class="{ open: isOpen['location'] }" @click="(e) => toggleDropdown('location', e)">
                                 <div class="selected">
                                     {{ selectedLocation ? selectedLocation : 'Anywhere' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
@@ -178,13 +178,15 @@ export default {
     },
 
     methods: {
-        toggleDropdown(dropdown) {
+        toggleDropdown(dropdown, e) {
+            if (e.target.classList.contains("filters-dropdown-content")) return;
+
             for (const key in this.isOpen) {
                 if (key !== dropdown) {
                 this.isOpen[key] = false;
                 }
             }
-            
+
             this.isOpen[dropdown] = !this.isOpen[dropdown];
         },
 
@@ -219,16 +221,19 @@ export default {
         },
 
         selectNearMeLocation() {
-            this.selectedLocation = 'nearMe';
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
+                    this.selectedLocation = 'nearMe';
                     console.log("Latitude: " + position.coords.latitude);
                     console.log("Longitude: " + position.coords.longitude);
+
                 }, (error) => {
                     console.error("Error obtaining location: ", error);
+                    this.$toast.error(this.$t("LocationGetFailed"));
                 });
             } else {
-                console.log("Geolocation is not supported by this browser.");
+                console.warn("Geolocation is not supported by this browser.");
+                this.$toast.warn(this.$t("BrowserGeoUnsupported"));
             }
         },
 
@@ -281,10 +286,43 @@ export default {
             document.body.classList.remove("openedSidebar");
             this.sidebarMenuOpened = false;
         });
+
     },
 
     mounted() {
+        this.emitter.on("check-header-filters", (e) => {
+            let contEl;
+            let optionEls;
+            let selectedEl;
 
+            if (this.isOpen.categories) {
+                contEl = document.querySelector('.categories');
+                optionEls = contEl.querySelectorAll('.option');
+                selectedEl = contEl.querySelector(".selected");
+            } else if (this.isOpen.price) {
+                contEl = document.querySelector('.price');
+                optionEls = contEl.querySelectorAll('.option');
+                selectedEl = contEl.querySelector(".price-selected");
+            } else if (this.isOpen.location) {
+                contEl = document.querySelector('.location');
+                optionEls = contEl.querySelectorAll('.option');
+                selectedEl = contEl.querySelector(".selected");
+            }
+            if (!contEl) return;
+
+            if (!contEl.contains(e.target) &&
+                !Array.from(optionEls).some(option => option.contains(e.target)) &&
+                !selectedEl.contains(e.target)
+            ) {
+                if (this.isOpen.categories) this.isOpen.categories = false;
+                else if (this.isOpen.price) this.isOpen.price = false;
+                else if (this.isOpen.location) this.isOpen.location = false;
+            }
+        });
+    },
+
+    unmounted() {
+        this.emitter.off("check-header-filters");
     }
 }
 </script>
@@ -384,11 +422,6 @@ export default {
     text-transform: uppercase;
 }
 
-.filters .chevron-icon {
-    font-size: 24px;
-    transition: transform 0.2s ease-out;
-}
-
 .filters .categories, .filters .price, .filters .location {
     cursor: pointer;
     position: relative;
@@ -398,42 +431,7 @@ export default {
     user-select: none;
 }
 
-.filters > .open .filters-dropdown-content {
-    display: block;
-}
 
-.filters-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: var(--black);
-    color: var(--white);
-    min-width: 250px;
-    box-shadow: 0px 8px 16px rgba(255, 154, 158, 0.1); 
-    z-index: 5;
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 16px;
-}
-
-.filters-dropdown-content .option {
-    padding: 8px;
-    background-color: var(--black);
-}
-.filters-dropdown-content .option:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.filters-dropdown-content .option:nth-child(1) {
-    margin-top: 16px;
-}
-
-.filters-dropdown-content .option.selected {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.filters .open .chevron-icon {
-    transform: rotate(180deg);
-}
 .filters .price .price-range {
     font-weight: 700;
 }
@@ -449,18 +447,6 @@ export default {
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     margin: 8px 0;
     width: 100%;
-}
-
-.filters-dropdown-content .refresh-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: transform 0.4s ease-out;
-}
-.filters-dropdown-content .refresh-icon:hover {
-    transform: rotate(360deg);
 }
 
 .filters .price-range-info {
@@ -482,9 +468,6 @@ export default {
     padding: 0 8px;
 }
 
-.filters .price .filters-dropdown-content {
-    cursor: initial;
-}
 
 .filters .price-input-cont input {
     max-width: 66px;
@@ -528,7 +511,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    /* z-index: 1; */
 }
 .pattern::before {
     content: "";
@@ -543,7 +526,68 @@ export default {
     backdrop-filter: blur(20px);
 }
 
-header > .container {
+/* header > .container {
     z-index: 16;
+} */
+</style>
+
+<style>
+.filters > .open .filters-dropdown-content {
+    display: block;
+}
+
+.filters-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--black);
+    color: var(--white);
+    min-width: 250px;
+    box-shadow: 0px 8px 16px rgba(255, 154, 158, 0.1); 
+    z-index: 5;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.filters-dropdown-content .option {
+    padding: 8px;
+    background-color: var(--black);
+    cursor: pointer;
+}
+.filters-dropdown-content .option:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.filters-dropdown-content .option:nth-child(1) {
+    margin-top: 16px;
+}
+
+.filters-dropdown-content .option.selected {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.filters-dropdown-content .refresh-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.4s ease-out;
+}
+.filters-dropdown-content .refresh-icon:hover {
+    transform: rotate(360deg);
+}
+
+.filters .filters-dropdown-content {
+    cursor: initial;
+}
+
+.filters .chevron-icon {
+    font-size: 24px;
+    transition: transform 0.2s ease-out;
+}
+
+.filters .open .chevron-icon {
+    transform: rotate(180deg);
 }
 </style>

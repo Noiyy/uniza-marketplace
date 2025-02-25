@@ -130,7 +130,18 @@ export default {
     },
 
     mounted() {
+        this.emitter.on("check-sidebar-outside-click", (e) => {
+            const sidebarMenu = document.getElementById("sidebar-menu");
+            const headerRight = document.querySelector(".header-right");
 
+            if (!sidebarMenu.contains(e.target) && !headerRight.contains(e.target)) {
+                this.emitter.emit("close-sidebarMenu");
+            }
+        });
+    },
+
+    unmounted() {
+        this.emitter.off("check-sidebar-outside-click");
     }
 }
 </script>

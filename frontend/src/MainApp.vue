@@ -94,6 +94,12 @@ export default {
     document.addEventListener('scroll', () => {
       this.handleScroll();
     });
+
+    document.addEventListener("click", (e) => {
+      this.emitter.emit("check-header-filters", e);
+      this.emitter.emit("check-browse-filters", e);
+      this.emitter.emit("check-sidebar-outside-click", e);
+    });
   },
 
   async mounted() {

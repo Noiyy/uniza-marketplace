@@ -24,24 +24,47 @@
                         <div class="results d-flex flex-column gap-40 flex-1">
                             <div class="results-header d-flex flex-column gap-8">
                                 <div class="content d-flex justify-content-between">
-                                    <div class="info">
-                                        <div class="breadcrumbs">
-                                            Clothing > Shirts
+                                    <div class="info d-flex flex-column">
+                                        <div class="breadcrumbs d-flex gap-8">
+                                            <a href="#"> Clothing </a>
+                                            <span> > </span>
+                                            <a href="#"> Shirts </a>
                                         </div>
-                                        <div class="heading">
-                                            SHIRTS
+                                        <div class="heading d-flex align-items-center gap-16">
+                                            <h2> SHIRTS </h2>
                                             <span class="result-count"> 201 </span>
                                         </div>
                                     </div>
 
                                     <div class="options d-flex gap-64 align-items-center">
                                         <div class="filters">
-                                            f
+                                            <div class="sort-filters pos-relative" :class="sortFiltersOpened ? 'open' : ''"
+                                                @click="toggleSortFilterDropdown"
+                                            >
+                                                <div class="selected-cont d-flex gap-8">
+                                                    <Icon icon="bx:sort" class="sort-icon" />
+                                                    <div class="selected d-flex align-items-center">
+                                                        {{ selectedSortFilter }}
+                                                        <Icon icon="mdi:chevron-down" class="chevron-icon" />
+                                                    </div>
+                                                </div>
+                                                <div class="filters-dropdown-content scrollbar">
+                                                    <div class="option" v-for="fltr in sortFilters" :key="fltr.name"
+                                                        :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
+                                                        @click="selectedSortFilter = fltr.name"> 
+                                                        {{ fltr.name }}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="result-views d-flex gap-8">
-                                            <Icon icon="mingcute:grid-fill" class="view-icon" />
-                                            <Icon icon="material-symbols:list" class="view-icon" />
+                                            <div class="view-icon-cont">
+                                                <Icon icon="mingcute:grid-fill" class="view-icon" />
+                                            </div>
+                                            <div class="view-icon-cont active">
+                                                <Icon icon="material-symbols:list" class="view-icon" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +117,16 @@ export default {
     data() {
         return {
             categories: [],
-            products: []
+            products: [],
+
+            sortFiltersOpened: false,
+            sortFilters: [
+                { name: "latest" },
+                { name: "oldest" },
+                { name: "minPrice" },
+                { name: "maxPrice" }
+            ],
+            selectedSortFilter: "latest"
         }
     },
 
@@ -155,6 +187,14 @@ export default {
             const resp = await this.productApi.getAllProducts();
 
             this.products = resp.data;
+        },
+
+        toggleSortFilterDropdown(e) {
+            if (e.target.classList.contains("option") || e.target.classList.contains("chevron-icon") ||
+                e.target.classList.contains("selected") || e.target.classList.contains("sort-icon") ||
+                e.target.classList.contains("sort-filters")) {
+                this.sortFiltersOpened = !this.sortFiltersOpened;
+            }
         }
     },
     
@@ -175,6 +215,23 @@ export default {
         this.emitter.emit("show-loader");
         await this.getProducts();
         this.emitter.emit("hide-loader");
+
+        this.emitter.on("check-browse-filters", (e) => {
+            const sortFiltersEl = document.querySelector('.sort-filters');
+            const optionsEls = document.querySelectorAll('.option');
+            const selectedContEl = document.querySelector('.selected-cont');
+
+            if (!sortFiltersEl.contains(e.target) &&
+                !Array.from(optionsEls).some(option => option.contains(e.target)) &&
+                !selectedContEl.contains(e.target)
+            ) {
+                this.sortFiltersOpened = false;
+            }
+        });
+    },
+
+    unmounted() {
+        this.emitter.off("check-browse-filters");
     }
 }
 </script>
@@ -188,6 +245,7 @@ export default {
 .categories {
     gap: 12px;
     min-width: 150px;
+    margin-top: 48px;
 }
 
 .sub-category {
@@ -234,5 +292,78 @@ export default {
     position: absolute;
     left: -16px;
     top: 0;
+}
+
+.results-header .breadcrumbs {
+    opacity: 0.5;
+    font-size: 14px;
+}
+
+.results-header .heading h2 {
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 16px;
+}
+
+.results-header .heading .result-count {
+    border-radius: 8px;
+    background-color: var(--white-5a);
+    padding: 4px 16px;
+    color: var(--white-50a);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.results-header .info {
+    gap: 4px;
+}
+
+.result-views .view-icon-cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    color: var(--black);
+    background: var(--gradient-angle);
+    opacity: 0.33;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+.result-views .view-icon-cont:hover {
+    opacity: 0.5;
+}
+.result-views .view-icon-cont.active {
+    opacity: 1;
+}
+
+.filters .sort-icon {
+    color: var(--primary);
+    font-size: 20px;
+}
+
+.filters .selected-cont .selected {
+    font-size: 14px;
+    gap: 2px;
+    user-select: none;
+}
+
+.filters .chevron-icon {
+    font-size: 18px;
+}
+
+.sort-filters {
+    cursor: pointer;
+}
+
+.filters-dropdown-content {
+    top: 32px;
+    right: 0;
+    cursor: initial;
+}
+.filters-dropdown-content .option {
+    cursor: pointer;
 }
 </style>
