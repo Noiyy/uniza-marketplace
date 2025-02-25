@@ -1,5 +1,7 @@
 <template>
     <div class="home-content content-wrapper">
+        <Header></Header>
+
         <HomeHero></HomeHero>
 
         <div class="container">
@@ -85,6 +87,7 @@
 
 <script>
 import Footer from '../Footer.vue'
+import Header from '../Header.vue';
 import HomeHero from './HomeHero.vue';
 // import { mapGetters, mapActions } from 'vuex';
 
@@ -102,6 +105,7 @@ export default {
 
     components: {
         HomeHero,
+        Header,
         Footer,
         Icon
     },
@@ -184,7 +188,7 @@ export default {
     top: 0;
     left: 0;
     z-index: 1;
-    border-radius: 24px;
+    border-radius: 100px;
 }
 .under-hero .pattern::before {
     border-radius: 22px;

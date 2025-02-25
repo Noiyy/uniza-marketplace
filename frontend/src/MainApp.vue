@@ -89,6 +89,7 @@ export default {
     window.onresize = (e) => {
       console.log("Resized window!", screen.width);
       this.setIsMobile(screen.width <= 760);
+      this.emitter.emit("resized-window");
     };
 
     document.addEventListener('scroll', () => {

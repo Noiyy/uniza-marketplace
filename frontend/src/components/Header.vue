@@ -16,7 +16,7 @@
                 <div class="header-right d-flex align-items-center gap-48">
                     <LangSelector></LangSelector>
     
-                    <div class="d-flex align-items-center menu gap-8 pos-relative" @click="toggleSidebarMenu">
+                    <a role="button" class="d-flex align-items-center menu gap-8 pos-relative" @click="toggleSidebarMenu">
                         {{ $t("Menu").toUpperCase() }}
                         <div class="menu-btn">
                             <Icon 
@@ -25,7 +25,7 @@
                                 :class="!sidebarMenuOpened ? 'open' : 'close'" 
                             />
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -191,16 +191,16 @@ export default {
         },
 
         toggleSidebarMenu() {
-            console.log("toggle");
             const sidebarMenu = document.getElementById("sidebar-menu");
             // const menuBtn = document.querySelector(".menu-btn");
 
             sidebarMenu.classList.toggle("open");
             // menuBtn.classList.toggle("animate");
-            document.body.classList.toggle("openedSidebar");
+            // document.body.classList.toggle("openedSidebar");
 
             setTimeout(() => {
                 this.sidebarMenuOpened = !this.sidebarMenuOpened;
+                this.emitter.emit("toggle-sidebar-menu-close-btn");
             }, 200);
         },
 
@@ -251,6 +251,23 @@ export default {
 
         doSearch() {
             
+        },
+
+        getMenuBtnPos() {
+            function getElPosition(element) {
+                const rect = element.getBoundingClientRect();
+                const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+                return {
+                    x: rect.left + scrollLeft,
+                    y: rect.top + scrollTop,
+                };
+            }
+
+            const menuBtn = document.querySelector(".menu-btn");
+            const menuBtnPos = getElPosition(menuBtn);
+            this.emitter.emit("sidebar-menu-btn-pos", menuBtnPos);
         }
     },
     
@@ -284,6 +301,11 @@ export default {
             // menuBtn.classList.toggle("animate");
 
             document.body.classList.remove("openedSidebar");
+            if (this.sidebarMenuOpened) {
+                console.log("was opened");
+                this.emitter.emit("toggle-sidebar-menu-close-btn");
+            }
+            
             this.sidebarMenuOpened = false;
         });
 
@@ -319,6 +341,9 @@ export default {
                 else if (this.isOpen.location) this.isOpen.location = false;
             }
         });
+
+        this.getMenuBtnPos();
+        this.emitter.on("resized-window", () => this.getMenuBtnPos());
     },
 
     unmounted() {
@@ -328,9 +353,12 @@ export default {
 </script>
 
 <style scoped>
-/* header {
-
-} */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.33);
+}
 
 .main-header {
     /* height: 96px; */
@@ -350,6 +378,9 @@ export default {
     line-height: 20%;
     font-weight: 200;
     cursor: pointer;
+}
+.header-right .menu:hover {
+    color: var(--white);
 }
 
 .header-right .menu-icon {

@@ -1,5 +1,11 @@
 <template>
      <div id="sidebar-menu" class="d-flex">
+        <a role="button" class="close-btn">
+            <Icon icon="material-symbols-light:close" class="menu-icon close" @click="emitter.emit('close-sidebarMenu')"/>
+        </a>
+
+        <div class="pattern" :style="patternBgStyle"></div>
+
         <div class="d-flex content gap-16 justify-content-between flex-1">
             <div class="avatar-wrapper gap-8 d-flex flex-column align-items-center">
                 <div class="admin-badge" v-if="user && user.isAdmin">
@@ -16,7 +22,10 @@
                     </template>
                 </router-link>
 
-                <a class="logout" v-if="user" @click.prevent="logoutUser()"> logout </a>
+                <a class="logout d-flex gap-8" v-if="user" @click.prevent="logoutUser()">
+                    logout
+                    <Icon icon="material-symbols:logout" class="logout-icon" />
+                </a>
             </div>
 
             <nav class="d-flex flex-column flex-1 align-items-end gap-64">
@@ -87,7 +96,8 @@ export default {
 
     data() {
         return {
-            user: null
+            user: null,
+            patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
         }
     },
 
@@ -122,11 +132,26 @@ export default {
                 getUser: 'user/getUser'
             }
         ),
+
+        patternBgStyle() {
+            return `
+                background: url(${this.patternImgSrc}) 0% 0% / 150% 100% repeat`;
+        }
     },
 
     created() {
         this.user = this.getUser;
         console.log("user", this.user);
+
+        this.emitter.on("sidebar-menu-btn-pos", (pos) => {
+            console.log("neee");
+            const sidebarMenu = document.getElementById("sidebar-menu");
+            const btn = sidebarMenu.querySelector(".close-btn");
+
+            // btn.style.display = "flex";
+            btn.style.top = `${pos.y}px`;
+            btn.style.left = `${pos.x}px`;
+        });
     },
 
     mounted() {
@@ -138,10 +163,19 @@ export default {
                 this.emitter.emit("close-sidebarMenu");
             }
         });
+
+        this.emitter.on("toggle-sidebar-menu-close-btn", () => {
+            const sidebarMenu = document.getElementById("sidebar-menu");
+            const btn = sidebarMenu.querySelector(".close-btn");
+            btn.style.display = btn.style.display == "initial" ? "none" : 'initial';
+            console.log("hej?", btn.style.display);
+            // btn.style.display == "initial" ? btn.style.display = "none" : btn.style.display = "initial";
+        });
     },
 
     unmounted() {
         this.emitter.off("check-sidebar-outside-click");
+        this.emitter.off("toggle-sidebar-menu-close-btn");
     }
 }
 </script>
@@ -163,6 +197,7 @@ export default {
 
 #sidebar-menu .content {
     margin-top: 120px;
+    z-index: 2;
 }
 
 #sidebar-menu.open {
@@ -192,6 +227,7 @@ nav a:hover {
     opacity: 0.15;
     width: 25%;
     height: auto;
+    z-index: 2;
 }
 
 .btn {
@@ -225,6 +261,8 @@ nav a:hover {
 
 .admin-badge {
     background: var(--accent);
+    color: var(--black);
+    font-weight: 600;
     border-radius: 16px;
     padding: 2px 10px;
     position: absolute;
@@ -285,5 +323,38 @@ nav .highlightActive.router-link-active::after {
     min-height: 16px;
     background: var(--gradient-angle);
     border-radius: 4px;
+}
+
+.pattern {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+.pattern::before {
+    content: "";
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background: rgba(26, 21, 18, 0.98);
+    backdrop-filter: blur(40px);
+}
+
+.close-btn {
+    position: fixed;
+    top: 16px;
+    right: 32px;
+    color: var(--white);
+    z-index: 2;
+    font-size: 48px;
+    display: none;
+    cursor: pointer;
 }
 </style>

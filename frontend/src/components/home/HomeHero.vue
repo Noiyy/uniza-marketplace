@@ -1,6 +1,6 @@
 <template>
     <section id="hero" class="d-flex flex-column">
-        <Header></Header>
+        <!-- <Header></Header> -->
         
         <div class="container d-flex flex-column flex-1">
             <div class="content d-flex flex-column flex-1">
@@ -149,6 +149,11 @@ export default {
 </script>
 
 <style scoped>
+#hero {
+    min-height: 82vh;
+    min-height: 82svh;
+}
+
 .hero-grid {
     width: 100%;
     height: 550px;
