@@ -75,11 +75,10 @@ export default {
     },
 
     scrollToHeader() {
+      console.log(scrollToTopBtn);
       if (!scrollToTopBtn) return;
       if (!scrollToTopBtn.classList.contains("active")) return;
-      document.querySelector('header').scrollIntoView({ 
-          behavior: 'smooth' 
-      });
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth"});
     },
   },
 

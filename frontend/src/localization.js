@@ -4,9 +4,11 @@ const i18nOptions = {
   messages: {
     sk: {
       Menu: "Menu",
+      AllProducts: "Všetky produkty"
     },
     en: {
       Menu: "Menu",
+      AllProducts: "All products"
     },
   },
 };

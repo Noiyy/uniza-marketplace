@@ -25,14 +25,14 @@
                             <div class="results-header d-flex flex-column gap-8">
                                 <div class="content d-flex justify-content-between">
                                     <div class="info d-flex flex-column">
-                                        <div class="breadcrumbs d-flex gap-8">
+                                        <div class="breadcrumbs d-flex gap-8" v-if="selectedSearchCategory">
                                             <a href="#"> Clothing </a>
                                             <span> > </span>
                                             <a href="#"> Shirts </a>
                                         </div>
                                         <div class="heading d-flex align-items-center gap-16">
-                                            <h2> SHIRTS </h2>
-                                            <span class="result-count"> 201 </span>
+                                            <h2> {{ getSearchTitle }} </h2>
+                                            <span class="result-count"> {{ sortedProducts.length }} </span>
                                         </div>
                                     </div>
 
@@ -51,7 +51,7 @@
                                                 <div class="filters-dropdown-content scrollbar">
                                                     <div class="option" v-for="fltr in sortFilters" :key="fltr.name"
                                                         :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
-                                                        @click="selectedSortFilter = fltr.name"> 
+                                                        @click="selectSortFilter(fltr)"> 
                                                         {{ fltr.name }}
                                                     </div>
                                                 </div>
@@ -59,10 +59,12 @@
                                         </div>
 
                                         <div class="result-views d-flex gap-8">
-                                            <div class="view-icon-cont">
+                                            <div class="view-icon-cont" :class="activeViewType == 'grid' ? 'active' : ''"
+                                                @click="activeViewType = 'grid'">
                                                 <Icon icon="mingcute:grid-fill" class="view-icon" />
                                             </div>
-                                            <div class="view-icon-cont active">
+                                            <div class="view-icon-cont" :class="activeViewType == 'list' ? 'active' : ''"
+                                                @click="activeViewType = 'list'">
                                                 <Icon icon="material-symbols:list" class="view-icon" />
                                             </div>
                                         </div>
@@ -72,10 +74,13 @@
                                 <div class="line-divider"></div>
                             </div>
                             <div class="results-content">
-                                <div class="products-wrapper d-flex flex-column gap-24">
-                                    <ProductItem v-for="(prod, index) in products" :key="index"
-                                        :prod-data="prod"
-                                    ></ProductItem>
+                                <div class="products-wrapper" :class="activeViewType == 'list' ? 'list' : 'grid'">
+                                    <template v-for="(prod, index) in sortedProducts" :key="index">
+                                        <ProductItem v-if="prod"
+                                            :prod-data="prod"
+                                            :view-type="activeViewType"
+                                        ></ProductItem>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -118,6 +123,7 @@ export default {
         return {
             categories: [],
             products: [],
+            sortedProducts: [],
 
             sortFiltersOpened: false,
             sortFilters: [
@@ -126,7 +132,14 @@ export default {
                 { name: "minPrice" },
                 { name: "maxPrice" }
             ],
-            selectedSortFilter: "latest"
+            selectedSortFilter: "latest",
+
+            activeViewType: "list",
+
+            selectedSearchCategory: null,
+            selectedPriceRange: [0, 9999],
+            selectedLocation: null,
+            searchQuery: "",
         }
     },
 
@@ -141,7 +154,7 @@ export default {
             let mainCategories = [{
                 name: "allProducts",
                 id: "all",
-                active: true
+                active: this.selectedSearchCategory ? false : true
             }];
             mainCategories.push(...categories.filter(category => !category.parentName));
 
@@ -151,7 +164,8 @@ export default {
                 return { 
                     ...mainCategory, 
                     subCategories,
-                    showSub: false 
+                    showSub: mainCategory.name == this.selectedSearchCategory ? true : false,
+                    active: mainCategory.name == this.selectedSearchCategory ? true : false
                 };
             });
         },
@@ -187,6 +201,8 @@ export default {
             const resp = await this.productApi.getAllProducts();
 
             this.products = resp.data;
+            console.log("all products", resp.data);
+            this.sortProducts();
         },
 
         toggleSortFilterDropdown(e) {
@@ -195,6 +211,42 @@ export default {
                 e.target.classList.contains("sort-filters")) {
                 this.sortFiltersOpened = !this.sortFiltersOpened;
             }
+        },
+
+        selectSortFilter(fltr) {
+            this.selectedSortFilter = fltr.name;
+            this.sortProducts();
+        },
+
+        sortProducts() {
+            this.sortedProducts = JSON.parse(JSON.stringify(this.products));
+            if (this.selectedSortFilter == "latest" || this.selectedSortFilter == "oldest") {
+                this.sortedProducts.sort((a, b) => {
+                    const aEpoch = new Date(a.createdAt).getTime();
+                    const bEpoch = new Date(b.createdAt).getTime();
+                    // console.log(a.title, aEpoch);
+                    // console.log(b.title, bEpoch);
+                    // console.log(aEpoch - bEpoch);
+
+                    return this.selectedSortFilter == "latest" ? 
+                        bEpoch - aEpoch : 
+                        aEpoch - bEpoch;
+                });
+
+            } else if (this.selectedSortFilter == "minPrice" || this.selectedSortFilter == "maxPrice") {
+
+            } 
+        },
+
+        getSearchOptions() {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.selectedSearchCategory = urlParams.get('category');
+            this.selectedPriceRange[0] = urlParams.get('priceFrom');
+            this.selectedPriceRange[1] = urlParams.get('priceTo');
+            this.selectedLocation = urlParams.get('location');
+            this.searchQuery = urlParams.get('search');
+
+            console.log("query params\n",this.selectedSearchCategory,  this.selectedPriceRange, this.selectedLocation, this.searchQuery);
         }
     },
     
@@ -204,9 +256,23 @@ export default {
                 getAllCategories: "product/getAllCategories"
             }
         ),
+
+        getSearchTitle() {
+            if (this.searchQuery) return `"${this.searchQuery}"`;
+            else if (this.selectedSearchCategory) return this.selectedSearchCategory.toUpperCase();
+            else return this.$t("AllProducts").toUpperCase();
+        }
     },
 
     created() {
+        this.getSearchOptions();
+        this.emitter.emit("update-header-search-params", { 
+            category: this.selectedSearchCategory, 
+            priceRange: this.selectedPriceRange, 
+            location: this.selectedLocation,
+            searchQuery: this.searchQuery
+        });
+
         this.categories = this.transformCategories(this.getAllCategories);
         console.log("ctg?", this.categories);
     },
@@ -214,7 +280,6 @@ export default {
     async mounted() {
         this.emitter.emit("show-loader");
         await this.getProducts();
-        this.emitter.emit("hide-loader");
 
         this.emitter.on("check-browse-filters", (e) => {
             const sortFiltersEl = document.querySelector('.sort-filters');
@@ -228,6 +293,8 @@ export default {
                 this.sortFiltersOpened = false;
             }
         });
+
+        this.emitter.emit("hide-loader");
     },
 
     unmounted() {
@@ -365,5 +432,18 @@ export default {
 }
 .filters-dropdown-content .option {
     cursor: pointer;
+}
+
+.products-wrapper.list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.products-wrapper.grid {
+    display: grid;
+    row-gap: 24px;
+    column-gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 </style>

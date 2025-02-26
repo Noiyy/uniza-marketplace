@@ -49,7 +49,7 @@
 
                             <div class="prod-body d-flex flex-column gap-24 justify-content-between">
                                 <div class="prod-heading d-flex justify-content-between align-items-center">
-                                    <h3 class="title"> {{ prod.title }} </h3>
+                                    <h3 class="title gradient-text"> {{ prod.title }} </h3>
                                     <div class="prod-count d-flex gap-8 align-items-center">
                                         <Icon icon="fluent:book-number-24-regular" class="count-icon" />
                                         {{ prod.count.available }}
@@ -290,10 +290,6 @@ export default {
 .prod-heading .title {
     font-size: 20px;
     font-weight: 600;
-    background: var(--gradient-angle);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .prod-count, .location-icon {

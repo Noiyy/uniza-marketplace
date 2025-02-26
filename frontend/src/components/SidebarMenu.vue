@@ -144,7 +144,6 @@ export default {
         console.log("user", this.user);
 
         this.emitter.on("sidebar-menu-btn-pos", (pos) => {
-            console.log("neee");
             const sidebarMenu = document.getElementById("sidebar-menu");
             const btn = sidebarMenu.querySelector(".close-btn");
 
@@ -168,7 +167,6 @@ export default {
             const sidebarMenu = document.getElementById("sidebar-menu");
             const btn = sidebarMenu.querySelector(".close-btn");
             btn.style.display = btn.style.display == "initial" ? "none" : 'initial';
-            console.log("hej?", btn.style.display);
             // btn.style.display == "initial" ? btn.style.display = "none" : btn.style.display = "initial";
         });
     },

@@ -52,16 +52,15 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
     try {
-        res.clearCookie("token");
-        // res.clearCookie("token", { 
-        //     httpOnly: true, 
-        //     secure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production',
-        //     sameSite: 'Strict',
-        //     path: '/' 
-        // });
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production',
+            sameSite: 'Strict',
+            path: '/'
+        });
         res.json({ success: true, message: 'Logged out successfully' });
     } catch (err) {
-        console.error("Logout error:", error);
+        console.error("Logout error:", err);
         res.status(500).json({ message: 'Logout failed' });
     }
 }

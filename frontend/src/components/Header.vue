@@ -37,7 +37,7 @@
                     <div class="left d-flex gap-32">
                         <div class="search">
                             <Icon icon="material-symbols:search" class="search-icon" />
-                            <input type="text" class="search-input" name="searchQuery">
+                            <input type="text" class="search-input" name="searchQuery" v-model="searchQuery">
                         </div>
                         <div class="filters d-flex gap-32 align-items-center">
                             <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
@@ -162,6 +162,7 @@ export default {
             glassImgSrc: this.getAssetUrl("img/header_texture.png"),
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
 
+            searchQuery: "",
             selectedSearchCategory: null,
             selectedPriceRange: [0, 9999],
             selectedLocation: null,
@@ -250,7 +251,18 @@ export default {
         },
 
         doSearch() {
-            
+            const currRoute = this.$router.currentRoute._rawValue.name;
+            console.log("curr route", this.$router.currentRoute);
+            console.log(currRoute);
+
+            const browseRoute = { name: "Browse", query: {} };
+            if (this.searchQuery) browseRoute.query.search = this.searchQuery;
+            if (this.selectedSearchCategory) browseRoute.query.category = this.selectedSearchCategory;
+            if (this.selectedPriceRange[0]) browseRoute.query.priceFrom = this.selectedPriceRange[0];
+            if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999) browseRoute.query.priceTo = this.selectedPriceRange[1];
+            if (this.selectedLocation) browseRoute.query.location = this.selectedLocation;
+
+            this.$router.push(browseRoute)
         },
 
         getMenuBtnPos() {
@@ -302,12 +314,22 @@ export default {
 
             document.body.classList.remove("openedSidebar");
             if (this.sidebarMenuOpened) {
-                console.log("was opened");
                 this.emitter.emit("toggle-sidebar-menu-close-btn");
             }
             
             this.sidebarMenuOpened = false;
         });
+
+        this.emitter.on("update-header-search-params", (data) => {
+            this.searchQuery = data.searchQuery;
+            this.selectedSearchCategory = data.category;
+            this.selectedLocation = data.location;
+
+            if (data.priceRange && data.priceRange.length) {
+                if (data.priceRange[0]) this.selectedPriceRange[0] = data.priceRange[0];
+                if (data.priceRange[1]) this.selectedPriceRange[1] = data.priceRange[1];
+            }
+        })
 
     },
 

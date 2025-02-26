@@ -72,6 +72,12 @@ a:hover {
 }
 
 .color-primary { color: var(--primary); }
+.gradient-text { 
+    background: var(--gradient-angle);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 .font-thin { font-weight: 100; }
 .font-extra_light { font-weight: 200; } 
