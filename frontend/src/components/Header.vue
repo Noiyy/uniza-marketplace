@@ -33,23 +33,32 @@
             <div class="glass" :style="glassBgStyle"></div>
 
             <div class="container">
-                <div class="d-flex align-items-center justify-content-between">
+                <form class="d-flex align-items-center justify-content-between" @submit.prevent="null">
                     <div class="left d-flex gap-32">
                         <div class="search">
                             <Icon icon="material-symbols:search" class="search-icon" />
                             <input type="text" class="search-input" name="searchQuery" v-model="searchQuery">
+                            <Icon icon="material-symbols:close" class="remove-icon" @click="searchQuery = ''" />
                         </div>
                         <div class="filters d-flex gap-32 align-items-center">
                             <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
                                 <div class="selected">
-                                    {{ selectedSearchCategory ? selectedSearchCategory : 'All main categories' }}
+                                    {{ selectedSearchCategory ? selectedSearchCategory.name : 'All categories' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                                 <div class="filters-dropdown-content scrollbar">
-                                    <div class="option" v-for="(ctg, index) in getMainCategories" :key="index"
-                                        :class="selectedSearchCategory && selectedSearchCategory == ctg.name ? 'selected' : ''"
-                                        @click="selectedSearchCategory = ctg.name"> 
+                                    <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
+                                        :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
+                                        @click="selectMainCtgHandler(ctg)"> 
                                         {{ ctg.name }}
+
+                                        <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
+                                            <div class="option sub-ctg" v-for="(sCtg, sIndex) in ctg.subCategories" :key="sIndex"
+                                                :class="selectedSearchCategory && selectedSearchCategory.name == sCtg.name ? 'selected' : ''"
+                                                @click="selectSubCtgHandler(sCtg, $event)">
+                                                {{ sCtg.name }}
+                                            </div>
+                                        </div>
                                     </div>
                                     <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedSearchCategory = null" />
                                 </div>
@@ -120,10 +129,11 @@
                         </div>
                     </div>
         
-                    <div class="right">
-                        <button class="btn" @click="doSearch"> Search </button>
+                    <div class="right d-flex align-items-center gap-16">
+                        <Icon icon="material-symbols:refresh" class="refresh-icon" @click="resetAllSearchParams()" />
+                        <button class="btn" type="submit" @click.prevent="doSearch()"> Search </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </header>
@@ -173,12 +183,18 @@ export default {
             },
             locationSearch: "",
 
+            structuredCategories: [],
+
             filteredLocations: [],
             userDeviceLocation: null,
         }
     },
 
     methods: {
+        ...mapActions({
+            setBrowseOptions: 'browse/setBrowseOptions'
+        }),
+
         toggleDropdown(dropdown, e) {
             if (e.target.classList.contains("filters-dropdown-content")) return;
 
@@ -250,19 +266,24 @@ export default {
             }
         },
 
+        updateBrowseOptions() {
+            this.setBrowseOptions({
+                searchQuery: this.searchQuery,
+                category: this.selectedSearchCategory,
+                subCategory: this.selectedSubCategory,
+                priceRange: this.selectedPriceRange,
+                location: this.selectedLocation
+            });
+        },
+
         doSearch() {
             const currRoute = this.$router.currentRoute._rawValue.name;
-            console.log("curr route", this.$router.currentRoute);
-            console.log(currRoute);
 
-            const browseRoute = { name: "Browse", query: {} };
-            if (this.searchQuery) browseRoute.query.search = this.searchQuery;
-            if (this.selectedSearchCategory) browseRoute.query.category = this.selectedSearchCategory;
-            if (this.selectedPriceRange[0]) browseRoute.query.priceFrom = this.selectedPriceRange[0];
-            if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999) browseRoute.query.priceTo = this.selectedPriceRange[1];
-            if (this.selectedLocation) browseRoute.query.location = this.selectedLocation;
+            this.updateBrowseOptions();
 
-            this.$router.push(browseRoute)
+            if (currRoute != "Browse")
+                this.$router.push({name: "Browse"});
+            else this.emitter.emit("do-search");
         },
 
         getMenuBtnPos() {
@@ -280,6 +301,37 @@ export default {
             const menuBtn = document.querySelector(".menu-btn");
             const menuBtnPos = getElPosition(menuBtn);
             this.emitter.emit("sidebar-menu-btn-pos", menuBtnPos);
+        },
+
+        getSearchOptions() {
+            const data = this.getBrowseOptions;
+            this.selectedSearchCategory = data.category;
+            this.selectedPriceRange = data.priceRange;
+            this.selectedLocation = data.location;
+            this.searchQuery = data.searchQuery;
+        },
+
+        resetAllSearchParams() {
+            this.selectedSearchCategory = null;
+            this.selectedPriceRange = [0, 9999];
+            this.selectedLocation = null;
+            this.searchQuery = "";
+            this.updateBrowseOptions();
+        },
+
+        getCategories() {
+            this.structuredCategories = this.transformCategories(this.getAllCategories, this.selectedSearchCategory);
+            this.structuredCategories = this.structuredCategories.filter(ctg => ctg.id != "all");
+        },
+
+        selectMainCtgHandler(ctg) {
+            this.selectedSearchCategory = { name: ctg.name, _id: ctg._id };
+        },
+
+        selectSubCtgHandler(sCtg, event) {
+            event.stopPropagation(); 
+            this.selectedSearchCategory = { name: sCtg.name, _id: sCtg._id, parentName: sCtg.parentName };
+            this.toggleDropdown('categories', event)
         }
     },
     
@@ -287,8 +339,10 @@ export default {
         ...mapGetters(
             {
                 IS_MOBILE: 'misc/getIsMobile',
-                getMainCategories: 'product/getMainCategories',
-                getAllPSC: 'misc/getAllPSC'
+                getAllCategories: 'product/getAllCategories',
+                getAllPSC: 'misc/getAllPSC',
+
+                getBrowseOptions: "browse/getBrowseOptions"
             }
         ),
 
@@ -320,17 +374,8 @@ export default {
             this.sidebarMenuOpened = false;
         });
 
-        this.emitter.on("update-header-search-params", (data) => {
-            this.searchQuery = data.searchQuery;
-            this.selectedSearchCategory = data.category;
-            this.selectedLocation = data.location;
-
-            if (data.priceRange && data.priceRange.length) {
-                if (data.priceRange[0]) this.selectedPriceRange[0] = data.priceRange[0];
-                if (data.priceRange[1]) this.selectedPriceRange[1] = data.priceRange[1];
-            }
-        })
-
+        this.getCategories();
+        this.getSearchOptions();
     },
 
     mounted() {
@@ -553,6 +598,28 @@ header {
     color: var(--secondary);
 }
 
+.filters .location .search-options .option.sub-ctg,
+.filters .categories .option.sub-ctg {
+    color: var(--white);
+}
+.filters .location .search-options .option.sub-ctg:nth-child(even),
+.filters .categories .option.sub-ctg:nth-child(even) {
+    color: rgba(255, 255, 255, 0.66);
+}
+
+.search .remove-icon {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    opacity: 0.33;
+    cursor: pointer;
+    transition: opacity 0.2s ease-in;
+}
+.search .remove-icon:hover {
+    opacity: 0.66;
+}
+
 .header-right .menu-btn {
     z-index: 16;
 }
@@ -619,6 +686,20 @@ header {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.filters-dropdown-content .option.main-ctg::before {
+    content: "";
+    display: inline-flex;
+    /* border-radius: 50%; */
+    background: rgba(255, 255, 255, 0.8);
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+}
+
+.filters-dropdown-content .option.sub-ctg {
+    margin-left: 16px;
+}
+
 .filters-dropdown-content .refresh-icon {
     position: absolute;
     top: 8px;
@@ -627,7 +708,7 @@ header {
     cursor: pointer;
     transition: transform 0.4s ease-out;
 }
-.filters-dropdown-content .refresh-icon:hover {
+.refresh-icon:hover {
     transform: rotate(360deg);
 }
 
@@ -642,5 +723,11 @@ header {
 
 .filters .open .chevron-icon {
     transform: rotate(180deg);
+}
+
+.right .refresh-icon {
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.4s ease-out;
 }
 </style>

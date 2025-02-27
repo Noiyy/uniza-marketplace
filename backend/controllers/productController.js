@@ -116,9 +116,9 @@ async function initTestProducts() {
             title: "Product a",
             sellerId: "678f6b895072aacad19cdb6e",
             description: "nejaka test desc",
-            images: ["testProductImg.png", "testProductImg2.png"],
+            images: ["testProductImg.jpg", "testProductImg2.jpg"],
             category: {
-                mainCategory: "678f6ba719ca0d2f3b0e8232"
+                mainCategory: "678f6f38063a689604c7c63e"
             },
             price: {
                 value: 27,
@@ -129,7 +129,7 @@ async function initTestProducts() {
             sellerId: "678f6b895072aacad19cdb6e",
             description: "nejaka test desc dalsia haha",
             category: {
-                mainCategory: "678f6ba719ca0d2f3b0e8232"
+                mainCategory: "678f6f38063a689604c7c63e"
             },
             price: {
                 value: 11
@@ -139,10 +139,10 @@ async function initTestProducts() {
             title: "Product c",
             sellerId: "678f6b895072aacad19cdb6e",
             description: "nejaka test desc is it",
-            images: ["testProductImg.png"],
+            images: ["testProductImg.jpg"],
             category: {
-                mainCategory: "678f6ba719ca0d2f3b0e8232",
-                subCategory: "678f6ba719ca0d2f3b0e8233"
+                mainCategory: "678f6f38063a689604c7c64f",
+                subCategory: "678f6f38063a689604c7c650"
             },
             price: {
                 value: 3
@@ -153,7 +153,7 @@ async function initTestProducts() {
             sellerId: "678f6b895072aacad19cdb6e",
             description: "nejaka test desc dalsia haha xd",
             category: {
-                mainCategory: "678f6ba719ca0d2f3b0e8232"
+                mainCategory: "678f6f38063a689604c7c653"
             },
             price: {
                 specialValue: "free"
@@ -162,9 +162,9 @@ async function initTestProducts() {
         {
             title: "Product e",
             sellerId: "678f6b895072aacad19cdb6e",
-            description: "nejaka test desc dalsia haha hehe",
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
             category: {
-                mainCategory: "678f6ba719ca0d2f3b0e8239"
+                mainCategory: "678f6f38063a689604c7c653"
             },
             price: {
                 specialValue: "agreement"

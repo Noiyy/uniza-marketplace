@@ -33,10 +33,10 @@ class ProductService extends DefaultService {
         return await this.apiClient.get('/categories/getAllCategories');
     }
     async getMainCategories() {
-        return await this.apiClient.get('/categories/getMain');
+        return await this.apiClient.get('/categories/getMainCategories');
     }
     async getSubCategories() {
-        return await this.apiClient.get('/categories/getSub');
+        return await this.apiClient.get('/categories/getSubCategories');
     }
     async getCategory(categoryId) {
         return await this.apiClient.get(`/categories/${categoryId}`);

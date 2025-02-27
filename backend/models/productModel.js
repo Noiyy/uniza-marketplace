@@ -28,7 +28,7 @@ const productSchema = new mongoose.Schema({
 	},
 	price: {
 		value: { type: mongoose.Schema.Types.Decimal128, required: true, default: 0 }, // 0 -> use specialValue
-		specialValue: { type: String, enum: ["agreement", "offer", "in text", "free" ] },
+		specialValue: { type: String, enum: ["agreement", "offer", "inText", "free" ] },
 	},
 	address: {
 		asProfile: { type: Boolean, default: true },

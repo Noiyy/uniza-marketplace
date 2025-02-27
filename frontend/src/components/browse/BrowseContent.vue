@@ -25,10 +25,10 @@
                             <div class="results-header d-flex flex-column gap-8">
                                 <div class="content d-flex justify-content-between">
                                     <div class="info d-flex flex-column">
-                                        <div class="breadcrumbs d-flex gap-8" v-if="selectedSearchCategory">
-                                            <a href="#"> Clothing </a>
-                                            <span> > </span>
-                                            <a href="#"> Shirts </a>
+                                        <div class="breadcrumbs d-flex gap-8" v-if="selectedSearchCategory && selectedSearchCategory._id">
+                                            <span > {{ selectedMainCtg }} </span>
+                                            <span v-if="selectedSubCtg"> > </span>
+                                            <span v-if="selectedSubCtg"> {{ selectedSubCtg }} </span>
                                         </div>
                                         <div class="heading d-flex align-items-center gap-16">
                                             <h2> {{ getSearchTitle }} </h2>
@@ -49,9 +49,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="filters-dropdown-content scrollbar">
-                                                    <div class="option" v-for="fltr in sortFilters" :key="fltr.name"
+                                                    <div class="option d-flex gap-8" v-for="fltr in sortFilters" :key="fltr.name"
                                                         :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
                                                         @click="selectSortFilter(fltr)"> 
+                                                        <Icon :icon="fltr.icon" class="filter-sort-option-icon" v-if="fltr.icon"/>
                                                         {{ fltr.name }}
                                                     </div>
                                                 </div>
@@ -74,13 +75,18 @@
                                 <div class="line-divider"></div>
                             </div>
                             <div class="results-content">
-                                <div class="products-wrapper" :class="activeViewType == 'list' ? 'list' : 'grid'">
+                                <div class="products-wrapper" :class="activeViewType == 'list' ? 'list' : 'grid'" v-if="sortedProducts.length">
                                     <template v-for="(prod, index) in sortedProducts" :key="index">
                                         <ProductItem v-if="prod"
                                             :prod-data="prod"
                                             :view-type="activeViewType"
                                         ></ProductItem>
                                     </template>
+                                </div>
+
+                                <div class="products-wrapper no-products text-center pos-relative" v-else>
+                                    <span> No products were found! :( </span>
+                                    <Icon icon="game-icons:capybara" class="no-products-icon" />
                                 </div>
                             </div>
                         </div>
@@ -124,17 +130,25 @@ export default {
             categories: [],
             products: [],
             sortedProducts: [],
+            filteredProducts: [],
 
             sortFiltersOpened: false,
             sortFilters: [
                 { name: "latest" },
                 { name: "oldest" },
                 { name: "minPrice" },
-                { name: "maxPrice" }
+                { name: "maxPrice" },
+                { name: "agreement", icon: "icomoon-free:price-tags" },
+                { name: "offer", icon: "icomoon-free:price-tags" },
+                { name: "inText", icon: "icomoon-free:price-tags" },
+                { name: "free", icon: "icomoon-free:price-tags" }
             ],
             selectedSortFilter: "latest",
 
             activeViewType: "list",
+
+            selectedMainCtg: null,
+            selectedSubCtg: null,
 
             selectedSearchCategory: null,
             selectedPriceRange: [0, 9999],
@@ -150,31 +164,17 @@ export default {
             }
         ),
 
-        transformCategories(categories) {
-            let mainCategories = [{
-                name: "allProducts",
-                id: "all",
-                active: this.selectedSearchCategory ? false : true
-            }];
-            mainCategories.push(...categories.filter(category => !category.parentName));
-
-            // For each main category, find subcategories
-            return mainCategories.map(mainCategory => {
-                const subCategories = categories.filter(category => category.parentName === mainCategory.name);
-                return { 
-                    ...mainCategory, 
-                    subCategories,
-                    showSub: mainCategory.name == this.selectedSearchCategory ? true : false,
-                    active: mainCategory.name == this.selectedSearchCategory ? true : false
-                };
-            });
-        },
-
         chooseCategory(event, category, isMain) {
+            this.selectedSubCtg = null;
+            this.selectedMainCtg = null;
+
             if (!isMain) {
                 event.stopPropagation();
                 event.preventDefault();
-            }
+                this.selectedSubCtg = category.name;
+            } else this.selectedMainCtg = category.name;
+
+            this.selectedSearchCategory = { name: category.name, _id: category._id };
 
             this.categories.forEach(ctg => {
                 ctg.showSub = false
@@ -183,6 +183,7 @@ export default {
                     sCtg.active = false;
 
                     if (category.parentName === ctg.name) {
+                        this.selectedMainCtg = ctg.name;
                         ctg.showSub = true;
                     }
                 });
@@ -194,7 +195,9 @@ export default {
             }
 
             category.active = true;
-            console.log("u", this.categories);
+
+            this.filterProducts();
+            this.sortProducts();
         },
 
         async getProducts() {
@@ -202,6 +205,7 @@ export default {
 
             this.products = resp.data;
             console.log("all products", resp.data);
+            this.filterProducts();
             this.sortProducts();
         },
 
@@ -215,18 +219,17 @@ export default {
 
         selectSortFilter(fltr) {
             this.selectedSortFilter = fltr.name;
+            this.filterProducts();
             this.sortProducts();
         },
 
         sortProducts() {
-            this.sortedProducts = JSON.parse(JSON.stringify(this.products));
+            this.sortedProducts = JSON.parse(JSON.stringify(this.filteredProducts));
+
             if (this.selectedSortFilter == "latest" || this.selectedSortFilter == "oldest") {
                 this.sortedProducts.sort((a, b) => {
                     const aEpoch = new Date(a.createdAt).getTime();
                     const bEpoch = new Date(b.createdAt).getTime();
-                    // console.log(a.title, aEpoch);
-                    // console.log(b.title, bEpoch);
-                    // console.log(aEpoch - bEpoch);
 
                     return this.selectedSortFilter == "latest" ? 
                         bEpoch - aEpoch : 
@@ -234,47 +237,81 @@ export default {
                 });
 
             } else if (this.selectedSortFilter == "minPrice" || this.selectedSortFilter == "maxPrice") {
+                this.sortedProducts.sort((a, b) => {
+                    const aPrice = a.price.specialValue ? a.price.specialValue : a.price.value.$numberDecimal;
+                    const bPrice = b.price.specialValue ? b.price.specialValue : b.price.value.$numberDecimal;
 
-            } 
+                    if (isNaN(aPrice) && isNaN(bPrice)) {
+                        return aPrice.toString().localeCompare(bPrice.toString());
+                    } else if (isNaN(aPrice)) {
+                        return 1;
+                    } else if (isNaN(bPrice)) {
+                        return -1;
+                    } else {
+                        return this.selectedSortFilter == "minPrice" ?
+                            aPrice - bPrice :
+                            bPrice - aPrice;
+                    }
+                });
+            } else if (this.selectedSortFilter == "agreement") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "agreement");
+            else if (this.selectedSortFilter == "offer") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "offer");
+            else if (this.selectedSortFilter == "inText") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "inText");
+            else if (this.selectedSortFilter == "free") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "free");
+        },
+
+        filterProducts() {
+            this.filteredProducts = JSON.parse(JSON.stringify(this.products));
+
+            if (this.selectedSearchCategory) {
+                if (!this.selectedSearchCategory._id) this.filteredProducts = JSON.parse(JSON.stringify(this.products));
+                else {
+                    this.filteredProducts = this.filteredProducts.filter(prod => {
+                        return this.selectedSearchCategory._id == prod.category.mainCategory || this.selectedSearchCategory._id == prod.category.subCategory;
+                    });
+                }
+            }
+            // if (this.selectedPriceRange[0]) this.filteredProducts = this.filteredProducts.filter(prod => prod)
+            // if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999) this.filteredProducts = this.filteredProducts.filter(prod => prod)
+            // if (this.selectedLocation) this.filteredProducts = this.filteredProducts.filter(prod => prod)
+            // if (this.searchQuery) this.filteredProducts = this.filteredProducts.filter(prod => prod)
         },
 
         getSearchOptions() {
-            const urlParams = new URLSearchParams(window.location.search);
-            this.selectedSearchCategory = urlParams.get('category');
-            this.selectedPriceRange[0] = urlParams.get('priceFrom');
-            this.selectedPriceRange[1] = urlParams.get('priceTo');
-            this.selectedLocation = urlParams.get('location');
-            this.searchQuery = urlParams.get('search');
+            const data = this.getBrowseOptions;
+            this.selectedSearchCategory = data.category;
+            this.selectedPriceRange = data.priceRange;
+            this.selectedLocation = data.location;
+            this.searchQuery = data.searchQuery;
 
-            console.log("query params\n",this.selectedSearchCategory,  this.selectedPriceRange, this.selectedLocation, this.searchQuery);
+            if (this.selectedSearchCategory) {
+                this.selectedMainCtg = data.category.parentName ? data.category.parentName : data.category.name;
+                if (data.category.parentName) this.selectedSubCtg = data.category.name;
+            }
+
+            this.categories = this.transformCategories(this.getAllCategories, this.selectedSearchCategory);
         }
     },
     
     computed: {
         ...mapGetters(
             {
-                getAllCategories: "product/getAllCategories"
+                getAllCategories: "product/getAllCategories",
+                getBrowseOptions: "browse/getBrowseOptions"
             }
         ),
 
         getSearchTitle() {
             if (this.searchQuery) return `"${this.searchQuery}"`;
-            else if (this.selectedSearchCategory) return this.selectedSearchCategory.toUpperCase();
+            else if (this.selectedSearchCategory) return this.selectedSearchCategory.name.toUpperCase();
             else return this.$t("AllProducts").toUpperCase();
         }
     },
 
     created() {
         this.getSearchOptions();
-        this.emitter.emit("update-header-search-params", { 
-            category: this.selectedSearchCategory, 
-            priceRange: this.selectedPriceRange, 
-            location: this.selectedLocation,
-            searchQuery: this.searchQuery
-        });
+        console.log("ctg?", this.getAllCategories);
 
-        this.categories = this.transformCategories(this.getAllCategories);
-        console.log("ctg?", this.categories);
+        this.categories = this.transformCategories(this.getAllCategories, this.selectedSearchCategory);
     },
 
     async mounted() {
@@ -294,11 +331,22 @@ export default {
             }
         });
 
+        this.emitter.on("do-search", () => {
+            this.emitter.emit("show-loader");
+
+            this.getSearchOptions();
+            this.filterProducts();
+            this.sortProducts();
+            
+            this.emitter.emit("hide-loader");
+        });
+
         this.emitter.emit("hide-loader");
     },
 
     unmounted() {
         this.emitter.off("check-browse-filters");
+        this.emitter.off("do-search");
     }
 }
 </script>
@@ -445,5 +493,23 @@ export default {
     row-gap: 24px;
     column-gap: 16px;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.no-products span {
+    font-weight: 200;
+    font-size: 18px;
+}
+
+.no-products-icon {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%);
+    font-size: 56px;
+    opacity: 0.33;
+    transition: transform 0.5s ease-in-out;
+}
+.no-products-icon:hover {
+    transform: rotate(180deg);
 }
 </style>

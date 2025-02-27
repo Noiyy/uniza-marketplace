@@ -15,8 +15,8 @@ router.delete('/delete/:id', deleteProduct);
 
 // Category
 router.get("/categories/getAllCategories", getAllCategories);
-router.get("/categories/getMain", getMainCategories);
-router.get("/categories/getSub", getSubCategories);
+router.get("/categories/getMainCategories", getMainCategories);
+router.get("/categories/getSubCategories", getSubCategories);
 router.get("/categories/:id", getCategory);
 
 // Sale

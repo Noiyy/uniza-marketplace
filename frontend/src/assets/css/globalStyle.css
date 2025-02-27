@@ -201,6 +201,13 @@ input.styled:focus-visible {
     z-index: 1;
 }
 
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--black) inset !important;
+  -webkit-text-fill-color: var(--white) !important;
+}
+
 /* SMALL - Mobile */
 @media(max-width: 640px) { 
 
