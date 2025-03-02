@@ -66,7 +66,7 @@
                                             </div>
                                             <div class="view-icon-cont" :class="activeViewType == 'list' ? 'active' : ''"
                                                 @click="activeViewType = 'list'">
-                                                <Icon icon="material-symbols:list" class="view-icon" />
+                                                <Icon icon="ph:rows-fill" class="view-icon" />
                                             </div>
                                         </div>
                                     </div>
@@ -270,10 +270,13 @@ export default {
                     });
                 }
             }
-            // if (this.selectedPriceRange[0]) this.filteredProducts = this.filteredProducts.filter(prod => prod)
-            // if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999) this.filteredProducts = this.filteredProducts.filter(prod => prod)
+            if (this.selectedPriceRange[0]) 
+                this.filteredProducts = this.filteredProducts.filter(prod => prod.price.value && +prod.price.value.$numberDecimal && +prod.price.value.$numberDecimal >= this.selectedPriceRange[0]);
+            if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999)
+                this.filteredProducts = this.filteredProducts.filter(prod => prod.price.value && +prod.price.value.$numberDecimal && +prod.price.value.$numberDecimal <= this.selectedPriceRange[1]);
             // if (this.selectedLocation) this.filteredProducts = this.filteredProducts.filter(prod => prod)
-            // if (this.searchQuery) this.filteredProducts = this.filteredProducts.filter(prod => prod)
+            if (this.searchQuery) 
+                this.filteredProducts = this.filterByValue(this.filteredProducts, this.searchQuery.toLowerCase());
         },
 
         getSearchOptions() {

@@ -250,4 +250,9 @@ width */
   height: 1px;
   background-color: var(--white-15a);
 }
+
+.star-icon {
+  color: var(--primary);
+  font-size: 20px;
+}
 </style>

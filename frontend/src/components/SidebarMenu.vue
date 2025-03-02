@@ -12,9 +12,10 @@
                     ADMIN
                 </div>
 
-                <router-link :to="user ? `/user/${user._id}` : ''" >
+                <router-link :to="user ? `/user/${user._id}` : ''" class="user-avatar-cont" >
                     <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo" v-if="!user">
                     <template v-else>
+                        <div class="avatar-overlay"></div>
                         <img :src="getAssetUrl(`img/userAvatars/${user.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user.avatarPath">
                         <div class="default-avatar-cont" v-else>
                             <Icon icon="akar-icons:person" class="default-avatar-icon" />
@@ -141,7 +142,7 @@ export default {
 
     created() {
         this.user = this.getUser;
-        console.log("user", this.user);
+        console.log("logged user", this.user);
 
         this.emitter.on("sidebar-menu-btn-pos", (pos) => {
             const sidebarMenu = document.getElementById("sidebar-menu");
@@ -243,6 +244,26 @@ nav a:hover {
     height: 128px;
 }
 
+.user-avatar-cont {
+    position: relative;
+}
+
+.user-avatar-cont:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.33);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s ease-in;
+}
+
 .user-avatar {
     border-radius: 50%;
     object-fit: cover;
@@ -267,6 +288,7 @@ nav a:hover {
     top: -8px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 1;
 }
 
 .logout {

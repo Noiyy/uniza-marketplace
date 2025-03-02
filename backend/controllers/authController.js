@@ -53,9 +53,6 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
     try {
         res.clearCookie('token', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production',
-            sameSite: 'Strict',
             path: '/'
         });
         res.json({ success: true, message: 'Logged out successfully' });

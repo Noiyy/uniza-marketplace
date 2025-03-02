@@ -66,12 +66,13 @@ export default function (emitter, isDev, axiosInstance) {
             path: '/product/:id/edit',
             name: 'ProductEdit',
             component: () => import ('../../views/product/ProductEditView.vue'),
-            meta: { requiresAuth: true, requiresOwner: true },
+            meta: { requiresAuth: true, requiresOwner: true, checkExisting: true },
         },
         {
             path: '/product/:id',
             name: 'ProductDetail',
             component: () => import ('../../views/product/ProductDetailView.vue'),
+            meta: { checkExisting: true }
         },
         {
             path: '/browse',
@@ -83,6 +84,7 @@ export default function (emitter, isDev, axiosInstance) {
             path: '/user/:id',
             name: 'UserProfile',
             component: () => import ('../../views/user/UserProfileView.vue'),
+            meta: { checkExisting: true }
         },
     ];
 
@@ -138,9 +140,33 @@ export default function (emitter, isDev, axiosInstance) {
                     defaultRouteHandler(to, from, next);
 
             } catch (error) {
-                console.log("err",error);
+                console.error("err", error);
                 next({ path: '/401' });
             }
+
+        // Existing item check
+        } else if (to.meta.checkExisting) {
+            const pathName = to.name;
+            const id = to.params.id;
+
+            let found = false;
+            try {
+                if (pathName.toLowerCase().includes("user")) {
+                    const resp = await axiosInstance.get(`api/user/${id}`);
+                    if (resp.data && resp.data._id) found = true;
+
+                } else if (pathName.toLowerCase().includes("product")) {
+                    const resp = await axiosInstance.get(`api/product/${id}`);
+                    if (resp.data && resp.data._id) found = true;
+                }
+            } catch (err) {
+                console.error("err", err);
+                next({ path: '/404' });
+            }
+
+            if (found) defaultRouteHandler(to, from, next);
+            else next({ path: '/404' });
+
         } else
             defaultRouteHandler(to, from, next);
     

@@ -30,7 +30,7 @@ class UserService extends DefaultService {
         return await this.apiClient.post('/auth/login', userData, { withCredentials: true });
     }
     async logoutUser() {
-        return await this.apiClient.post('/auth/logout', { withCredentials: true });
+        return await this.apiClient.post('/auth/logout', {}, { withCredentials: true });
     }
 }
 

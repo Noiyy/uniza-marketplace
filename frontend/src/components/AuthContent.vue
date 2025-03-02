@@ -139,12 +139,12 @@ export default {
                     } else {
                         this.$toast.error("LoginFailed");
                     }
-                    this.emitter.emit("hide-loader");
-                    
                 } catch (error) {
                     console.error(error);
                     this.$toast.error("InvalidCredentials");
                 }
+
+                this.emitter.emit("hide-loader");
             }
         }
     },

@@ -45,12 +45,9 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function(next) {
-    console.log("serus ne");
     if (!this.isModified('password')) return next();
-    console.log("serus ne 2", this);
 
     this.password = await bcrypt.hash(this.password, 10);
-    console.log("serus ne 3", this);
     next();
 });
 
@@ -61,6 +58,7 @@ userSchema.methods.comparePassword = function (password) {
 userSchema.set("toJSON", {
     transform: (doc, ret) => {
         delete ret.password;
+        delete ret.email;
         return ret;
     }
 });

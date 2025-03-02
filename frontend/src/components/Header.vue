@@ -224,17 +224,7 @@ export default {
         filterLocations() {
             if (!this.getAllPSC || !this.getAllPSC.length) return [];
 
-            const filterByValue = (array, value) => {
-                const regex = new RegExp(value.replace(/([!@#$%^&*()+=\[\]\\',./{}":<>?~_-])/g, "\\$1"));
-                return array.filter(obj =>
-                    Object.values(obj).some(val =>
-                        (typeof val === 'string' || typeof val === 'number') &&
-                        (regex.test(val.toString().toLowerCase()))
-                    )
-                );
-            };
-
-            this.filteredLocations = filterByValue(this.getAllPSC, this.locationSearch);
+            this.filteredLocations = this.filterByValue(this.getAllPSC, this.locationSearch);
         },
 
         selectNearMeLocation() {

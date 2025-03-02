@@ -21,7 +21,7 @@ exports.getProduct = async (req, res) => {
     const product = await Product.findById(id);
     if (!product) return res.status(404).json({error: 'No product found for id ' + id});
 
-    res.status(200).json(user);
+    res.status(200).json(product);
 };
 
 exports.getUserProducts = async (req, res) => {
