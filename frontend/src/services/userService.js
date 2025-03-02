@@ -21,6 +21,14 @@ class UserService extends DefaultService {
     async deleteUser(userId) {
         return await this.apiClient.delete(`/user/delete/${userId}`);
     }
+    async uploadAvatar(formData) {
+        return await this.apiClient.post('/user/uploadAvatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+        });
+    }
 
     /* AUTH ROUTES */
     async registerUser(userData) {

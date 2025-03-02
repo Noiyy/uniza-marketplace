@@ -1,6 +1,9 @@
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
+const fs = require('fs');
+const path = require('path');
+
 exports.getAllUsers = async (req, res) => {
     const users = await User.find({}).sort({registeredAt: -1});
     
@@ -88,3 +91,38 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findOneAndDelete({_id: id});
     res.status(200).json({ message: 'User deleted.', delUserId: user.id });
 }
+
+exports.uploadAvatar = async (req, res) => {
+    const { prevFilename, userId } = req.body;
+    const newFile = req.file;
+
+    if (!newFile) {
+        console.error("No file uploaded!");
+        return res.status(400).send("No file uploaded");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
+    
+    const userCheck = await User.findById(req.user.id);
+    if (!userCheck) 
+        res.status(401).json({error: 'Auth user not found'});
+
+    // Only owner or admin is allowed to
+    if (userCheck.id.toString() !== userId && !userCheck.isAdmin) 
+        res.status(401).json({error: 'Auth user not authorized'});
+ 
+    await User.findOneAndUpdate(
+        { _id: userId},
+        { avatarPath: newFile.filename },
+        { new: true, runValidators: true }
+    );
+
+    if (prevFilename) {
+        const oldFilePath = path.join(__dirname, '../../frontend/src/assets/img/userAvatars/', prevFilename);
+        if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+        }
+    }
+
+    res.json({ message: 'File uploaded successfully', file: newFile });
+};

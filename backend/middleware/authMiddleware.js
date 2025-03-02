@@ -14,7 +14,11 @@ exports.protect = async (req, res, next) => {
         req.user = usr;
         next();
     } catch (error) {
-        console.log("bro", error);
+        console.log("protect error", error);
+        res.clearCookie('token', {
+            path: '/'
+        });
+
         return res.status(401).json({ message: 'Not authorized' });
     }
 

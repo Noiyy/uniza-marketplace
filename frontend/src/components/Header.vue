@@ -240,7 +240,7 @@ export default {
                 });
             } else {
                 console.warn("Geolocation is not supported by this browser.");
-                this.$toast.warn(this.$t("BrowserGeoUnsupported"));
+                this.$toast.warning(this.$t("BrowserGeoUnsupported"));
             }
         },
 

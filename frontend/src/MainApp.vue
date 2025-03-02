@@ -177,7 +177,7 @@ export default {
   display: flex;
   color: var(--black);
   background-color: var(--accent);
-  filter: drop-shadow(0px 0px 5px #fff);
+  filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
   font-size: 40px;
   cursor: pointer;
   transition: transform 0.2s ease-out;

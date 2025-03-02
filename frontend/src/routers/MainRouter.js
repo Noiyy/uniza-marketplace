@@ -119,8 +119,8 @@ export default function (emitter, isDev, axiosInstance) {
         let user = store.getters["user/getUser"];
         let isAdmin = user && user.isAdmin;
 
-        // Auth check
-        if ((to.meta.requiresAuth && (!user || !user._id)) || (to.meta.requiresAdmin && ((!user || !user._id) || !isAdmin))) {
+        // Check if user is logged in
+        if (!user) {
             try {
                 const resp = await axiosInstance.get("api/user/getLoggedUser", { withCredentials: true });
                 const userData = resp.data.user;
@@ -128,21 +128,13 @@ export default function (emitter, isDev, axiosInstance) {
                 await store.dispatch("user/setUser", userData);
                 user = store.getters["user/getUser"];
                 isAdmin = user && user.isAdmin;
+            } catch (err) {}
+        }
 
-                if (
-                    (!user || !user._id) || // If user isn't logged or
-                    (to.meta.requiresAdmin && !user || !user._id || !isAdmin) // user isn't admin and it's required
-                ) {
-                    emitter.emit("close-sidebarMenu");
-                    next({ path: '/401' });
-                } else 
-                    // Successfully authenticated
-                    defaultRouteHandler(to, from, next);
-
-            } catch (error) {
-                console.error("err", error);
-                next({ path: '/401' });
-            }
+        // Auth check
+        if ((to.meta.requiresAuth && (!user || !user._id)) || (to.meta.requiresAdmin && ((!user || !user._id) || !isAdmin))) {
+            emitter.emit("close-sidebarMenu");
+            next({ path: '/401' });
 
         // Existing item check
         } else if (to.meta.checkExisting) {

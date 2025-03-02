@@ -13,10 +13,12 @@
                                 <Icon icon="akar-icons:person" class="default-avatar-icon" />
                             </div>
 
-                            <div class="upload-overlay" v-if="getLoggedUser && (getLoggedUser._id == $route.params.id || getLoggedUser.isAdmin)"
-                                @click="showAvatarUpload()">
+                            <form enctype="multipart/form-data" class="upload-overlay" v-if="getLoggedUser && (getLoggedUser._id == $route.params.id || getLoggedUser.isAdmin)"
+                                @submit.prevent="uploadUserAvatar" @click="triggerFileInput">
+                                <input ref="avatarInput" name="image" @change="onFileChange" style="display: none"
+                                    type="file" accept=".jpg, .jpeg, .png, .webp" />
                                 <Icon icon="mdi:camera-outline" class="upload-icon" />
-                            </div>
+                            </form>
                         </div>
 
                         <div class="user-info d-flex flex-column gap-64 justify-content-between">
@@ -39,7 +41,7 @@
                                     <div class="rating-heading d-flex gap-32 align-items-center">
                                         <div class="heading">Rating</div>
                                         <div class="rating-values d-flex gap-8 align-items-center">
-                                            <div> 4,7 </div>
+                                            <span> 4,7 </span>
                                             <div class="stars d-flex">
                                                 <Icon icon="material-symbols:star" class="star-icon" />
                                                 <Icon icon="material-symbols:star" class="star-icon" />
@@ -49,7 +51,7 @@
                                             </div>
                                         </div>
                                     </div>
-            
+
                                     <div class="stats">
                                         <span class="gradient-text">27</span> ratings
                                     </div>
@@ -59,12 +61,12 @@
                                         <div class="divider"></div>
                                     </div>
                                 </div>
-            
+
                                 <div class="user-products d-flex justify-content-between pos-relative">
                                     <div class="products-heading d-flex gap-32 align-items-center">
                                         <div class="heading">Products</div>
                                     </div>
-            
+
                                     <div class="stats d-flex gap-24">
                                         <div> <span class="gradient-text">12</span> sold </div>
                                         <div> <span class="gradient-text">3</span> on sale </div>
@@ -80,7 +82,7 @@
                         </div>
                     </div>
 
-                    
+
                 </div>
             </div>
         </section>
@@ -114,7 +116,8 @@ export default {
 
     data() {
         return {
-            user: null
+            user: null,
+            selectedAvatarFile: null
         }
     },
 
@@ -131,7 +134,7 @@ export default {
             try {
                 const resp = await this.userApi.getUserById(this.$route.params.id);
                 this.user = resp.data;
-                console.log("eh", this.user);
+                console.log("user", this.user);
             } catch (err) {
                 console.error(err);
                 // this.$router.push("/404");
@@ -141,10 +144,47 @@ export default {
         },
 
         showAvatarUpload() {
-            
-        }
+
+        },
+
+        triggerFileInput() {
+            this.$refs.avatarInput.click();
+        },
+
+        onFileChange(event) {
+            this.selectedAvatarFile = event.target.files[0];
+
+            if (this.selectedAvatarFile) {
+                this.uploadUserAvatar();
+            }
+        },
+
+        async uploadUserAvatar() {
+            console.log("upload?", this.selectedAvatarFile);
+            if (!this.selectedAvatarFile) return this.$toast.warning("PleaseSelectFile");
+
+            const formData = new FormData();
+            formData.append('image', this.selectedAvatarFile);
+            formData.append('prevFilename', this.user.avatarPath);
+            formData.append('userId', this.user._id);
+            console.log("dpč", this.selectedAvatarFile);
+
+            try {
+                const resp = await this.userApi.uploadAvatar(formData);
+                if (resp.data.file) {
+                    this.user.avatarPath = resp.data.file.filename;
+                    this.$toast.success("SavedAvatarSuccess");
+                } else {
+                    this.$toast.error("SavedAvatarFailed");
+                }
+
+
+            } catch (err) {
+                console.error(err);
+            }
+        },
     },
-    
+
     computed: {
         ...mapGetters(
             {
@@ -222,7 +262,7 @@ export default {
 .name h1 {
     font-weight: bold;
     font-size: 32px;
-    
+
 }
 
 .admin-badge {
@@ -281,5 +321,9 @@ export default {
     padding: 2px 24px;
     font-weight: 600;
     text-transform: capitalize;
+}
+
+.rating-values span {
+    font-weight: 600;
 }
 </style>
