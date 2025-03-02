@@ -255,4 +255,76 @@ width */
   color: var(--primary);
   font-size: 20px;
 }
+
+.sort-icon {
+    color: var(--primary);
+    font-size: 20px;
+}
+
+.selected-cont .selected {
+    font-size: 14px;
+    gap: 2px;
+    user-select: none;
+}
+
+.chevron-icon {
+    font-size: 18px;
+}
+
+.sort-filters {
+    cursor: pointer;
+}
+
+.filters-dropdown-content {
+    top: 32px;
+    right: 0;
+    cursor: initial;
+}
+.filters-dropdown-content .option {
+    cursor: pointer;
+}
+
+.result-views .view-icon-cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    color: var(--black);
+    background: var(--gradient-angle);
+    opacity: 0.33;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+.result-views .view-icon-cont:hover {
+    opacity: 0.5;
+}
+.result-views .view-icon-cont.active {
+    opacity: 1;
+}
+
+.view-divider {
+    position: absolute;
+    bottom: -24px;
+    left: 0;
+    width: 100%;
+}
+
+.view-divider .divider {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 1px;
+    background-color: var(--white-15a);
+}
+
+.view-divider .btn {
+    padding: 2px 24px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
 </style>

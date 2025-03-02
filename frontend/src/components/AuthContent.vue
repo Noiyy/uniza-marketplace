@@ -87,7 +87,8 @@ export default {
     methods: {
         ...mapActions(
             {
-                setUser: 'user/setUser'
+                setUser: 'user/setUser',
+                setCheckedForUser: "user/setChecked"
             }
         ),
         async doSign() {
@@ -133,6 +134,7 @@ export default {
                     console.log(loginResp);
                     if (loginResp.data.success) {
                         this.setUser(loginResp.data.user);
+                        this.setCheckedForUser(true);
     
                         this.$toast.success("LoginSuccess");
                         this.$router.push({name: "Home"});

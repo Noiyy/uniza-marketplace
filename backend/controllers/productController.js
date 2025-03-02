@@ -26,7 +26,7 @@ exports.getProduct = async (req, res) => {
 
 exports.getUserProducts = async (req, res) => {
     const { userId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + userId});
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
 
     const products = await Product.find({sellerId: userId}).sort({createdAt: -1});
     if (!products || !products.length) return res.status(404).json({error: 'No products found for user with id ' + userId});
@@ -114,7 +114,7 @@ async function initTestProducts() {
     const products = [
         {
             title: "Product a",
-            sellerId: "678f6b895072aacad19cdb6e",
+            sellerId: "679679676468b5e69af79120",
             description: "nejaka test desc",
             images: ["testProductImg.jpg", "testProductImg2.jpg"],
             category: {
@@ -126,7 +126,7 @@ async function initTestProducts() {
         },
         {
             title: "Product b",
-            sellerId: "678f6b895072aacad19cdb6e",
+            sellerId: "67c4433b1e8440e30e55fe36",
             description: "nejaka test desc dalsia haha",
             category: {
                 mainCategory: "678f6f38063a689604c7c63e"
@@ -150,7 +150,7 @@ async function initTestProducts() {
         },
         {
             title: "Product d",
-            sellerId: "678f6b895072aacad19cdb6e",
+            sellerId: "679679676468b5e69af79120",
             description: "nejaka test desc dalsia haha xd",
             category: {
                 mainCategory: "678f6f38063a689604c7c653"

@@ -38,25 +38,11 @@
 
                                     <div class="options d-flex gap-64 align-items-center">
                                         <div class="filters">
-                                            <div class="sort-filters pos-relative" :class="sortFiltersOpened ? 'open' : ''"
-                                                @click="toggleSortFilterDropdown"
-                                            >
-                                                <div class="selected-cont d-flex gap-8">
-                                                    <Icon icon="bx:sort" class="sort-icon" />
-                                                    <div class="selected d-flex align-items-center">
-                                                        {{ selectedSortFilter }}
-                                                        <Icon icon="mdi:chevron-down" class="chevron-icon" />
-                                                    </div>
-                                                </div>
-                                                <div class="filters-dropdown-content scrollbar">
-                                                    <div class="option d-flex gap-8" v-for="fltr in sortFilters" :key="fltr.name"
-                                                        :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
-                                                        @click="selectSortFilter(fltr)"> 
-                                                        <Icon :icon="fltr.icon" class="filter-sort-option-icon" v-if="fltr.icon"/>
-                                                        {{ fltr.name }}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <ItemsSorter
+                                                :option-callback="selectSortFilter"
+                                                :selected-sort-filter="selectedSortFilter"
+                                                :show-special-prices="true"
+                                            ></ItemsSorter>
                                         </div>
 
                                         <div class="result-views d-flex gap-8">
@@ -75,19 +61,10 @@
                                 <div class="line-divider"></div>
                             </div>
                             <div class="results-content">
-                                <div class="products-wrapper" :class="activeViewType == 'list' ? 'list' : 'grid'" v-if="sortedProducts.length">
-                                    <template v-for="(prod, index) in sortedProducts" :key="index">
-                                        <ProductItem v-if="prod"
-                                            :prod-data="prod"
-                                            :view-type="activeViewType"
-                                        ></ProductItem>
-                                    </template>
-                                </div>
-
-                                <div class="products-wrapper no-products text-center pos-relative" v-else>
-                                    <span> No products were found! :( </span>
-                                    <Icon icon="game-icons:capybara" class="no-products-icon" />
-                                </div>
+                                <ProductsList
+                                    :products="sortedProducts"
+                                    :active-view-type="activeViewType"
+                                ></ProductsList>
                             </div>
                         </div>
                     </div>
@@ -103,7 +80,8 @@
 <script>
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
-import ProductItem from './ProductItem.vue';
+import ItemsSorter from '../ItemsSorter.vue';
+import ProductsList from './ProductsList.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 import { Icon } from '@iconify/vue';
@@ -121,7 +99,8 @@ export default {
     components: {
         Header,
         Footer,
-        ProductItem,
+        ItemsSorter,
+        ProductsList,
         Icon
     },
 
@@ -196,8 +175,8 @@ export default {
 
             category.active = true;
 
-            this.filterProducts();
-            this.sortProducts();
+            this.filterProducts(this.products, this.filteredProducts, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
+            this.sortProducts(this.filteredProducts, this.sortedProducts, this.selectedSortFilter);
         },
 
         async getProducts() {
@@ -205,8 +184,8 @@ export default {
 
             this.products = resp.data;
             console.log("all products", resp.data);
-            this.filterProducts();
-            this.sortProducts();
+            this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
+            this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
         },
 
         toggleSortFilterDropdown(e) {
@@ -219,64 +198,8 @@ export default {
 
         selectSortFilter(fltr) {
             this.selectedSortFilter = fltr.name;
-            this.filterProducts();
-            this.sortProducts();
-        },
-
-        sortProducts() {
-            this.sortedProducts = JSON.parse(JSON.stringify(this.filteredProducts));
-
-            if (this.selectedSortFilter == "latest" || this.selectedSortFilter == "oldest") {
-                this.sortedProducts.sort((a, b) => {
-                    const aEpoch = new Date(a.createdAt).getTime();
-                    const bEpoch = new Date(b.createdAt).getTime();
-
-                    return this.selectedSortFilter == "latest" ? 
-                        bEpoch - aEpoch : 
-                        aEpoch - bEpoch;
-                });
-
-            } else if (this.selectedSortFilter == "minPrice" || this.selectedSortFilter == "maxPrice") {
-                this.sortedProducts.sort((a, b) => {
-                    const aPrice = a.price.specialValue ? a.price.specialValue : a.price.value.$numberDecimal;
-                    const bPrice = b.price.specialValue ? b.price.specialValue : b.price.value.$numberDecimal;
-
-                    if (isNaN(aPrice) && isNaN(bPrice)) {
-                        return aPrice.toString().localeCompare(bPrice.toString());
-                    } else if (isNaN(aPrice)) {
-                        return 1;
-                    } else if (isNaN(bPrice)) {
-                        return -1;
-                    } else {
-                        return this.selectedSortFilter == "minPrice" ?
-                            aPrice - bPrice :
-                            bPrice - aPrice;
-                    }
-                });
-            } else if (this.selectedSortFilter == "agreement") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "agreement");
-            else if (this.selectedSortFilter == "offer") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "offer");
-            else if (this.selectedSortFilter == "inText") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "inText");
-            else if (this.selectedSortFilter == "free") this.sortedProducts = this.sortedProducts.filter(prod => prod.price.specialValue == "free");
-        },
-
-        filterProducts() {
-            this.filteredProducts = JSON.parse(JSON.stringify(this.products));
-
-            if (this.selectedSearchCategory) {
-                if (!this.selectedSearchCategory._id) this.filteredProducts = JSON.parse(JSON.stringify(this.products));
-                else {
-                    this.filteredProducts = this.filteredProducts.filter(prod => {
-                        return this.selectedSearchCategory._id == prod.category.mainCategory || this.selectedSearchCategory._id == prod.category.subCategory;
-                    });
-                }
-            }
-            if (this.selectedPriceRange[0]) 
-                this.filteredProducts = this.filteredProducts.filter(prod => prod.price.value && +prod.price.value.$numberDecimal && +prod.price.value.$numberDecimal >= this.selectedPriceRange[0]);
-            if (this.selectedPriceRange[1] && this.selectedPriceRange[1] != 9999)
-                this.filteredProducts = this.filteredProducts.filter(prod => prod.price.value && +prod.price.value.$numberDecimal && +prod.price.value.$numberDecimal <= this.selectedPriceRange[1]);
-            // if (this.selectedLocation) this.filteredProducts = this.filteredProducts.filter(prod => prod)
-            if (this.searchQuery) 
-                this.filteredProducts = this.filterByValue(this.filteredProducts, this.searchQuery.toLowerCase());
+            this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
+            this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
         },
 
         getSearchOptions() {
@@ -338,8 +261,8 @@ export default {
             this.emitter.emit("show-loader");
 
             this.getSearchOptions();
-            this.filterProducts();
-            this.sortProducts();
+            this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
+            this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
             
             this.emitter.emit("hide-loader");
         });
@@ -434,85 +357,5 @@ export default {
 
 .results-header .info {
     gap: 4px;
-}
-
-.result-views .view-icon-cont {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 20px;
-    color: var(--black);
-    background: var(--gradient-angle);
-    opacity: 0.33;
-    cursor: pointer;
-    transition: all 0.2s ease-out;
-}
-.result-views .view-icon-cont:hover {
-    opacity: 0.5;
-}
-.result-views .view-icon-cont.active {
-    opacity: 1;
-}
-
-.filters .sort-icon {
-    color: var(--primary);
-    font-size: 20px;
-}
-
-.filters .selected-cont .selected {
-    font-size: 14px;
-    gap: 2px;
-    user-select: none;
-}
-
-.filters .chevron-icon {
-    font-size: 18px;
-}
-
-.sort-filters {
-    cursor: pointer;
-}
-
-.filters-dropdown-content {
-    top: 32px;
-    right: 0;
-    cursor: initial;
-}
-.filters-dropdown-content .option {
-    cursor: pointer;
-}
-
-.products-wrapper.list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.products-wrapper.grid {
-    display: grid;
-    row-gap: 24px;
-    column-gap: 16px;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-
-.no-products span {
-    font-weight: 200;
-    font-size: 18px;
-}
-
-.no-products-icon {
-    position: absolute;
-    top: 24px;
-    left: 50%;
-    transform: translate(-50%);
-    font-size: 56px;
-    opacity: 0.33;
-    transition: transform 0.5s ease-in-out;
-}
-.no-products-icon:hover {
-    transform: rotate(180deg);
 }
 </style>

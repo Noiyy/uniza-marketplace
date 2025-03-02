@@ -29,15 +29,5 @@ export const globalMixin = {
                 };
             });
         },
-
-        filterByValue (array, value) {
-            const regex = new RegExp(value.replace(/([!@#$%^&*()+=\[\]\\',./{}":<>?~_-])/g, "\\$1"));
-            return array.filter(obj =>
-                Object.values(obj).some(val =>
-                    (typeof val === 'string' || typeof val === 'number') &&
-                    (regex.test(val.toString().toLowerCase()))
-                )
-            );
-        },
     }
 };

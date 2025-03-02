@@ -15,8 +15,9 @@ import Toast, { useToast } from 'vue-toastification';
 
 import { createI18n } from 'vue-i18n';
 import { i18nOptions } from './localization';
-import { globalMixin } from './mixins/globalMixin'; 
 import { createHead, VueHeadMixin } from '@unhead/vue';
+import { globalMixin } from './mixins/globalMixin';
+import { listMixin } from './mixins/listMixin';
 
 import UserService from './services/userService';
 import FeedbackService from './services/feedbackService';
@@ -54,6 +55,7 @@ app.use(Toast, toastOptions);
 app.use(head);
 
 app.mixin(globalMixin);
+app.mixin(listMixin);
 app.mixin(VueHeadMixin);
 
 app.provide("axios", axiosInstance);

@@ -3,7 +3,8 @@ export default {
 
     state() {
         return {
-            user: null
+            user: null,
+            checked: false
         }
     },
 
@@ -11,18 +12,29 @@ export default {
         getUser(state) {
             return state.user;
         },
+
+        getChecked(state) {
+            return state.checked;
+        }
     },
 
     actions: {
         setUser ({commit}, user) {
             commit("setUser", user);
         },
+
+        setChecked({commit}, flag) {
+            commit("setChecked", flag);
+        }
     },
 
     mutations: {
         setUser(state, data) {
-            console.log("saving user to:", data);
             state.user = data;
         },
+
+        setChecked(state, data) {
+            state.checked = data;
+        }
     }
 }

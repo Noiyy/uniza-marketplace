@@ -56,8 +56,8 @@
                                         <span class="gradient-text">27</span> ratings
                                     </div>
 
-                                    <div class="user-other-divider d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary"> View </button>
+                                    <div class="view-divider d-flex justify-content-center align-items-center">
+                                        <button class="btn secondary" @click="viewRatings()"> View </button>
                                         <div class="divider"></div>
                                     </div>
                                 </div>
@@ -73,8 +73,8 @@
                                         <div> <span class="gradient-text">7</span> bought </div>
                                     </div>
 
-                                    <div class="user-other-divider d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary"> View </button>
+                                    <div class="view-divider d-flex justify-content-center align-items-center">
+                                        <button class="btn secondary" @click="viewProducts()"> View </button>
                                         <div class="divider"></div>
                                     </div>
                                 </div>
@@ -82,6 +82,9 @@
                         </div>
                     </div>
 
+                    <UserItems v-if="userProducts && userProducts.length"
+                        :products="userProducts"
+                    ></UserItems>
 
                 </div>
             </div>
@@ -94,6 +97,7 @@
 <script>
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
+import UserItems from './UserItems.vue';
 import { Icon } from '@iconify/vue';
 
 import { mapGetters, mapActions } from 'vuex';
@@ -101,7 +105,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'UserProfileContent',
 
-    inject: ['emitter', 'userApi'],
+    inject: ['emitter', 'userApi', 'productApi'],
     emits: [],
 
     props: {
@@ -111,12 +115,14 @@ export default {
     components: {
         Header,
         Footer,
+        UserItems,
         Icon
     },
 
     data() {
         return {
             user: null,
+            userProducts: [],
             selectedAvatarFile: null
         }
     },
@@ -129,8 +135,6 @@ export default {
         ),
 
         async getUser() {
-            this.emitter.emit("show-loader");
-
             try {
                 const resp = await this.userApi.getUserById(this.$route.params.id);
                 this.user = resp.data;
@@ -139,12 +143,17 @@ export default {
                 console.error(err);
                 // this.$router.push("/404");
             }
-
-            this.emitter.emit("hide-loader");
         },
 
-        showAvatarUpload() {
+        async getUserProducts() {
+            try {
+                const resp = await this.productApi.getUserProducts(this.$route.params.id)
+                this.userProducts = resp.data;
+                console.log("user products", this.userProducts);
 
+            } catch (err) {
+                console.error(err);
+            }
         },
 
         triggerFileInput() {
@@ -160,14 +169,12 @@ export default {
         },
 
         async uploadUserAvatar() {
-            console.log("upload?", this.selectedAvatarFile);
             if (!this.selectedAvatarFile) return this.$toast.warning("PleaseSelectFile");
 
             const formData = new FormData();
             formData.append('image', this.selectedAvatarFile);
             formData.append('prevFilename', this.user.avatarPath);
             formData.append('userId', this.user._id);
-            console.log("dpč", this.selectedAvatarFile);
 
             try {
                 const resp = await this.userApi.uploadAvatar(formData);
@@ -183,6 +190,15 @@ export default {
                 console.error(err);
             }
         },
+
+        viewProducts() {
+            const el = document.querySelector(".user-products");
+            el.scrollIntoView();
+        },
+
+        viewRatings() {
+
+        }
     },
 
     computed: {
@@ -193,8 +209,12 @@ export default {
         ),
     },
 
-    created() {
-        this.getUser();
+    async created() {
+        this.emitter.emit("show-loader");
+        await this.getUser();
+        await this.getUserProducts();
+
+        this.emitter.emit("hide-loader");
     },
 
     mounted() {
@@ -298,29 +318,6 @@ export default {
 
 .stars {
     gap: 4px;
-}
-
-.user-other-divider {
-    position: absolute;
-    bottom: -24px;
-    left: 0;
-    width: 100%;
-}
-
-.user-other-divider .divider {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 100%;
-    height: 1px;
-    background-color: var(--white-15a);
-}
-
-.user-other-divider .btn {
-    padding: 2px 24px;
-    font-weight: 600;
-    text-transform: capitalize;
 }
 
 .rating-values span {

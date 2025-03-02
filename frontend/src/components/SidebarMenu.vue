@@ -105,7 +105,8 @@ export default {
     methods: {
         ...mapActions(
             {
-                setUser: "user/setUser"
+                setUser: "user/setUser",
+                setCheckedForUser: "user/setChecked"
             }
         ),
 
@@ -115,6 +116,7 @@ export default {
 
             if (resp.data.success) {
                 this.setUser(null);
+                this.setCheckedForUser(false);
                 this.user = null;
 
                 this.emitter.emit('close-sidebarMenu')

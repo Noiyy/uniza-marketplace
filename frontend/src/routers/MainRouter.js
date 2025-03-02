@@ -118,17 +118,21 @@ export default function (emitter, isDev, axiosInstance) {
 
         let user = store.getters["user/getUser"];
         let isAdmin = user && user.isAdmin;
+        let checkedForUser = store.getters["user/getChecked"];
 
         // Check if user is logged in
-        if (!user) {
+        if (!user && !checkedForUser) {
             try {
+                store.dispatch("user/setChecked", true);
                 const resp = await axiosInstance.get("api/user/getLoggedUser", { withCredentials: true });
                 const userData = resp.data.user;
 
                 await store.dispatch("user/setUser", userData);
                 user = store.getters["user/getUser"];
                 isAdmin = user && user.isAdmin;
-            } catch (err) {}
+            } catch (err) {
+                console.warn(err)
+            }
         }
 
         // Auth check
