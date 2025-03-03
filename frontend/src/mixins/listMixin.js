@@ -48,7 +48,7 @@ export const listMixin = {
             return sortedProducts;
         },
 
-        filterProducts(products, searchQuery, selectedSearchCategory, selectedPriceRange, selectedLocation) {
+        filterProducts(products, searchQuery, selectedSearchCategory, selectedPriceRange, selectedLocation, type) {
             let filteredProducts = JSON.parse(JSON.stringify(products));
 
             if (selectedSearchCategory) {
@@ -69,5 +69,33 @@ export const listMixin = {
 
             return filteredProducts;
         },
+
+        sortRatings(filteredRatings, selectedSortFilter) {
+            let sortedRatings = JSON.parse(JSON.stringify(filteredRatings));
+
+            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
+                sortedRatings.sort((a, b) => {
+                    const aEpoch = new Date(a.createdAt).getTime();
+                    const bEpoch = new Date(b.createdAt).getTime();
+
+                    return selectedSortFilter == "latest" ? 
+                        bEpoch - aEpoch : 
+                        aEpoch - bEpoch;
+                });
+            }
+
+            return sortedRatings;
+        },
+
+        filterRatings(ratings, searchQuery, type) {
+            let filteredRatings = JSON.parse(JSON.stringify(ratings));
+
+            if (type)
+                filteredRatings = filteredRatings = filteredRatings.filter(rt => rt.type__ == type);
+            if (searchQuery) 
+                filteredRatings = this.filterByValue(filteredRatings, searchQuery.toLowerCase());
+
+            return filteredRatings;
+        }
     }
 };

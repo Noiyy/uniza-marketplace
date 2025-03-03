@@ -2,23 +2,24 @@
     <div class="item-content-list d-flex flex-column">
         <div class="list-heading d-flex flex-column gap-8">
             <div class="list-heading-content d-flex gap-16 justify-content-between">
-                <h1 class="title"> PRODUCTS </h1>
-                <div class="list-options d-flex gap-64 align-items-center">
+                <h1 class="title"> {{ listTitle.toUpperCase() }} </h1>
+                <div class="list-options d-flex gap-64 align-items-center" :class="listOptionsClass">
                     <slot name="heading-right">
                         <ItemsSorter
                             :option-callback="sorterOptionCallback"
                             :selected-sort-filter="selectedSortFilter"
-                            :show-special-prices="true"
+                            :show-special-prices="showSorterSpecialPrices"
+                            :custom-filters="sorterCustomFilters"
                         ></ItemsSorter>
         
                         <slot name="heading-right-other">
-                            <div class="result-views d-flex gap-8">
-                                <div class="view-icon-cont" :class="activeViewType == 'grid' ? 'active' : ''"
-                                    @click="activeViewType = 'grid'">
+                            <div class="result-views d-flex gap-8" v-if="localActiveViewType">
+                                <div class="view-icon-cont" :class="localActiveViewType == 'grid' ? 'active' : ''"
+                                    @click="localActiveViewType = 'grid'">
                                     <Icon icon="mingcute:grid-fill" class="view-icon" />
                                 </div>
-                                <div class="view-icon-cont" :class="activeViewType == 'list' ? 'active' : ''"
-                                    @click="activeViewType = 'list'">
+                                <div class="view-icon-cont" :class="localActiveViewType == 'list' ? 'active' : ''"
+                                    @click="localActiveViewType = 'list'">
                                     <Icon icon="ph:rows-fill" class="view-icon" />
                                 </div>
                             </div>
@@ -41,7 +42,7 @@
 
                 <slot name="under-header-right">
                     <div class="list-searchbar pos-relative">
-                        <input type="text" class="search-input" name="searchQuery" :value="searchQuery" @input="$emit('search-changed')">
+                        <input type="text" class="search-input" name="searchQuery" v-model="localSearchQuery">
                         <Icon icon="material-symbols:search" class="search-icon" />
                     </div>
                 </slot>
@@ -57,15 +58,18 @@
 import ItemsSorter from './ItemsSorter.vue';
 import { Icon } from '@iconify/vue';
 
-import { mapGetters, mapActions } from 'vuex';
-
 export default {
     name: 'ItemContentList',
 
     inject: ['axios', 'emitter'],
-    emits: ['search-changed'],
+    emits: ['update:searchQuery', 'update:activeViewType'],
 
     props: {
+        listTitle: {
+            type: String,
+            default: "List"
+        },
+
         itemFilters: {
             type: Array,
             default: []
@@ -78,7 +82,7 @@ export default {
 
         activeViewType: {
             type: String,
-            default: "list"
+            default: null
         },
 
         selectedSortFilter: {
@@ -97,6 +101,21 @@ export default {
             default: null,
             required: true
         },
+
+        showSorterSpecialPrices: {
+            type: Boolean,
+            default: false
+        },
+
+        sorterCustomFilters: {
+            type: Array,
+            default: null
+        },
+
+        listOptionsClass: {
+            type: String,
+            default: null
+        }
     },
 
     components: {
@@ -111,19 +130,23 @@ export default {
     },
 
     methods: {
-        ...mapActions(
-            {
 
-            }
-        ),
     },
     
     computed: {
-        ...mapGetters(
-            {
-
+        localSearchQuery: {
+            get() { return this.searchQuery; },
+            set(newValue) {
+                this.$emit('update:searchQuery', newValue);
             }
-        ),
+        },
+
+        localActiveViewType: {
+            get() { return this.activeViewType; },
+            set(newValue) {
+                this.$emit('update:activeViewType', newValue);
+            }
+        }
     },
 
     created() {

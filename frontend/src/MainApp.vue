@@ -327,4 +327,25 @@ width */
     font-weight: 600;
     text-transform: capitalize;
 }
+
+.no-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.no-items span {
+    font-weight: 200;
+    font-size: 18px;
+}
+
+.no-items-icon {
+    font-size: 56px;
+    opacity: 0.33;
+    transition: transform 0.6s ease-in-out;
+}
+.no-items-icon:hover {
+    transform: rotate(360deg);
+}
 </style>

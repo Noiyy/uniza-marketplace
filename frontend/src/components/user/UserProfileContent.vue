@@ -53,7 +53,8 @@
                                     </div>
 
                                     <div class="stats">
-                                        <span class="gradient-text">27</span> ratings
+                                        <span class="gradient-text"> {{ userRatings.filter(rt => rt.type__ == "self").length }} </span>
+                                        {{ userRatings.filter(rt => rt.type__ == "self").length > 1 ? 'ratings' : 'rating' }}
                                     </div>
 
                                     <div class="view-divider d-flex justify-content-center align-items-center">
@@ -82,8 +83,9 @@
                         </div>
                     </div>
 
-                    <UserItems v-if="userProducts && userProducts.length"
+                    <UserItems v-if="loadedProducts && loadedRatings"
                         :products="userProducts"
+                        :ratings="userRatings"
                     ></UserItems>
 
                 </div>
@@ -105,7 +107,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'UserProfileContent',
 
-    inject: ['emitter', 'userApi', 'productApi'],
+    inject: ['emitter', 'userApi', 'productApi', 'feedbackApi'],
     emits: [],
 
     props: {
@@ -123,6 +125,10 @@ export default {
         return {
             user: null,
             userProducts: [],
+            userRatings: [],
+            loadedProducts: false,
+            loadedRatings: false,
+
             selectedAvatarFile: null
         }
     },
@@ -147,9 +153,23 @@ export default {
 
         async getUserProducts() {
             try {
-                const resp = await this.productApi.getUserProducts(this.$route.params.id)
+                const resp = await this.productApi.getUserProducts(this.$route.params.id);
                 this.userProducts = resp.data;
+                this.loadedProducts = true;
                 console.log("user products", this.userProducts);
+
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async getUserRatings() {
+            try {
+                const resp = await this.feedbackApi.getUserRatings(this.$route.params.id);
+                const ratings = [...resp.data.self.map(rt => ({...rt, type__: "self"})), ...resp.data.others.map(rt => ({...rt, type__: "others"}))];
+                this.userRatings = ratings;
+                this.loadedRatings = true;
+                console.log("user ratings", this.userRatings);
 
             } catch (err) {
                 console.error(err);
@@ -213,6 +233,7 @@ export default {
         this.emitter.emit("show-loader");
         await this.getUser();
         await this.getUserProducts();
+        await this.getUserRatings();
 
         this.emitter.emit("hide-loader");
     },

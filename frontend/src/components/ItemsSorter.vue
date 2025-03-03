@@ -44,6 +44,11 @@ export default {
         showSpecialPrices: {
             type: Boolean,
             default: false
+        },
+
+        customFilters: {
+            type: Array,
+            default: null
         }
     },
 
@@ -74,14 +79,18 @@ export default {
     },
 
     created() {
-        if (this.showSpecialPrices) {
-            this.sortFilters.push(...[
-                { name: "agreement", icon: "icomoon-free:price-tags" },
-                { name: "offer", icon: "icomoon-free:price-tags" },
-                { name: "inText", icon: "icomoon-free:price-tags" },
-                { name: "free", icon: "icomoon-free:price-tags" }
-            ]);
+        if (this.customFilters) this.sortFilters = this.customFilters;
+        else {
+            if (this.showSpecialPrices) {
+                this.sortFilters.push(...[
+                    { name: "agreement", icon: "icomoon-free:price-tags" },
+                    { name: "offer", icon: "icomoon-free:price-tags" },
+                    { name: "inText", icon: "icomoon-free:price-tags" },
+                    { name: "free", icon: "icomoon-free:price-tags" }
+                ]);
+            }
         }
+
     }
 }
 </script>

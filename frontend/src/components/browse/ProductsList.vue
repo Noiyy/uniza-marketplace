@@ -1,5 +1,5 @@
 <template>
-    <div class="products-wrapper" :class="activeViewType == 'list' ? 'list' : 'grid'" v-if="products.length">
+    <div class="products-wrapper" :class="wrapperClasses" v-if="products.length">
         <template v-for="(prod, index) in products" :key="index">
             <ProductItem v-if="prod"
                 :prod-data="prod"
@@ -8,9 +8,9 @@
         </template>
     </div>
 
-    <div class="products-wrapper no-products text-center pos-relative" v-else>
+    <div class="products-wrapper no-items text-center pos-relative" v-else>
         <span> No products were found! :( </span>
-        <Icon icon="game-icons:capybara" class="no-products-icon" />
+        <Icon icon="game-icons:capybara" class="no-items-icon" />
     </div>
 </template>
 
@@ -33,6 +33,11 @@ export default {
         activeViewType: {
             type: String,
             default: "list"
+        },
+
+        wrapperClass: {
+            type: String,
+            default: null
         }
     },
 
@@ -46,6 +51,16 @@ export default {
 
         }
     },
+
+    computed: {
+        wrapperClasses() {
+            let classes = "";
+            classes += this.activeViewType && this.activeViewType == 'list' ? 'list ' : 'grid ';
+            classes += this.wrapperClass ? `${this.wrapperClass} ` : '';
+
+            return classes;
+        }
+    }
 }
 </script>
 
@@ -63,24 +78,7 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
-.no-products {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.no-products span {
-    font-weight: 200;
-    font-size: 18px;
-}
-
-.no-products-icon {
-    font-size: 56px;
-    opacity: 0.33;
-    transition: transform 0.6s ease-in-out;
-}
-.no-products-icon:hover {
-    transform: rotate(360deg);
+.products-wrapper.grid.smaller {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 178px));
 }
 </style>

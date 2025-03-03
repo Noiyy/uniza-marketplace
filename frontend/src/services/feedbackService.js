@@ -26,6 +26,9 @@ class FeedbackService extends DefaultService {
     async getRating(ratingId) {
         return await this.apiClient.get(`/ratings/${ratingId}`);
     }
+    async getUserRatings(userId) {
+        return await this.apiClient.get(`/ratings/user/${userId}`);
+    }
     async addRating(ratingData) {
         return await this.apiClient.post('/ratings/add', ratingData);
     }

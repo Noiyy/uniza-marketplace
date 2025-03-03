@@ -11,6 +11,7 @@
 :root { 
     --white: #F0EDEA;
     --white-2a: rgba(240, 237, 234, 0.02);
+    --white-3a: rgba(240, 237, 234, 0.03);
     --white-5a: rgba(240, 237, 234, 0.05);
     --white-7a: rgba(240, 237, 234, 0.07);
     --white-15a: rgba(240, 237, 234, 0.15);
@@ -172,7 +173,7 @@ a.btn.secondary:hover {
 }
 
 .btn.secondary:hover {
-    background-color: rgba(26, 21, 18, 0.9);
+    background-color: rgba(26, 21, 18, 0.9) !important;
 }
 
 input.styled {
