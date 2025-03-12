@@ -10,9 +10,21 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
 const cors = require('cors');
+const history = require('connect-history-api-fallback');
+
+const historyFallbackOptions = {
+    rewrites: [
+        // Exclude API endpoints from the fallback
+        { from: /^\/api\//, to: context => context.parsedUrl.pathname },
+        // Fallback to index.html for all other routes
+        { from: /./, to: '/index.html' }
+    ]
+  };
 
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
 const app = express();
+
+const distPath = path.resolve(__dirname, "../frontend/dist");
 
 // middleware
 app.use(cookieParser());
@@ -33,7 +45,7 @@ if (isDev) {
             // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
             if (allowedOrigins.indexOf(origin) === -1) {
-                const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+                const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
                 return callback(new Error(msg), false);
             }
             return callback(null, true);
@@ -42,12 +54,6 @@ if (isDev) {
     };
     app.use(cors(corsOptions));
 }
-
-app.use((req, res, next) => {
-  console.log("@@@ API CALL - ", req.path, req.method);
-  console.log("");
-  next();
-})
 
 // routes
 const authRoutes = require('./routes/authApi');
@@ -61,6 +67,20 @@ app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/misc/", miscRoutes);
+
+app.use(express.static(path.join(distPath)));
+app.use(history(historyFallbackOptions));
+
+// Handle all other routes and serve the index.html file
+app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+});
+
+app.use((req, res, next) => {
+  console.log("@@@ API CALL - ", req.path, req.method);
+  console.log("");
+  next();
+})
  
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)

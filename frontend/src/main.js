@@ -28,7 +28,7 @@ const head = createHead();
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
 
 const axiosInstance = axios.create({
-    baseURL: isDev ? "http://localhost:4000/" : "https://uniza-marketplace.sk/",
+    baseURL: isDev ? "http://localhost:4000/" : "https://unizamarketplace.noiyy.eu/",
     headers: {
         'Content-Type': 'application/json',
     },

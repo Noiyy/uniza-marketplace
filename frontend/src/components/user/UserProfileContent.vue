@@ -110,6 +110,12 @@ export default {
     inject: ['emitter', 'userApi', 'productApi', 'feedbackApi'],
     emits: [],
 
+    head() {
+        return {
+            title: this.pageTitle
+        }
+    },
+
     props: {
 
     },
@@ -129,7 +135,9 @@ export default {
             loadedProducts: false,
             loadedRatings: false,
 
-            selectedAvatarFile: null
+            selectedAvatarFile: null,
+
+            pageTitle: null
         }
     },
 
@@ -144,6 +152,7 @@ export default {
             try {
                 const resp = await this.userApi.getUserById(this.$route.params.id);
                 this.user = resp.data;
+                this.pageTitle = `${this.user.username} - UNIZA Marketplace`;
                 console.log("user", this.user);
             } catch (err) {
                 console.error(err);
@@ -217,7 +226,8 @@ export default {
         },
 
         viewRatings() {
-
+            const el = document.querySelector(".user-ratings");
+            el.scrollIntoView();
         }
     },
 

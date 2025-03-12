@@ -348,4 +348,10 @@ width */
 .no-items-icon:hover {
     transform: rotate(360deg);
 }
+
+.breadcrumbs {
+  opacity: 0.5;
+  font-size: 14px;
+  line-height: 100%;
+}
 </style>

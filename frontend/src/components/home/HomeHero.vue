@@ -8,14 +8,16 @@
                 <div class="hero-content d-flex flex-1 flex-column justify-content-center align-items-center text-center">
                     
                     <div class="hero-grid">
-                        <div class="item animate gradient-straight d-flex flex-column align-items-center justify-content-center gap-8">
+                        <router-link :to="`/browse?ctg=${'clothing'}`"
+                            class="item animate gradient-straight d-flex flex-column align-items-center justify-content-center gap-8">
                             <div>
                                 <h1> Clothing </h1>
                                 <p> footwear, accessories ... </p>
                             </div>
                             <Icon icon="lsicon:clothes-filled" class="icon" />
-                        </div>
-                        <div class="item animate pattern d-flex flex-column align-items-center justify-content-center gap-8">
+                        </router-link>
+                        <router-link :to="`/browse?ctg=${'tickets'}`"
+                            class="item animate pattern d-flex flex-column align-items-center justify-content-center gap-8">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass">
                                 <div>
@@ -24,36 +26,40 @@
                                 </div>
                                 <Icon icon="mdi:ticket" class="icon" />
                             </div>
-                        </div>
-                        <div class="item animate secondary d-flex align-items-center justify-content-around gap-8">
+                        </router-link>
+                        <router-link :to="`/browse?ctg=${'services'}`"
+                            class="item animate secondary d-flex align-items-center justify-content-around gap-8">
                             <div>
                                 <h1> Services </h1>
                                 <p> tutoring, accomodation ... </p>
                             </div>
                             <Icon icon="ri:service-fill" class="icon" />
-                        </div>
+                        </router-link>
 
-                        <div class="item animate gradient-angle d-flex align-items-center">
+                        <router-link :to="`/browse?ctg=${'music'}`"
+                            class="item animate gradient-angle d-flex align-items-center">
                             <div class="info">
                                 <h1> Music </h1>
                                 <p> drums, keyboard ... </p>
                             </div>
                             <Icon icon="tdesign:music-filled" class="icon" />
-                        </div>
+                        </router-link>
                         <div class="item mid d-flex flex-column justify-content-center align-items-center">
                             <h1> 621817 </h1>
                             <p> Products sold </p>
                             <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo">
                         </div>
-                        <div class="item animate secondary d-flex align-items-center justify-content-between gap-16">
+                        <router-link :to="`/browse?ctg=${'electronics'}`"
+                            class="item animate secondary d-flex align-items-center justify-content-between gap-16">
                             <div class="text-left">
                                 <h1> Electronics </h1>
                                 <p> microwaves, refrigerators ... </p>
                             </div>
                             <Icon icon="material-symbols:microwave" class="icon" />
-                        </div>
+                        </router-link>
 
-                        <div class="item animate pattern d-flex">
+                        <router-link :to="`/browse?ctg=${'books'}`"
+                            class="item animate pattern d-flex">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass d-flex flex-row-reverse justify-content-around flex-1">
                                 <div class="text-left">
@@ -62,26 +68,28 @@
                                 </div>
                                 <Icon icon="ic:baseline-book" class="icon" />
                             </div>
-                        </div>
-                        <div class="item animate primary d-flex flex-column-reverse align-items-center justify-content-center">
+                        </router-link>
+                        <router-link :to="`/browse?ctg=${'furniture'}`"
+                            class="item animate primary d-flex flex-column-reverse align-items-center justify-content-center">
                             <div>
                                 <h1> Furniture </h1>
                                 <p> chairs, tables, drawers ... </p>
                             </div>
                             <Icon icon="material-symbols:chair" class="icon" />
-                        </div>
-                        <div class="item animate pattern d-flex align-items-center">
+                        </router-link>
+                        <router-link :to="`/browse?ctg=${'pcPhone'}`"
+                            class="item animate pattern d-flex align-items-center">
                             <div class="glass" :style="patternBgStyle"></div>
                             <div class="above-glass d-flex flex-column flex-1">
                                 <div class="text-left">
-                                    <h1> PC & Phone  </h1>
+                                    <h1> PC & Phone </h1>
                                     <p> laptops, mouses ... </p>
                                 </div>
                                 <div class="icon-cont d-flex justify-content-end">
                                     <Icon icon="icon-park-solid:laptop" class="icon" />
                                 </div>
                             </div>
-                        </div>
+                        </router-link>
                     </div>
 
                 </div>

@@ -1,8 +1,21 @@
 export const globalMixin = {
     methods: {
         getAssetUrl(path) {
-            const fullPath = `../assets/${path}`;
-            return new URL(fullPath, import.meta.url).href;
+            if (import.meta.env.MODE === 'production') {
+                const texturePaths = import.meta.glob([
+                    '../assets/img/*.{png,jpg,svg}',
+                    '../assets/img/userAvatars/*.{png,jpg,svg}',
+                    '../assets/img/products/*.{png,jpg,svg}'
+                ], {
+                    eager: true,
+                    import: 'default'
+                });
+                return texturePaths[`../assets/${path}`];
+                
+            } else {
+                const fullPath = `../assets/${path}`;
+                return new URL(fullPath, import.meta.url).href;
+            }
         },
 
         transformCategories(categories, selectedSearchCategory) {

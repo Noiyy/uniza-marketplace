@@ -148,8 +148,10 @@ export default {
             this.selectedMainCtg = null;
 
             if (!isMain) {
-                event.stopPropagation();
-                event.preventDefault();
+                if (event) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
                 this.selectedSubCtg = category.name;
             } else this.selectedMainCtg = category.name;
 
@@ -174,9 +176,21 @@ export default {
             }
 
             category.active = true;
+            if (this.selectedSubCtg) {
+                this.categories.forEach((ctg, indx) => {
+                    let c = ctg.subCategories.find(sCtg => sCtg.name == category.name);
+                    let subIndx = ctg.subCategories.findIndex(sCtg => sCtg.name == category.name);
+                    if (c) {
+                        this.categories[indx].subCategories[subIndx] = {
+                            ...this.categories[indx].subCategories[subIndx],
+                            active: true
+                        }
+                    }
+                });
+            }
 
-            this.filterProducts(this.products, this.filteredProducts, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
-            this.sortProducts(this.filteredProducts, this.sortedProducts, this.selectedSortFilter);
+            this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
+            this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
         },
 
         async getProducts() {
@@ -215,6 +229,17 @@ export default {
             }
 
             this.categories = this.transformCategories(this.getAllCategories, this.selectedSearchCategory);
+        },
+
+        findCategory(name) {
+            let activeCtg = this.categories.find(ctg => ctg.name == name);
+            if (!activeCtg) {
+                this.categories.forEach(ctg => {
+                    const c = ctg.subCategories.find(sCtg => sCtg.name == name);
+                    if (c) activeCtg = c;
+                });
+            }
+            return activeCtg;
         }
     },
     
@@ -230,6 +255,10 @@ export default {
             if (this.searchQuery) return `"${this.searchQuery}"`;
             else if (this.selectedSearchCategory) return this.selectedSearchCategory.name.toUpperCase();
             else return this.$t("AllProducts").toUpperCase();
+        },
+
+        queryCtg() {
+            return this.$route.query.ctg;
         }
     },
 
@@ -237,7 +266,11 @@ export default {
         this.getSearchOptions();
         console.log("ctg?", this.getAllCategories);
 
-        this.categories = this.transformCategories(this.getAllCategories, this.selectedSearchCategory);
+        if (this.queryCtg) {
+            let activeCtg = this.findCategory(this.queryCtg);
+            console.log("ale jak toto može spraviť dpč", this.queryCtg);
+            this.chooseCategory(null, activeCtg, activeCtg.parentName ? false : true);
+        }
     },
 
     async mounted() {
@@ -333,11 +366,6 @@ export default {
     position: absolute;
     left: -16px;
     top: 0;
-}
-
-.results-header .breadcrumbs {
-    opacity: 0.5;
-    font-size: 14px;
 }
 
 .results-header .heading h2 {
