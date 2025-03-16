@@ -255,6 +255,9 @@ width */
   color: var(--primary);
   font-size: 20px;
 }
+.star-icon.empty {
+  color: rgba(255, 255, 255, 0.5);
+}
 
 .sort-icon {
     color: var(--primary);

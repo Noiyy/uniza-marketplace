@@ -42,5 +42,16 @@ export const globalMixin = {
                 };
             });
         },
+
+        getUserRatingAvg(ratings) {
+            if (!Array.isArray(ratings) || ratings.length === 0) {
+                return 0;
+            }
+
+            const sum = ratings.reduce((acc, rtng) => acc + rtng.ratingValue.$numberDecimal, 0);
+            const average = sum / ratings.length;
+
+            return Math.round(average * 2) / 2;
+        }
     }
 };

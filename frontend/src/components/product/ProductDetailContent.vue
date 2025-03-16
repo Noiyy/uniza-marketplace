@@ -6,6 +6,10 @@
             <div class="container">
                 <div class="content">
 
+                    <div class="printable logo-for-print">
+                        <img :src="getAssetUrl('img/logo-w_light.svg')" aria-hidden="true" class="img-fluid"> 
+                    </div>
+
                     <div class="product-wrapper" v-if="product">
                         <div class="product-heading d-flex flex-column gap-8">
                             <div class="heading-main d-flex justify-content-between gap-32">
@@ -51,8 +55,8 @@
                                     <img v-if="product.images && product.images.length" :src="getMainImg()" class="img-fluid" />
                                     <span> {{ shownMainImgIndex+1 }}/{{ product.images.length }} </span>
 
-                                    <Icon icon="gridicons:fullscreen" class="main-img-icon fullscreen" />
-                                    <Icon icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" />
+                                    <Icon icon="gridicons:fullscreen" class="main-img-icon fullscreen" @click="imgLightboxVisible = true" />
+                                    <Icon icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" @click="bookmarkProduct()" />
 
                                     <Icon icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
                                     <Icon icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
@@ -68,28 +72,121 @@
                                             <img v-for="(image, index) in product.images" :key="index" 
                                                 :src="getAssetUrl(`img/products/${image}`)" class="img-fluid"
                                                 @mouseover="shownMainImgIndex = index"
+                                                @click="imgLightboxVisible = true"
                                     
                                             /> <!--  @mouseleave="shownMainImgIndex = null" -->
                                         </template>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="under-showcase">
 
+                                <VueEasyLightbox
+                                    :visible="imgLightboxVisible"
+                                    :imgs="product.images.map(img => getAssetUrl(`img/products/${img}`))"
+                                    :index="shownMainImgIndex"
+                                    @hide="imgLightboxVisible = false"
+                                ></VueEasyLightbox>
+                            </div>
+                            <div class="under-showcase d-flex gap-32 justify-content-between">
+                                <div class="product-stats d-flex gap-32 align-items-end">
+                                    <div class="stat-cont d-flex flex-column">
+                                        <span> Location </span>
+                                        <div class="location d-flex gap-8 align-items-center">
+                                            <Icon icon="mdi:location" class="location-icon detail-icon" />
+                                            Žilina
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-cont d-flex flex-column">
+                                        <span> Views </span>
+                                        <div class="views d-flex gap-8 align-items-center">
+                                            <Icon icon="mdi:eye" class="views-icon detail-icon" />
+                                            2719x
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-cont d-flex flex-column">
+                                        <span> Count </span>
+                                        <div class="count d-flex gap-8 align-items-center">
+                                            <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
+                                            {{ product.count.available }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="product-seller-info d-flex gap-32">
+                                    <div class="seller-btns d-flex gap-16 align-items-end">
+                                        <button class="btn secondary"> MESSAGE </button>
+                                        <button class="btn primary"> 
+                                            <Icon icon="ic:baseline-phone" class="phone-icon" />
+                                            0901 632 913
+                                        </button>
+                                    </div>
+                                    <router-link :to="`/user/${product.sellerId}`" class="seller d-flex flex-column gap-8 text-end">
+                                        <span> Seller </span>
+
+                                        <div class="d-flex gap-8">
+                                            <div class="rating-values d-flex gap-8 align-items-center">
+                                                <span> {{ userRatingAvg }} </span>
+                                                <Icon icon="material-symbols:star" class="star-icon" v-if="userRatingAvg >= 1" />
+                                                <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="userRatingAvg > 0" />
+                                                <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
+                                            </div>
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${userAvatarPath}`)" class="user-avatar" alt="User avatar" v-if="userAvatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </router-link>
+                                </div>
                             </div>
                         </div>
 
                         <div class="product-description">
-
+                            <p> {{ product.description }} </p>
                         </div>
 
-                        <div class="product-misc-options">
+                        <div class="product-misc-options pos-relative">
+                            <div class="options-wrapper d-flex gap-32">
+                                <div class="pattern" :style="patternBgStyle"></div>
 
+                                <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
+                                    <Icon icon="lsicon:tree-filled" class="opt-icon" />
+                                    <span> View similar </span>
+                                </div>
+    
+                                <div class="option pos-relative">
+                                    <div class="d-flex gap-8 align-items-center share-btn"  @click="shareIsOpen = !shareIsOpen">
+                                        <Icon icon="mdi:share" class="opt-icon" />
+                                        <span> Share </span>
+                                    </div>
+
+                                    <ShareButtons v-if="shareIsOpen"
+                                        :classes="shareIsOpen ? 'open' : ''"
+                                        :product-data="product"
+                                        :share-is-open="shareIsOpen"
+                                    ></ShareButtons>
+                                </div>
+    
+                                <div class="option d-flex gap-8 align-items-center" @click="doPrint()">
+                                    <Icon icon="material-symbols:print" class="opt-icon" />
+                                    <span> Print </span>
+                                </div>
+    
+                                <div class="option d-flex gap-8 align-items-center" @click="doReport()">
+                                    <Icon icon="mdi:alert" class="opt-icon" />
+                                    <span> Report </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="product-history">
-
+                        <div class="history-heading d-flex flex-column gap-8">
+                            <h2> PRODUCT HISTORY </h2>
+                            <div class="line-divider"></div>
+                        </div>
                     </div>
 
                 </div>
@@ -103,14 +200,17 @@
 <script>
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
+import ShareButtons from './ShareButtons.vue';
 import { Icon } from '@iconify/vue';
+
+import VueEasyLightbox from 'vue-easy-lightbox';
 
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'ProducDetailContent',
 
-    inject: ['emitter', 'productApi'],
+    inject: ['emitter', 'productApi', 'userApi', 'feedbackApi'],
     emits: [],
 
     head() {
@@ -126,7 +226,9 @@ export default {
     components: {
         Header,
         Footer,
-        Icon
+        Icon,
+        VueEasyLightbox,
+        ShareButtons,
     },
 
     data() {
@@ -136,7 +238,15 @@ export default {
             productMainCtg: null,
             productSubCtg: null,
 
-            shownMainImgIndex: 0
+            shownMainImgIndex: 0,
+            imgLightboxVisible: false,
+
+            userAvatarPath: null,
+            userRatingAvg: null,
+
+            patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
+
+            shareIsOpen: false
         }
     },
 
@@ -159,6 +269,28 @@ export default {
             }
         },
 
+        async getUser() {
+            try {
+                const resp = await this.userApi.getUserById(this.product.sellerId);
+                this.userAvatarPath = resp.data.avatarPath;
+            } catch (err) {
+                console.error(err);
+                // this.$router.push("/404");
+            }
+        },
+
+        async getUserRatings() {
+            try {
+                const resp = await this.feedbackApi.getUserRatings(this.product.sellerId);
+                const ratings = [...resp.data.self.map(rt => ({...rt, type__: "self"}))];
+
+                this.userRatingAvg = this.getUserRatingAvg(ratings);
+
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
         getMainImg() {
             const indx = this.shownMainImgIndex;
             return this.getAssetUrl(`img/products/${this.product.images[indx ? indx : 0]}`);
@@ -174,12 +306,26 @@ export default {
             else this.shownMainImgIndex = 0;
         },
 
+        bookmarkProduct() {
+
+        },
+
         deleteProduct() {
 
         },
 
         editProduct() {
 
+        },
+
+        doPrint() { window.print(); },
+
+        doReport() {
+
+        },
+
+        viewSimilarProducts() {
+            
         }
     },
     
@@ -189,11 +335,18 @@ export default {
                 getAllCategories: "product/getAllCategories",
             }
         ),
+
+        patternBgStyle() {
+            return `
+                background: url(${this.patternImgSrc}) 0% 0% / 80% 150% repeat`;
+        }
     },
 
     async created() {
         this.emitter.emit("show-loader");   
         await this.getProductDetail();
+        await this.getUser();
+        await this.getUserRatings();
 
         this.productMainCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.mainCategory);
         if (this.product.category.subCategory) this.productSubCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.subCategory);
@@ -314,5 +467,142 @@ export default {
 .other-images-wrapper img {
     border-radius: 8px;
     max-width: 112px; 
+    cursor: pointer;
+}
+
+.under-showcase {
+    margin-top: 8px;
+}
+
+.stat-cont {
+    gap: 4px;
+}
+
+.stat-cont span {
+    font-weight: 200;
+    font-size: 14px;
+}
+
+.stat-cont .detail-icon {
+    opacity: 0.33;
+    font-size: 24px;
+}
+
+.user-avatar-cont {
+    transition: filter 0.2s ease-in;
+}
+.seller:hover .user-avatar-cont {
+    filter: brightness(0.66);
+}
+
+.user-avatar-cont, .default-avatar-cont {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    border-radius: 50%;
+}
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+}
+
+.default-avatar-cont {
+    font-size: 24px;
+    background: var(--white-5a);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.seller:hover {
+    color: var(--white);
+}
+
+.seller > span {
+    margin-right: 6px;
+}
+
+.product-description {
+    margin-top: 40px;
+}
+
+.product-misc-options .option {
+    cursor: pointer;
+}
+
+.product-misc-options .option span {
+    font-weight: bold;
+    font-family: "Montserrat", serif;
+}
+
+.product-misc-options .opt-icon {
+    font-size: 24px;
+    color: var(--primary);
+}
+
+.product-misc-options {
+    margin-top: 32px;
+    padding: 1px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 154, 158, 0) 0%, rgba(255, 154, 158, 0.5) 100%);
+}
+
+.product-misc-options .options-wrapper {
+    padding: 18px 30px;
+    border-radius: 16px;
+    position: relative;
+}
+
+.product-misc-options .options-wrapper .option {
+    z-index: 2;
+    user-select: none;
+}
+
+.product-misc-options .pattern {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    border-radius: 100px;
+}
+.product-misc-options .pattern::before {
+    border-radius: 14px;
+    content: "";
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background: rgba(26, 21, 18, 0.97);
+    backdrop-filter: blur(20px);
+}
+
+.product-history {
+    margin-top: 88px;
+}
+
+.history-heading h2 {
+    font-size: 20px;
+    line-height: 16px;
+    font-weight: bold;
+}
+
+.logo-for-print {
+    display: none;
+}
+
+.logo-for-print img {
+    max-width: 20%;
 }
 </style>

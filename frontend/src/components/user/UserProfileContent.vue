@@ -41,13 +41,17 @@
                                     <div class="rating-heading d-flex gap-32 align-items-center">
                                         <div class="heading">Rating</div>
                                         <div class="rating-values d-flex gap-8 align-items-center">
-                                            <span> 4,7 </span>
+                                            <span> {{ userRatingAvg >= 0 ? userRatingAvg : "?" }} </span>
                                             <div class="stars d-flex">
-                                                <Icon icon="material-symbols:star" class="star-icon" />
-                                                <Icon icon="material-symbols:star" class="star-icon" />
-                                                <Icon icon="material-symbols:star" class="star-icon" />
-                                                <Icon icon="material-symbols:star" class="star-icon" />
-                                                <Icon icon="material-symbols:star-half" class="star-icon" />
+                                                <template v-for="fullStar in Math.floor(userRatingAvg)" :key="fullStar">
+                                                    <Icon icon="material-symbols:star" class="star-icon" />
+                                                </template>
+                                                <template v-if="(userRatingAvg - (Math.floor(userRatingAvg))) > 0">
+                                                    <Icon icon="material-symbols:star-half" class="star-icon" />
+                                                </template>
+                                                <template v-for="emptyStar in (5 - (Math.floor(userRatingAvg) + Math.ceil((userRatingAvg - (Math.floor(userRatingAvg))))))" :key="emptyStar">
+                                                    <Icon icon="material-symbols:star-outline" class="star-icon empty" />
+                                                </template>
                                             </div>
                                         </div>
                                     </div>
@@ -134,6 +138,7 @@ export default {
             userRatings: [],
             loadedProducts: false,
             loadedRatings: false,
+            userRatingAvg: null,
 
             selectedAvatarFile: null,
 
@@ -179,6 +184,8 @@ export default {
                 this.userRatings = ratings;
                 this.loadedRatings = true;
                 console.log("user ratings", this.userRatings);
+
+                this.userRatingAvg = this.getUserRatingAvg(ratings.filter(rt => rt.type__ == "self"));
 
             } catch (err) {
                 console.error(err);

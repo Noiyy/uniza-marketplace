@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const ProductHistory = require("../models/productHistoryModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
@@ -109,6 +110,44 @@ exports.deleteProduct = async (req, res) => {
     const product = await Product.findOneAndDelete({_id: id});
     res.status(200).json({ message: 'Product deleted.', delProductId: product.id });
 }
+
+exports.updateProductPrice = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { 
+            newValue
+        } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});
+    
+        const user = await User.findById(req.user.id);
+        if (!user) 
+            res.status(401).json({error: 'Auth user not found'});
+     
+        const productCheck = await Product.findById(id);
+        if (!productCheck) return res.status(404).json({error: 'No product found for id ' + id});
+    
+        // Only owner or admin is allowed to
+        if (productCheck.sellerId.toString() !== user.id && !user.isAdmin) 
+            res.status(401).json({error: 'Auth user not authorized'});
+    
+        const historyEntry = new ProductHistory({
+            id,
+            historyType: 'priceChange',
+            oldValue: productCheck.price,
+            newValue: newValue,
+            byUserId: user.id
+        });
+        await historyEntry.save();
+    
+        productCheck.price = newValue;
+        await productCheck.save();
+        
+        res.status(200).json({success: true});
+    } catch (err) {
+        console.log("price up err", err);
+        res.status(500).json({success: false});
+    }
+};
 
 async function initTestProducts() {
     const products = [

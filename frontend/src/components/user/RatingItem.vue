@@ -13,7 +13,7 @@
                         <span> {{ ratingData.ratingValue.$numberDecimal }} </span>
                         <Icon icon="material-symbols:star" class="star-icon" v-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal >= 1" />
                         <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal > 0" />
-                            <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
+                        <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
                     </div>
 
                     <h1 class="rating-title"> {{ ratingData.title }} </h1>

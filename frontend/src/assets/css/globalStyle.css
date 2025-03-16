@@ -227,3 +227,66 @@ select:-webkit-autofill {
 @media(min-width: 641px) and (max-width: 992px) { 
 
 }
+
+@media print {
+    .product-misc-options, 
+    header, 
+    .product-heading-options, 
+    footer,
+    .main-img-cont span,
+    .main-img-cont .main-img-icon,
+    .seller-btns .btn.secondary {
+        display: none !important;
+    }
+
+    .gradient-text {
+        color: var(--primary);
+        background: initial;
+        background-clip: initial;
+        -webkit-background-clip: initial;
+        -webkit-text-fill-color: initial;
+    }
+
+    .btn.primary {
+        background: var(--primary)
+    }
+
+    #product-detail {
+        margin-top: 16px !important;
+    }
+
+    .container {
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .product-showcase .main-img-cont img {
+        height: 200px !important;
+    }
+
+    .product-showcase .main-img-cont {
+        flex: 0.5 !important;
+    }
+
+    body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #app {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    * {
+        page-break-before: auto;
+        page-break-after: auto;
+        page-break-inside: avoid;
+    }
+
+    .printable {
+        display: flex !important;
+        justify-content: center;
+    }
+}

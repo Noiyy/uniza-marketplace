@@ -1,5 +1,5 @@
 <template>
-    <header class="d-flex flex-column pos-relative">
+    <header class="flex-column pos-relative">
         <div class="pattern" :style="patternBgStyle"></div>
 
         <div class="container">
@@ -415,6 +415,7 @@ header {
     top: 0;
     z-index: 10;
     box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.33);
+    display: flex;
 }
 
 .main-header {
