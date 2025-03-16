@@ -29,7 +29,7 @@
                 </a>
             </div>
 
-            <nav class="d-flex flex-column flex-1 align-items-end gap-64">
+            <nav class="d-flex flex-column flex-1 align-items-end gap-64 montserrat">
                 <div class="d-flex flex-column gap-32">
                     <div class="d-flex flex-column gap-16">
                         <router-link to="/" class="highlightActive" > Home </router-link>
@@ -209,7 +209,6 @@ nav {
     font-size: 16px;
     text-transform: uppercase;
     text-align: right;
-    font-family: "Montserrat", sans-serif;
 }
 
 nav a {

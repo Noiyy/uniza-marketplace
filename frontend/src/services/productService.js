@@ -19,13 +19,13 @@ class ProductService extends DefaultService {
         return await this.apiClient.get(`/userProducts/${userId}`);
     }
     async addProduct(productData) {
-        return await this.apiClient.post("/add", productData);
+        return await this.apiClient.post("/add", productData, { withCredentials: true });
     }
     async updateProduct(productId, productData) {
-        return await this.apiClient.patch(`/update/${productId}`, productData);
+        return await this.apiClient.patch(`/update/${productId}`, productData, { withCredentials: true });
     }
     async deleteProduct(productId) {
-        return await this.apiClient.delete(`/delete/${productId}`);
+        return await this.apiClient.delete(`/delete/${productId}`, { withCredentials: true });
     }
 
     /* CATEGORY ROUTES */

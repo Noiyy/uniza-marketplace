@@ -2,6 +2,9 @@ const express = require('express');
 const { getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct, deleteProduct } = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { getAllSales, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
+
+const { protect } = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
 // Product
@@ -9,9 +12,9 @@ router.get("/getAllProducts", getAllProducts);
 router.get("/getLatestProducts", getLatestProducts);
 router.get("/:id", getProduct);
 router.get("/userProducts/:userId", getUserProducts);
-router.post("/add", addProduct);
-router.patch('/update/:id', updateProduct);
-router.delete('/delete/:id', deleteProduct);
+router.post("/add", protect, addProduct);
+router.patch('/update/:id', protect, updateProduct);
+router.delete('/delete/:id', protect, deleteProduct);
 
 // Category
 router.get("/categories/getAllCategories", getAllCategories);

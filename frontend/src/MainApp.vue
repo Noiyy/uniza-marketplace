@@ -357,4 +357,27 @@ width */
   font-size: 14px;
   line-height: 100%;
 }
+
+.view-divider.shorter {
+    bottom: 16px;
+    width: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.view-divider.shorter .divider {
+    background-color: var(--white-33a);
+}
+
+.view-divider-cont .hidden-overlay {
+    position: absolute;
+    top: 104px;
+    left: 0;
+    width: 100%;
+    height: 72%;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%);
+}
 </style>

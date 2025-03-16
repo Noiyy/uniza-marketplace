@@ -18,6 +18,20 @@ export const globalMixin = {
             }
         },
 
+        isoToDateString(iso) {
+            // DD.MM.YYYY
+            const date = new Date(iso);
+            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+            return formattedDate;
+        },
+
+        isoToDayTime(iso) {
+            // HH:MM
+            const date = new Date(iso);
+            const formattedTime = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            return formattedTime;
+        },
+
         transformCategories(categories, selectedSearchCategory) {
             let mainCategories = [{
                 name: "allProducts",

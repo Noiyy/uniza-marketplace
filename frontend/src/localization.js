@@ -4,11 +4,13 @@ const i18nOptions = {
   messages: {
     sk: {
       Menu: "Menu",
-      AllProducts: "Všetky produkty"
+      AllProducts: "Všetky produkty",
+      Back: "späť"
     },
     en: {
       Menu: "Menu",
-      AllProducts: "All products"
+      AllProducts: "All products",
+      Back: "back"
     },
   },
 };

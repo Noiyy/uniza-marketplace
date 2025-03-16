@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
                 userName: user.username
             },
             process.env.JWT_SECRET, 
-            { expiresIn: '1h' }
+            { expiresIn: '2h' }
         );
 
         res.cookie("token", token, { 

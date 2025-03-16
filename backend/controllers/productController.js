@@ -96,9 +96,12 @@ exports.deleteProduct = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});
 
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
     const user = await User.findById(req.user.id);
     if (!user) 
-        res.status(401).json({error: 'User not found'});
+        return res.status(401).json({error: 'User not found'});
 
     const productCheck = await Product.findById(id);
     if (!productCheck) return res.status(404).json({error: 'No product found for id ' + id});
@@ -155,7 +158,7 @@ async function initTestProducts() {
             title: "Product a",
             sellerId: "679679676468b5e69af79120",
             description: "nejaka test desc",
-            images: ["testProductImg.jpg", "testProductImg2.jpg"],
+            images: ["testProductImg.jpg", "testProductImg2.jpg", "testProductImg2.jpg", "testProductImg2.jpg"],
             category: {
                 mainCategory: "678f6f38063a689604c7c63e"
             },

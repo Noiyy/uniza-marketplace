@@ -36,12 +36,17 @@
                                             <Icon icon="mdi:arrow-left-top" class="back-icon" />
                                             back
                                         </div>
-                                        <button class="btn primary btn-icon" @click="deleteProduct()">
-                                            <Icon icon="mdi:trash" class="opt-icon" />
-                                        </button>
-                                        <button class="btn primary btn-icon" @click="editProduct()">
-                                            <Icon icon="mdi:pencil" class="opt-icon" />
-                                        </button>
+                                        <template v-if="getLoggedUser && (getLoggedUser._id == product.sellerId || getLoggedUser.isAdmin)">
+                                            <button class="btn primary btn-icon" @click="deleteProduct()">
+                                                <Icon icon="mdi:trash" class="opt-icon" />
+                                            </button>
+                                            <router-link :to="`/product/${product._id}/edit`" role="button" class="btn primary btn-icon">
+                                                <Icon icon="mdi:pencil" class="opt-icon" />
+                                            </router-link>
+                                            <router-link :to="`/product/${product._id}/edit#sales`" role="button" class="btn primary btn-icon">
+                                                <Icon icon="material-symbols:shopping-cart" class="opt-icon" />
+                                            </router-link>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -64,8 +69,8 @@
                                 <div class="images-price d-flex flex-column gap-24 align-items-end">
                                     <div class="price d-flex gap-24 align-items-center">
                                         <h3 class="gradient-text"> Price </h3>
-                                        <span v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
-                                        <span v-else> {{ product.price.value.$numberDecimal }}€ </span>      
+                                        <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
+                                        <span class="montserrat" v-else> {{ product.price.value.$numberDecimal }}€ </span>      
                                     </div>
                                     <div class="other-images-wrapper d-flex flex-wrap gap-8 scrollbar">
                                         <template v-if="product.images && product.images.length">
@@ -153,13 +158,13 @@
 
                                 <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
                                     <Icon icon="lsicon:tree-filled" class="opt-icon" />
-                                    <span> View similar </span>
+                                    <span class="montserrat"> View similar </span>
                                 </div>
     
                                 <div class="option pos-relative">
                                     <div class="d-flex gap-8 align-items-center share-btn"  @click="shareIsOpen = !shareIsOpen">
                                         <Icon icon="mdi:share" class="opt-icon" />
-                                        <span> Share </span>
+                                        <span class="montserrat"> Share </span>
                                     </div>
 
                                     <ShareButtons v-if="shareIsOpen"
@@ -171,24 +176,56 @@
     
                                 <div class="option d-flex gap-8 align-items-center" @click="doPrint()">
                                     <Icon icon="material-symbols:print" class="opt-icon" />
-                                    <span> Print </span>
+                                    <span class="montserrat"> Print </span>
                                 </div>
     
                                 <div class="option d-flex gap-8 align-items-center" @click="doReport()">
                                     <Icon icon="mdi:alert" class="opt-icon" />
-                                    <span> Report </span>
+                                    <span class="montserrat"> Report </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="product-history">
+                    <div class="product-history" v-if="product">
                         <div class="history-heading d-flex flex-column gap-8">
-                            <h2> PRODUCT HISTORY </h2>
+                            <div class="d-flex gap-32 justify-content-between align-items-center">
+                                <h2> PRODUCT HISTORY </h2>
+                                <div class="created-at d-flex gap-24 align-items-center">
+                                    Created at
+                                    <span> {{ isoToDateString(product.createdAt) }} </span> 
+                                </div>
+                            </div>
                             <div class="line-divider"></div>
                         </div>
                     </div>
 
+                    <div class="history-content d-flex flex-column gap-24">
+                        <div class="sale-ended d-flex flex-column text-center"> <!-- v-if="saleEnded" -->
+                            <div class="sale-ended-title pos-relative">
+                                <h2 class="pos-relative"> sale ended </h2>
+                                <div class="line-divider"></div>
+                            </div>
+                            <div class="date montserrat"> 18.12.2024 </div>
+                        </div>
+
+                        <div class="history-wrapper d-flex flex-column gap-16 pos-relative" :class="shownHistory ? 'shown' : ''">
+                            <div class="view-divider-cont"> <!-- v-if="!shownHistory && prod.history.length &&  prod.history.length > 5" -->
+                                <div class="view-divider shorter d-flex justify-content-center align-items-center">
+                                    <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
+                                    <div class="divider"></div>
+                                </div>
+                    
+                                <div class="hidden-overlay"></div>
+                            </div>
+
+                            <template v-for="(hist, index) in 7" :key="index">
+                                <HistoryItem
+                                    :history-data="hist"
+                                ></HistoryItem>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -201,6 +238,7 @@
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
 import ShareButtons from './ShareButtons.vue';
+import HistoryItem from './HistoryItem.vue';
 import { Icon } from '@iconify/vue';
 
 import VueEasyLightbox from 'vue-easy-lightbox';
@@ -229,6 +267,7 @@ export default {
         Icon,
         VueEasyLightbox,
         ShareButtons,
+        HistoryItem,
     },
 
     data() {
@@ -246,7 +285,8 @@ export default {
 
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
 
-            shareIsOpen: false
+            shareIsOpen: false,
+            shownHistory: false
         }
     },
 
@@ -310,12 +350,22 @@ export default {
 
         },
 
-        deleteProduct() {
+        async deleteProduct() {
+            this.emitter.emit("show-loader");
+            try {
+                const resp = await this.productApi.deleteProduct(this.product._id);
 
-        },
+                if (resp.data.delProductId) {
+                    this.$toast.success("ProductDeleteSuccess");
+                    this.$router.push({ name: "Browse" });
+                } else this.$toast.error("ProductDeleteFailed");
 
-        editProduct() {
+            } catch (err) {
+                console.error(err);
+                this.$toast.error("ProductDeleteFailed");
+            }
 
+            this.emitter.emit("hide-loader");
         },
 
         doPrint() { window.print(); },
@@ -333,6 +383,8 @@ export default {
         ...mapGetters(
             {
                 getAllCategories: "product/getAllCategories",
+
+                getLoggedUser: "user/getUser"
             }
         ),
 
@@ -461,7 +513,6 @@ export default {
     border-bottom-left-radius: 16px;
     font-size: 24px;
     font-weight: 800;
-    font-family: "Montserrat", serif;
 }
 
 .other-images-wrapper img {
@@ -538,7 +589,6 @@ export default {
 
 .product-misc-options .option span {
     font-weight: bold;
-    font-family: "Montserrat", serif;
 }
 
 .product-misc-options .opt-icon {
@@ -598,6 +648,16 @@ export default {
     font-weight: bold;
 }
 
+.created-at {
+    font-size: 14px;
+}
+
+.created-at span {
+    font-weight: 300;
+    letter-spacing: 4px;
+    line-height: normal;
+}
+
 .logo-for-print {
     display: none;
 }
@@ -605,4 +665,46 @@ export default {
 .logo-for-print img {
     max-width: 20%;
 }
+
+.history-content {
+    margin-top: 32px;
+}
+
+.sale-ended h2 {
+    color: var(--red);
+    font-size: 20px;
+    text-transform: uppercase;
+    padding: 4px 24px;
+    background: var(--black);
+    font-weight: bold;
+    display: inline-flex;
+    z-index: 2;
+}
+
+.sale-ended .date {
+    font-weight: 100;
+}
+
+.sale-ended .line-divider {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgb(229, 88, 93, 0.5);
+}
+
+.history-wrapper {
+    max-height: 345px;
+    overflow: hidden;
+}
+
+.history-wrapper.shown {
+    max-height: initial;
+    overflow: initial;
+}
+
+.history-wrapper .hidden-overlay {
+    top: 0;
+    height: 100%;
+}
+
 </style>

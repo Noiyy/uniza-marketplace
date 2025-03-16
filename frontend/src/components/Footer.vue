@@ -12,7 +12,7 @@
                         <a href=""> <Icon icon="ri:twitter-x-fill" class="social-icon x" /> </a>
                     </div>
                 </div>
-                <div class="right d-flex flex-column gap-32">
+                <div class="right d-flex flex-column gap-32 montserrat">
                     <p> CUSTOMER SERVICE </p>
                     <div class="info-links d-flex">
                         <div class="left-col d-flex flex-column">
@@ -32,7 +32,7 @@
         <div class="lower-content">
             <div class="container d-flex flex-column gap-16 align-items-center">
                 <p> &copy; UNIZA Marketplace 2025, all rights reserved. </p>
-                <a href="https://noiyy.eu/" target="_blank"> made by Noiyy<Icon icon="prime:arrow-up-right" class="arrow-icon" /> </a>
+                <a href="https://noiyy.eu/" target="_blank" class="montserrat"> made by Noiyy<Icon icon="prime:arrow-up-right" class="arrow-icon" /> </a>
             </div>
         </div>
     </footer>
@@ -136,7 +136,6 @@ footer {
 
 .upper-content .right {
     flex: 3;
-    font-family: "Montserrat", sans-serif;
     font-weight: 400;
     line-height: normal;
 }
@@ -193,7 +192,6 @@ footer {
 }
 
 .lower-content a {
-    font-family: "Montserrat", sans-serif;
     font-style: normal;
     font-weight: 300;
     letter-spacing: 16.64px;

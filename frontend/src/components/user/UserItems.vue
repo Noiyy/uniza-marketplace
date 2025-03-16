@@ -22,14 +22,14 @@
                 </template>
             </ItemContentList>
 
-            <template v-if="!shownProducts && sortedProducts.length && sortedProducts.length > 1">
-                <div class="view-divider d-flex justify-content-center align-items-center">
+            <div class="view-divider-cont" v-if="!shownProducts && sortedProducts.length && sortedProducts.length > 1">
+                <div class="view-divider shorter d-flex justify-content-center align-items-center">
                     <button class="btn secondary" @click="shownProducts = !shownProducts"> View </button>
                     <div class="divider"></div>
                 </div>
     
                 <div class="hidden-overlay"></div>
-            </template>
+            </div>
         </div>
     
         <div class="user-ratings pos-relative" :class="shownRatings ? 'shown' : ''">
@@ -58,14 +58,14 @@
                 </template>
             </ItemContentList>
 
-            <template v-if="!shownRatings && sortedRatings.length && sortedRatings.length > 1">
-                <div class="view-divider d-flex justify-content-center align-items-center">
+            <div class="view-divider-cont" v-if="!shownRatings && sortedRatings.length && sortedRatings.length > 1">
+                <div class="view-divider shorter d-flex justify-content-center align-items-center">
                     <button class="btn secondary" @click="shownRatings = !shownRatings"> View </button>
                     <div class="divider"></div>
                 </div>
     
                 <div class="hidden-overlay"></div>
-            </template>
+            </div>
         </div>
     </div>
 </template>
@@ -252,29 +252,6 @@ export default {
 .user-products.shown, .user-ratings.shown { /* , .user-ratings.shown */
     max-height: initial;
     overflow: initial;
-}
-
-.view-divider {
-    bottom: 16px;
-    width: 80%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-}
-
-.view-divider .divider {
-    background-color: var(--white-33a);
-}
-
-.hidden-overlay {
-    position: absolute;
-    top: 104px;
-    left: 0;
-    width: 100%;
-    height: 72%;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%);
 }
 
 .small-btns-wrapper .btn {

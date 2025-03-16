@@ -31,7 +31,7 @@
                                 </div>
 
                                 <div class="joined-on d-flex gap-32 align-items-center">
-                                    <span> 27.12.2024 </span>
+                                    <span> {{ isoToDateString(user.registeredAt) }} </span>
                                     Joined on
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                                         {{ userRatings.filter(rt => rt.type__ == "self").length > 1 ? 'ratings' : 'rating' }}
                                     </div>
 
-                                    <div class="view-divider d-flex justify-content-center align-items-center">
+                                    <div class="view-divider full d-flex justify-content-center align-items-center">
                                         <button class="btn secondary" @click="viewRatings()"> View </button>
                                         <div class="divider"></div>
                                     </div>
@@ -78,7 +78,7 @@
                                         <div> <span class="gradient-text">7</span> bought </div>
                                     </div>
 
-                                    <div class="view-divider d-flex justify-content-center align-items-center">
+                                    <div class="view-divider full d-flex justify-content-center align-items-center">
                                         <button class="btn secondary" @click="viewProducts()"> View </button>
                                         <div class="divider"></div>
                                     </div>
@@ -361,4 +361,8 @@ export default {
 .rating-values span {
     font-weight: 600;
 }
+
+/* .view-divider.full {
+    bottom: 16px;
+} */
 </style>
