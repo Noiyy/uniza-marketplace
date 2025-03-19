@@ -197,12 +197,18 @@ input.styled:focus-visible {
     border: 2px solid var(--secondary);
     outline: none !important;
 }
+input.styled.secondary {
+    border: 2px solid var(--secondary);
+}
+input.styled.secondary:focus-visible {
+    border: 2px solid var(--primary);
+}
 
-.form-row {
+.form-row, .input-cont {
     position: relative;
 }
 
-.form-row .input-tag {
+.form-row .input-tag, .input-cont .input-tag {
     position: absolute;
     top: -16px;
     left: 24px;
@@ -217,6 +223,17 @@ textarea:-webkit-autofill,
 select:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px var(--black) inset !important;
   -webkit-text-fill-color: var(--white) !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide arrows in Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 
 .montserrat {

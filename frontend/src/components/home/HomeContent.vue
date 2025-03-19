@@ -57,9 +57,9 @@
                                 </div>
 
                                 <div class="prod-info d-flex flex-column gap-16">
-                                    <p class="prod-description">
-                                        {{ prod.description }}
-                                    </p>
+                                    <div class="prod-description"
+                                        v-html="prod.description">
+                                    </div>
     
                                     <div class="prod-additional-info d-flex justify-content-between align-items-center">
                                         <div class="prod-location d-flex gap-8 align-items-center">

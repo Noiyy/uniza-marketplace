@@ -149,7 +149,7 @@
                         </div>
 
                         <div class="product-description">
-                            <p> {{ product.description }} </p>
+                            <div v-html="product.description"></div>
                         </div>
 
                         <div class="product-misc-options pos-relative">
@@ -707,4 +707,10 @@ export default {
     height: 100%;
 }
 
+</style>
+
+<style>
+.product-description a {
+    text-decoration: underline;
+}
 </style>

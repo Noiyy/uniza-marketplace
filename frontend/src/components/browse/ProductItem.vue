@@ -8,7 +8,9 @@
             <div class="heading">
                 <h2 class="gradient-text"> {{ prodData.title }} </h2>
             </div>
-            <p class="description"> {{ prodData.description }} </p>
+            <div class="description" 
+                v-html="prodData.description"> 
+            </div>
         </div>
         <div class="details d-flex flex-column gap-8">
             <div class="price">
@@ -165,7 +167,7 @@ export default {
     gap: 4px;
 }
 
-.main p {
+.main .description {
     font-size: 14px;
     overflow: hidden;
 }
