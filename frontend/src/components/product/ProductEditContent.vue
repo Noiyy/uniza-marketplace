@@ -14,9 +14,9 @@
                                 </div>
 
                                 <div class="edit-options d-flex gap-32 align-items-center">
-                                    <div class="view-options d-flex">
-                                        <button class="btn"> Preview </button>
-                                        <button class="btn active"> Editor </button>
+                                    <div class="nav-btns-wrapper d-flex">
+                                        <button class="btn nav-btn"> Preview </button>
+                                        <button class="btn nav-btn active"> Editor </button>
                                     </div>
 
                                     <button class="btn primary" @click="saveProduct()"> Save </button>
@@ -60,7 +60,7 @@
                                     <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
                                         :title="'Add image'"
                                         @submit.prevent="uploadImages" @click="triggerFileInput">
-                                        <input ref="imageInput" name="image" @change="onFileChange" style="display: none"
+                                        <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
                                             type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
                                         <div class="add-img-icon-cont">
                                             <Icon icon="ic:baseline-plus" class="plus-icon" />
@@ -91,7 +91,7 @@
                                 <div class="input-row d-flex gap-24 align-items-center justify-content-between">
                                     <div class="input-cont d-flex flex-column gap-8">
                                         <div class="input-tag"> Price </div>
-                                        <input type="number" class="styled" :placeholder="'Price'" required>
+                                        <input v-model="product.price.value.$numberDecimal" type="number" class="styled" :placeholder="'Price'" required>
                                     </div>
 
                                     <span class="input-row-divider montserrat"> Or </span>
@@ -106,11 +106,11 @@
                                     <div>
                                         <Checkbox
                                             :text="'Use the same address as your account'"
-                                            v-model:is-checked="useSameAddressAsAccount"
+                                            v-model:is-checked="product.address.asProfile"
                                         ></Checkbox>
                                     </div>
 
-                                    <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="useSameAddressAsAccount ? 'disabled' : ''">
+                                    <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="product.address.asProfile ? 'disabled' : ''">
                                         <div class="input-cont d-flex flex-column gap-8">
                                             <div class="input-tag"> Address </div>
                                             <input type="text" class="styled" :placeholder="'Address'" required>
@@ -129,20 +129,20 @@
                                     <div>
                                         <Checkbox
                                             :text="'Delete product automatically when count reaches 0'"
-                                            v-model:is-checked="deleteProductOn0Count"
+                                            v-model:is-checked="product.count.deleteOnZero"
                                         ></Checkbox>
                                        
                                     </div>
 
                                     <div class="input-row d-flex gap-8 align-items-center justify-content-between">
-                                        <div class="input-cont d-flex flex-column gap-8" :class="deleteProductOn0Count ? 'disabled' : ''">
+                                        <div class="input-cont d-flex flex-column gap-8">
                                             <div class="input-tag"> Count </div>
-                                            <input type="number" class="styled" :placeholder="'Count'" required>
+                                            <input v-model="product.count.available" type="number" class="styled" :placeholder="'Count'" required>
                                         </div>
     
                                         <div class="product-stats">
                                             sold:
-                                            <span> 2 </span>
+                                            <span> {{ product.count.sold }} </span>
                                         </div>
                                     </div>
                                 </div>
@@ -203,9 +203,7 @@ export default {
             productMainCtg: null,
             productSubCtg: null,
 
-            useSameAddressAsAccount: true,
-            deleteProductOn0Count: true,
-
+            prevImages: [],
             productImages: [],
             imageBlobs: [],
 
@@ -228,10 +226,6 @@ export default {
                 this.productImages = this.product.images;
                 this.productDescription = this.product.description;
 
-                this.useSameAddressAsAccount = this.product.address.asProfile;
-                this.deleteProductOn0Count = this.product.count.deleteOnZero;
-
-
                 console.log("product", this.product);
             } catch (err) {
                 console.error(err);
@@ -244,6 +238,8 @@ export default {
         },
 
         onFileChange(event) {
+            this.imageBlobs = [];
+
             const files = event.target.files;
             if (!files.length) return;
 
@@ -265,6 +261,8 @@ export default {
             console.log("wat", img);
             if (img.url) {
                 URL.revokeObjectURL(this.productImages[index].url);
+            } else {
+                this.prevImages.push(this.productImages[index]);
             }
             this.productImages.splice(index, 1);
         },
@@ -277,7 +275,18 @@ export default {
             this.emitter.emit("show-loader");
             console.log("save?", this.product);
             console.log(this.productImages);
-            console.log(this.productDescription);
+            // console.log(this.productDescription);
+
+            console.log("prev images", this.prevImages);
+            const imageFiles = this.productImages.filter(img => img.url).map(img => img.file);
+
+            const imageFormData = new FormData();
+            imageFormData.append('imageFiles', imageFiles);
+            imageFormData.append('prevImages', this.prevImages);
+            imageFormData.append('productId', this.product._id);
+
+            const uploadResp = await this.productApi.uploadProductImages(imageFormData);
+            console.log("upload?", uploadResp);
 
             const post = {
                 ...this.product,
@@ -285,14 +294,14 @@ export default {
             }
             console.log("post", post);
 
-            const resp = await this.productApi.updateProduct(this.product._id, post);
-            console.log("did?", resp);
-            if (resp.data._id) {
-                this.$toast.success("ProductEditSuccess");
-                this.$router.push({ ProductDetail, params: { id: resp.data._id } });
-            } else {
-                this.$toast.error("ProductEditFailed");
-            }
+            // const resp = await this.productApi.updateProduct(this.product._id, post);
+            // console.log("did?", resp);
+            // if (resp.data._id) {
+            //     this.$toast.success("ProductEditSuccess");
+            //     this.$router.push({ ProductDetail, params: { id: resp.data._id } });
+            // } else {
+            //     this.$toast.error("ProductEditFailed");
+            // }
 
             this.emitter.emit("hide-loader");
         }
@@ -336,27 +345,6 @@ export default {
 
 .under-heading {
     margin-top: 2px;
-}
-
-.view-options {
-    background-color: var(--white-5a);
-    border-radius: 8px;
-    padding: 8px;
-    gap: 4px;
-}
-
-.view-options .btn {
-    text-transform: capitalize;
-    transition: background-color 0.2s ease-in;
-    padding: 2px 24px;
-}
-.view-options .btn:hover {
-    background-color: var(--white-5a);
-}
-
-.view-options .btn.active {
-    background-color: var(--white-10a);
-    border-color: transparent;
 }
 
 .back {

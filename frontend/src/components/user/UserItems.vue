@@ -185,7 +185,7 @@ export default {
         setupProductFilters() {
             this.productFilters = [
                 { name: "onSale", count: 2, active: true },
-                { name: "sold", count: 12 },
+                { name: "saleEnded", count: 12 },
                 { name: "bought", count: 7 },
             ];
         },

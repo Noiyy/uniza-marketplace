@@ -52,7 +52,7 @@ export const listMixin = {
             let filteredProducts = JSON.parse(JSON.stringify(products));
 
             if (selectedSearchCategory) {
-                if (!selectedSearchCategory._id) filteredProducts = JSON.parse(JSON.stringify(this.products));
+                if (!selectedSearchCategory._id) filteredProducts = JSON.parse(JSON.stringify(products));
                 else {
                     filteredProducts = filteredProducts.filter(prod => {
                         return selectedSearchCategory._id == prod.category.mainCategory || selectedSearchCategory._id == prod.category.subCategory;

@@ -24,6 +24,15 @@ class ProductService extends DefaultService {
     async updateProduct(productId, productData) {
         return await this.apiClient.patch(`/update/${productId}`, productData, { withCredentials: true });
     }
+    async uploadProductImages(formData) {
+        return await this.apiClient.post(`/uploadProductImages`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+        });
+    } 
+
     async deleteProduct(productId) {
         return await this.apiClient.delete(`/delete/${productId}`, { withCredentials: true });
     }

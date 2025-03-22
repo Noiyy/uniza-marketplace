@@ -1,9 +1,14 @@
 const express = require('express');
-const { getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct, deleteProduct } = require("../controllers/productController");
+const { getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct, deleteProduct, uploadProductImages } = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { getAllSales, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
 
 const { protect } = require("../middleware/authMiddleware");
+
+const crypto = require('crypto');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 
@@ -15,6 +20,31 @@ router.get("/userProducts/:userId", getUserProducts);
 router.post("/add", protect, addProduct);
 router.patch('/update/:id', protect, updateProduct);
 router.delete('/delete/:id', protect, deleteProduct);
+
+// Upload product images
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const productImagesPath = path.join(__dirname, '../../frontend/src/assets/img/products/');
+
+        if (!fs.existsSync(productImagesPath)) {
+            fs.mkdirSync(productImagesPath, { recursive: true });
+        }
+
+        cb(null, productImagesPath);
+    },
+    filename: (req, file, cb) => {
+        crypto.randomBytes(16, (err, buffer) => {
+            if (err) return cb(err);
+
+            // Create a hashed filename with the original extension
+            const hashedName = buffer.toString('hex') + path.extname(file.originalname);
+            cb(null, hashedName);
+        });
+    },
+});
+const upload = multer({ storage });
+
+router.post("/uploadProductImages", protect, upload.array("imageFiles", 12), uploadProductImages);
 
 // Category
 router.get("/categories/getAllCategories", getAllCategories);

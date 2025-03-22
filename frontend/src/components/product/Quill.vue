@@ -8,7 +8,6 @@
 import Quill from 'quill';
 import "quill/dist/quill.core.css";
 import 'quill/dist/quill.snow.css';
-import quill from 'quill/core/quill';
   
 export default {
     name: 'Quill',
@@ -33,6 +32,7 @@ export default {
                         'var(--red)', 'var(--green)' , 'var(--blue)',
                         
                     ] }],
+                    [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
                     [{ list: 'ordered' }, { list: 'bullet' }],
                     ['link'],
                 ]
@@ -61,9 +61,7 @@ export default {
         this.quillInstance = new Quill(this.$refs.editorContainer, quillOptions);
   
         if (this.modelValue) {
-            console.log("serus ne", this.modelValue);
             const delta = this.quillInstance.clipboard.convert(this.modelValue);
-            console.log(delta);
 
             // this.quillInstance.setContents(delta);
             this.quillInstance.root.innerHTML = this.modelValue;

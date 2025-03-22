@@ -148,7 +148,7 @@
                             </div>
                         </div>
 
-                        <div class="product-description">
+                        <div class="product-description ql-editor">
                             <div v-html="product.description"></div>
                         </div>
 
@@ -244,6 +244,8 @@ import { Icon } from '@iconify/vue';
 import VueEasyLightbox from 'vue-easy-lightbox';
 
 import { mapGetters, mapActions } from 'vuex';
+
+import "quill/dist/quill.core.css";
 
 export default {
     name: 'ProducDetailContent',

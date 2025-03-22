@@ -92,6 +92,48 @@ exports.updateProduct = async (req, res) => {
     res.status(200).json(product);
 }
 
+exports.uploadProductImages = async (req, res) => {
+    try {
+        const { prevImages, productId } = req.body;
+        const newFiles = req.files;
+        console.log("are there?", newFiles);
+    
+        if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(404).json({error: 'No product found for id ' + productId});
+    
+        if (!newFiles) {
+            console.error("No file uploaded!");
+            return res.status(400).send("No file uploaded");
+        }
+        
+        const userCheck = await User.findById(req.user.id);
+        if (!userCheck) 
+            res.status(401).json({error: 'Auth user not found'});
+    
+        const productCheck = await Product.findById(productId);
+        if (!productCheck) return res.status(404).json({error: 'No product found for id ' + productId});
+    
+        // Only owner or admin is allowed to
+        if (productCheck.sellerId.toString() !== userCheck.id && !userCheck.isAdmin) 
+            res.status(401).json({error: 'Auth user not authorized'});
+    
+        // remove previous images
+        console.log("prev", prevImages);
+        // if (prevImages && prevImages.length) {
+        //     prevImages.forEach(img => {
+        //         const oldFilePath = path.join(__dirname, '../../frontend/src/assets/img/products/', img);
+        //         if (fs.existsSync(oldFilePath)) {
+        //             fs.unlinkSync(oldFilePath);
+        //         }
+        //     });
+        // }
+    
+        res.json({ message: 'Files uploaded successfully', filenames: newFiles.map(fl => fl.name) });
+    } catch (err) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 exports.deleteProduct = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});

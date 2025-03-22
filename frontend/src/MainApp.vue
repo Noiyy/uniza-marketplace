@@ -380,4 +380,25 @@ width */
     border-bottom-right-radius: 16px;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 100%);
 }
+
+.nav-btns-wrapper {
+    background-color: var(--white-5a);
+    border-radius: 8px;
+    padding: 8px;
+    gap: 4px;
+}
+
+.nav-btns-wrapper .btn.nav-btn {
+    text-transform: capitalize;
+    transition: background-color 0.2s ease-in;
+    padding: 2px 24px;
+}
+.nav-btns-wrapper .btn.nav-btn:hover {
+    background-color: var(--white-5a);
+}
+
+.nav-btns-wrapper .btn.nav-btn.active {
+    background-color: var(--white-10a);
+    border-color: transparent;
+}
 </style>

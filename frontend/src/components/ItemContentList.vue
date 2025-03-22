@@ -2,7 +2,12 @@
     <div class="item-content-list d-flex flex-column">
         <div class="list-heading d-flex flex-column gap-8">
             <div class="list-heading-content d-flex gap-16 justify-content-between">
-                <h1 class="title"> {{ listTitle.toUpperCase() }} </h1>
+                <div class="list-title d-flex align-items-center gap-8">
+                    <h1 class="title"> {{ listTitle.toUpperCase() }} </h1>
+
+                    <span v-if="listAllItemsCount"> {{ listAllItemsCount }} </span>
+                </div>
+
                 <div class="list-options d-flex gap-64 align-items-center" :class="listOptionsClass">
                     <slot name="heading-right">
                         <ItemsSorter
@@ -115,7 +120,12 @@ export default {
         listOptionsClass: {
             type: String,
             default: null
-        }
+        },
+
+        listAllItemsCount: {
+            type: Number,
+            default: 0
+        },
     },
 
     components: {
@@ -203,11 +213,12 @@ export default {
     background-color: var(--white-2a);
 }
 
-.list-filters .filter-opt span {
+.list-filters .filter-opt span, .list-title span {
     padding: 4px 16px;
     border-radius: 8px;
     background-color: var(--white-5a);
     color: var(--white-50a);
+    font-weight: bold;
 }
 
 .list-searchbar {
