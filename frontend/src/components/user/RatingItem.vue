@@ -1,40 +1,56 @@
 <template>
-    <div class="rating-item d-flex gap-16">
-        <div class="main d-flex gap-24">
-            <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative">
-                <img v-if="ratingData.fromUser && ratingData.fromUser.avatarPath" :src="getAssetUrl(`img/userAvatars/${ratingData.fromUser.avatarPath}`)" class="user-avatar" alt="User avatar" >
-                <div class="default-avatar-cont" v-else>
-                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                </div>
-            </router-link>
-            <div class="rating-content d-flex flex-column">
-                <div class="rating-heading d-flex gap-24">
-                    <div class="rating-values d-flex gap-8 align-items-center">
-                        <span> {{ ratingData.ratingValue.$numberDecimal }} </span>
-                        <Icon icon="material-symbols:star" class="star-icon" v-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal >= 1" />
-                        <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal > 0" />
-                        <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
-                    </div>
+    <div class="rating-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
+        <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
+            <button class="btn btn-icon" @click="deleteRating()">
+                <Icon icon="mdi:trash" class="control-icon" />
+            </button>
 
-                    <h1 class="rating-title"> {{ ratingData.title }} </h1>
+            <button class="btn btn-icon" @click="editRating()">
+                <Icon icon="mdi:pencil" class="control-icon" />
+            </button>
+        </div>
+
+        <div class="rating-item list-item flex-1 d-flex gap-16">
+            <div class="main d-flex gap-24">
+                <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative">
+                    <img v-if="ratingData.fromUser && ratingData.fromUser.avatarPath" :src="getAssetUrl(`img/userAvatars/${ratingData.fromUser.avatarPath}`)" class="user-avatar" alt="User avatar" >
+                    <div class="default-avatar-cont" v-else>
+                        <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                    </div>
+                </router-link>
+                <div class="rating-content d-flex flex-column">
+                    <div class="rating-heading d-flex gap-24">
+                        <div class="rating-values d-flex gap-8 align-items-center">
+                            <span> {{ ratingData.ratingValue.$numberDecimal }} </span>
+                            <Icon icon="material-symbols:star" class="star-icon" v-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal >= 1" />
+                            <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingData.ratingValue.$numberDecimal && ratingData.ratingValue.$numberDecimal > 0" />
+                            <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
+                        </div>
+    
+                        <h1 class="rating-title"> {{ ratingData.title }} </h1>
+                    </div>
+                    <div class="rating-description-cont scrollbar">
+                        <p class="rating-description">
+                            {{ ratingData.description ? ratingData.description : '-' }}
+                        </p>
+                    </div>
                 </div>
-                <div class="rating-description-cont scrollbar">
-                    <p class="rating-description">
-                        {{ ratingData.description ? ratingData.description : '-' }}
-                    </p>
+            </div>
+            <div class="product-info d-flex flex-column pos-relative">
+                <div class="product-heading"> Product </div>
+                <div class="product-name gradient-text">
+                    <template v-if="ratingData.product && ratingData.product.title"> {{ ratingData.product.title }} </template>
+                    <template v-else> - </template>
                 </div>
+    
+                <router-link v-if="ratingData.productId" :to="`/product/${ratingData.productId}`" class="product-link">
+                    <Icon icon="prime:arrow-up-right" class="arrow-icon" />
+                </router-link>
             </div>
         </div>
-        <div class="product-info d-flex flex-column pos-relative">
-            <div class="product-heading"> Product </div>
-            <div class="product-name gradient-text">
-                <template v-if="ratingData.product && ratingData.product.title"> {{ ratingData.product.title }} </template>
-                <template v-else> - </template>
-            </div>
 
-            <router-link v-if="ratingData.productId" :to="`/product/${ratingData.productId}`" class="product-link">
-                <Icon icon="prime:arrow-up-right" class="arrow-icon" />
-            </router-link>
+        <div class="item-id-info" v-if="isInAdmin">
+            {{ ratingData._id }}
         </div>
     </div>
 </template>
@@ -53,6 +69,10 @@ export default {
         ratingData: {
             type: Object,
             default: null
+        },
+        isInAdmin: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -94,21 +114,14 @@ export default {
 
 <style scoped>
 .rating-item {
-    border-radius: 16px;
-    background-color: var(--white-2a);
     max-height: 124px;
     gap: 20px;
-    transition: box-shadow 0.2s ease-out;
-    position: relative;
 }
 .rating-item:hover {
     color: var(--white);
     -webkit-box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
     -moz-box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
     box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
-}
-.rating-item:nth-child(even) {
-    background-color: var(--white-7a);
 }
 
 .main {

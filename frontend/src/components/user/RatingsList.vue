@@ -3,6 +3,7 @@
         <template v-for="(rating, index) in ratings" :key="index">
             <RatingItem v-if="rating"
                 :rating-data="rating"
+                :is-in-admin="isInAdmin"
             ></RatingItem>
         </template>
     </div>
@@ -28,6 +29,11 @@ export default {
             type: Array,
             default: []
         },
+
+        isInAdmin: {
+            type: Boolean,
+            default: false
+        }
     },
 
     components: {

@@ -4,6 +4,7 @@
             <ProductItem v-if="prod"
                 :prod-data="prod"
                 :view-type="activeViewType"
+                :is-in-admin="isInAdmin"
             ></ProductItem>
         </template>
     </div>
@@ -38,6 +39,11 @@ export default {
         wrapperClass: {
             type: String,
             default: null
+        },
+
+        isInAdmin: {
+            type: Boolean,
+            default: false
         }
     },
 

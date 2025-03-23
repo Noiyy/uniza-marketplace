@@ -234,8 +234,14 @@ export default {
     },
 
     mounted() {
-
+        this.emitter.on("show-hidden-user-products", () => this.shownProducts = true);
+        this.emitter.on("show-hidden-user-ratings", () => this.shownRatings = true);
     },
+
+    unmounted() {
+        this.emitter.off("show-hidden-user-products");
+        this.emitter.off("show-hidden-user-ratings");
+    }
 }
 </script>
 

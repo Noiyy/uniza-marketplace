@@ -29,7 +29,7 @@
                                     :search-query="productsSearchQuery"
                                     :selected-sort-filter="productsSortFilter"
                                     :show-sorter-special-prices="true"
-                                    :list-all-items-count="18251"
+                                    :list-all-items-count="allProducts ? allProducts.length : 0"
                                     :filterClickCallback="filterProductsHandler"
                                     :sorterOptionCallback="sortProductsHandler"
                                     @update:searchQuery="productsSearchHandler"
@@ -38,6 +38,7 @@
                                         <ProductsList
                                             :products="sortedProducts"
                                             :wrapper-class="'smaller'"
+                                            :is-in-admin="true"
                                         ></ProductsList>
                                     </template>
                                 </ItemContentList>
@@ -46,17 +47,19 @@
                             <div id="users" class="admin-section">
                                 <ItemContentList
                                     :list-title="'Users'"
-                                    :item-filters="ratingFilters"
-                                    :search-query="ratingsSearchQuery"
-                                    :selected-sort-filter="ratingsSortFilter"
-                                    :sorter-custom-filters="ratingsNavFilters"
-                                    :list-all-items-count="18632"
-                                    :filterClickCallback="filterRatingsHandler"
-                                    :sorterOptionCallback="sortRatingsHandler"
-                                    @update:searchQuery="ratingsSearchHandler"
+                                    :item-filters="usersFilters"
+                                    :search-query="usersSearchQuery"
+                                    :selected-sort-filter="usersSortFilter"
+                                    :sorter-custom-filters="usersNavFilters"
+                                    :list-all-items-count="allUsers ? allUsers.length : 0"
+                                    :filterClickCallback="filterUsersHandler"
+                                    :sorterOptionCallback="sortUsersHandler"
+                                    @update:searchQuery="usersSearchHandler"
                                 >
                                     <template #content>
-                                        aaa
+                                        <UsersList
+                                            :users="sortedUsers"
+                                        ></UsersList>
                                     </template>
                                 </ItemContentList>
                             </div>
@@ -69,13 +72,13 @@
                                     :selected-sort-filter="ratingsSortFilter"
                                     :sorter-custom-filters="ratingsNavFilters"
                                     :list-all-items-count="allRatings ? allRatings.length : 0"
-                                    :filterClickCallback="filterRatingsHandler"
                                     :sorterOptionCallback="sortRatingsHandler"
                                     @update:searchQuery="ratingsSearchHandler"
                                 >
                                     <template #content>
                                         <RatingsList
                                             :ratings="sortedRatings"
+                                            :is-in-admin="true"
                                         ></RatingsList>
                                     </template>
                                 </ItemContentList>
@@ -136,6 +139,7 @@ import ItemContentList from '../ItemContentList.vue';
 
 import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
+import UsersList from '../user/UsersList.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
@@ -154,7 +158,8 @@ export default {
         Footer,
         ItemContentList,
         ProductsList,
-        RatingsList
+        RatingsList,
+        UsersList
     },
 
     data() {
@@ -209,6 +214,25 @@ export default {
             ratingsNavFilters: [
                 { name: "latest" },
                 { name: "oldest" },
+            ],
+
+            filteredUsers: [],
+            sortedUsers: [],
+
+            usersFilters: [],
+            usersSortFilter: "latest",
+            usersSearchQuery: "",
+            usersNavFilters: [
+                { name: "latest" },
+                { name: "oldest" },
+                { name: "userId" },
+                { name: "maxRating" },
+                { name: "minRating" },
+                { name: "maxProductsOnSale" },
+                { name: "maxProductsSold" },
+                { name: "maxProductsBought" },
+                { name: "maxOwnReports" },
+                { name: "maxOthersReports" }
             ],
         }
     },
@@ -270,41 +294,9 @@ export default {
 
             const el = document.getElementById(item.href);
             el.scrollIntoView();
-
-            const headerHeight = 123;
-            // window.scrollBy(0, headerHeight + 16);
-
-            // function scrollElementIntoViewAsync(element) {
-            //     return new Promise((resolve) => {
-            //         const observer = new IntersectionObserver(
-            //             (entries) => {
-            //                 entries.forEach((entry) => {
-
-            //                 if (entry.intersectionRatio >= 0.80) {
-            //                     observer.disconnect();
-            //                     resolve();
-            //                 }
-            //                 });
-            //             },
-            //             {
-            //                 threshold: 0.80, // Trigger when 80% of the element is visible
-            //             }
-            //         );
-
-            //         observer.observe(element);
-            //         element.scrollIntoView();
-            //     });
-            // }   
-
-            // scrollElementIntoViewAsync(el).then(() => {
-            //     console.log('Scrolling finished and element is in view!');
-            //     setTimeout(() =>{
-            //         window.scrollBy(0, headerHeight + 16);
-            //     }, 100);
-            // });
-
         },
 
+        /* DATA GETTERS THROUGH SORTING AND FILTERING */
         getProductsData() {
             this.filteredProducts = this.filterProducts(this.allProducts, this.productsSearchQuery, this.productsTypeFilter);
             this.sortedProducts = this.sortProducts(this.filteredProducts, this.productsSortFilter);
@@ -315,8 +307,13 @@ export default {
             this.sortedRatings = this.sortRatings(this.filteredRatings, this.ratingsSortFilter);
         },
 
+        getUsersData() {
+            this.filteredUsers = this.filterUsers(this.allUsers, this.usersSearchQuery, this.usersTypeFilter);
+            this.sortedUsers = this.sortUsers(this.filteredUsers, this.usersSortFilter);
+        },
+
+        /* FILTER HANDLERS */
         filterProductsHandler(fltr) {
-            console.log("fltr prod", fltr);
             this.productsTypeFilter = fltr.name;
             this.productFilters.forEach(pr => pr.active = false);
             const selFilter = this.productFilters.find(pr => pr.name == this.productsTypeFilter);
@@ -325,19 +322,25 @@ export default {
             this.getProductsData();
         },
 
-        sortProductsHandler(fltr) {
-            console.log("sort prod", fltr);
-            this.productsSortFilter = fltr.name;
-            this.getProductsData();
+        filterRatingsHandler(fltr) {
+            // vymazať, netreba
+            // this.ratingFilters.forEach(ft => ft.active = false);
+            // this.getRatingsData();
         },
 
-        filterRatingsHandler(fltr) {
-            // this.ratingsTypeFilter = fltr.name;
-            this.ratingFilters.forEach(ft => ft.active = false);
-            // const selFilter = this.ratingFilters.find(ft => ft.name == this.ratingsTypeFilter);
-            // if (selFilter) selFilter.active = true;
+        filterUsersHandler(fltr) {
+            this.usersTypeFilter = fltr.name;
+            this.usersFilters.forEach(ft => ft.active = false);
+            const selFilter = this.usersFilters.find(ft => ft.name == this.usersTypeFilter);
+            if (selFilter) selFilter.active = true;
 
-            this.getRatingsData();
+            this.getUsersData();
+        },
+
+        /* SORT HANDLERS */
+        sortProductsHandler(fltr) {
+            this.productsSortFilter = fltr.name;
+            this.getProductsData();
         },
 
         sortRatingsHandler(fltr) {
@@ -345,6 +348,12 @@ export default {
             this.getRatingsData();
         },
 
+        sortUsersHandler(fltr) {
+            this.usersSortFilter = fltr.name;
+            this.getUsersData();
+        },
+
+        /* SEARCH HANDLERS */
         ratingsSearchHandler(newValue) {
             this.ratingsSearchQuery = newValue;
             this.getRatingsData();
@@ -355,6 +364,12 @@ export default {
             this.getProductsData();
         },
 
+        usersSearchHandler(newValue) {
+            this.usersSearchQuery = newValue;
+            this.getUsersData();
+        },
+
+        /* SETUP FILTERS */
         setupProductFilters() {
             this.productFilters = [
                 { name: "onSale", count: 2, active: true },
@@ -368,7 +383,17 @@ export default {
             ];
         },
 
+        setupUserFilters() {
+            this.usersFilters = [    
+                { name: "active", count: this.allUsers.filter(usr => !usr.ban).length, active: true },
+                { name: "banned", count: this.allUsers.filter(usr => usr.ban && usr.ban.isBanned).length }
+            ];
+        },
+
+        /* ####################### */
         /* RESTY */
+        /* ####################### */
+
         async getAllProducts() {
             const resp = await this.productApi.getAllProducts();
             this.allProducts = resp.data;
@@ -379,7 +404,25 @@ export default {
             const resp = await this.feedbackApi.getAllRatings();
             this.allRatings = resp.data;
             console.log("ratings", resp);
-        }
+        },
+
+        async getAllUsers() {
+            const resp = await this.userApi.getAllUsers();
+            this.allUsers = resp.data;
+            console.log("users", resp);
+        },
+
+        async getAllSupportTickets() {
+            const resp = await this.feedbackApi.getAllRatings();
+            this.allSupportTickets = resp.data;
+            console.log("supp tickets", resp);
+        },
+
+        async getAllReports() {
+            const resp = await this.feedbackApi.getAllRatings();
+            this.allReports = resp.data;
+            console.log("reports", resp);
+        },
     },
     
     computed: {
@@ -401,12 +444,15 @@ export default {
 
         await this.getAllProducts();
         await this.getAllRatings();
+        await this.getAllUsers();
 
         this.setupProductFilters();
         this.setupRatingFilters();
+        this.setupUserFilters();
         
         this.getProductsData();
         this.getRatingsData();
+        this.getUsersData();
 
         this.emitter.emit("hide-loader");
     }

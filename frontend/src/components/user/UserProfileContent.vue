@@ -31,7 +31,7 @@
                                 </div>
 
                                 <div class="joined-on d-flex gap-32 align-items-center">
-                                    <span> {{ isoToDateString(user.registeredAt) }} </span>
+                                    <span> {{ isoToDateString(user.createdAt) }} </span>
                                     Joined on
                                 </div>
                             </div>
@@ -230,11 +230,13 @@ export default {
         viewProducts() {
             const el = document.querySelector(".user-products");
             el.scrollIntoView();
+            this.emitter.emit("show-hidden-user-products");
         },
 
         viewRatings() {
             const el = document.querySelector(".user-ratings");
             el.scrollIntoView();
+            this.emitter.emit("show-hidden-user-ratings");
         }
     },
 

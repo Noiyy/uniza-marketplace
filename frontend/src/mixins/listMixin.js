@@ -10,18 +10,24 @@ export const listMixin = {
             );
         },
 
+        sortByDate (sortedItems, selectedSortFilter) {
+            sortedItems.sort((a, b) => {
+                const aEpoch = new Date(a.createdAt).getTime();
+                const bEpoch = new Date(b.createdAt).getTime();
+
+                return selectedSortFilter == "latest" ? 
+                    bEpoch - aEpoch : 
+                    aEpoch - bEpoch;
+            });
+        },
+
+
+        /* ITEM SORTERS */
         sortProducts(filteredProducts, selectedSortFilter) {
             let sortedProducts = JSON.parse(JSON.stringify(filteredProducts));
 
             if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
-                sortedProducts.sort((a, b) => {
-                    const aEpoch = new Date(a.createdAt).getTime();
-                    const bEpoch = new Date(b.createdAt).getTime();
-
-                    return selectedSortFilter == "latest" ? 
-                        bEpoch - aEpoch : 
-                        aEpoch - bEpoch;
-                });
+                this.sortByDate(sortedProducts, selectedSortFilter);
 
             } else if (selectedSortFilter == "minPrice" || selectedSortFilter == "maxPrice") {
                 sortedProducts.sort((a, b) => {
@@ -48,6 +54,27 @@ export const listMixin = {
             return sortedProducts;
         },
 
+        sortRatings(filteredRatings, selectedSortFilter) {
+            let sortedRatings = JSON.parse(JSON.stringify(filteredRatings));
+
+            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
+                this.sortByDate(sortedRatings, selectedSortFilter);
+            }
+
+            return sortedRatings;
+        },
+
+        sortUsers(filteredUsers, selectedSortFilter) {
+            let sortedUsers = JSON.parse(JSON.stringify(filteredUsers));
+
+            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
+                this.sortByDate(sortedUsers, selectedSortFilter);
+            }
+
+            return sortedUsers;
+        },
+
+        /* ITEM FILTERS */
         filterProducts(products, searchQuery, selectedSearchCategory, selectedPriceRange, selectedLocation, type) {
             let filteredProducts = JSON.parse(JSON.stringify(products));
 
@@ -70,32 +97,30 @@ export const listMixin = {
             return filteredProducts;
         },
 
-        sortRatings(filteredRatings, selectedSortFilter) {
-            let sortedRatings = JSON.parse(JSON.stringify(filteredRatings));
-
-            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
-                sortedRatings.sort((a, b) => {
-                    const aEpoch = new Date(a.createdAt).getTime();
-                    const bEpoch = new Date(b.createdAt).getTime();
-
-                    return selectedSortFilter == "latest" ? 
-                        bEpoch - aEpoch : 
-                        aEpoch - bEpoch;
-                });
-            }
-
-            return sortedRatings;
-        },
-
         filterRatings(ratings, searchQuery, type) {
             let filteredRatings = JSON.parse(JSON.stringify(ratings));
 
             if (type)
-                filteredRatings = filteredRatings = filteredRatings.filter(rt => rt.type__ == type);
+                filteredRatings = filteredRatings.filter(rt => rt.type__ == type);
             if (searchQuery) 
                 filteredRatings = this.filterByValue(filteredRatings, searchQuery.toLowerCase());
 
             return filteredRatings;
+        },
+
+        filterUsers(users, searchQuery, userStatus) {
+            let filteredUsers = JSON.parse(JSON.stringify(users));
+
+            if (userStatus) {
+                if (userStatus == "active") filteredUsers = filteredUsers.filter(user => !user.ban)
+                else if (userStatus == "banned") filteredUsers = filteredUsers.filter(user => user.ban && user.ban.isBanned);
+                
+            }
+               
+            if (searchQuery) 
+                filteredUsers = this.filterByValue(filteredUsers, searchQuery.toLowerCase());
+
+            return filteredUsers;
         }
     }
 };

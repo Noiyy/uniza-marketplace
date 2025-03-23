@@ -1,66 +1,94 @@
 <template>
-    <router-link :to="`/product/${prodData._id}`" class="product-item d-flex list" v-if="viewType == 'list'"> <!-- :class="viewType == 'grid' ? 'grid' : ''" -->
-        <div class="thumbnail d-flex justify-content-center align-items-center">
-            <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
-            <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
+    <div class="product-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
+        <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
+            <button class="btn btn-icon" @click="deleteProduct()">
+                <Icon icon="mdi:trash" class="control-icon" />
+            </button>
+
+            <button class="btn btn-icon" @click="editProduct()">
+                <Icon icon="mdi:pencil" class="control-icon" />
+            </button>
         </div>
-        <div class="main d-flex flex-column">
-            <div class="heading">
-                <h2 class="gradient-text"> {{ prodData.title }} </h2>
+
+        <router-link :to="`/product/${prodData._id}`" class="product-item list-item d-flex flex-1 list" v-if="viewType == 'list'"> <!-- :class="viewType == 'grid' ? 'grid' : ''" -->
+            <div class="thumbnail d-flex justify-content-center align-items-center">
+                <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
+                <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
             </div>
-            <div class="description" 
-                v-html="prodData.description"> 
-            </div>
-        </div>
-        <div class="details d-flex flex-column gap-8">
-            <div class="price">
-                <span v-if="prodData.price.specialValue"> {{ prodData.price.specialValue }} </span>
-                <span v-else> {{ prodData.price.value.$numberDecimal }}€ </span>      
-            </div>
-            <div class="location">
-                <Icon icon="mdi:location" class="location-icon detail-icon" />
-                Žilina
-            </div>
-            <div class="d-flex gap-16 justify-content-between align-items-center">
-                <div class="views">
-                    <Icon icon="mdi:eye" class="views-icon detail-icon" />
-                    2719x
+            <div class="main d-flex flex-column">
+                <div class="heading">
+                    <h2 class="gradient-text"> {{ prodData.title }} </h2>
                 </div>
-                <div class="count d-flex gap-8 align-items-center">
-                    <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
-                    {{ prodData.count.available }}
+                <div class="description" 
+                    v-html="prodData.description"> 
                 </div>
             </div>
-        </div>
-    </router-link>
-
-    <router-link :to="`/product/${prodData._id}`" class="product-item d-flex flex-column grid" v-else-if="viewType == 'grid'">
-        <div class="thumbnail d-flex justify-content-center align-items-center">
-            <div class="location">
-                <Icon icon="mdi:location" class="location-icon detail-icon" />
-                Žilina
-            </div>
-
-            <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
-            <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
-        </div>
-        <div class="main d-flex flex-column justify-content-between">
-            <div class="heading">
-                <h2 class="gradient-text"> {{ prodData.title }} </h2>
-            </div>
-            <div class="grid-details d-flex gap-16 justify-content-between align-items-center">
+            <div class="details d-flex flex-column gap-8">
                 <div class="price">
                     <span v-if="prodData.price.specialValue"> {{ prodData.price.specialValue }} </span>
                     <span v-else> {{ prodData.price.value.$numberDecimal }}€ </span>      
                 </div>
-
-                <div class="count d-flex gap-8 align-items-center">
-                    <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
-                    {{ prodData.count.available }}
+                <div class="location">
+                    <Icon icon="mdi:location" class="location-icon detail-icon" />
+                    Žilina
+                </div>
+                <div class="d-flex gap-16 justify-content-between align-items-center">
+                    <div class="views">
+                        <Icon icon="mdi:eye" class="views-icon detail-icon" />
+                        2719x
+                    </div>
+                    <div class="count d-flex gap-8 align-items-center">
+                        <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
+                        {{ prodData.count.available }}
+                    </div>
                 </div>
             </div>
+        </router-link>
+    
+        <router-link :to="`/product/${prodData._id}`" class="product-item d-flex flex-column grid" v-else-if="viewType == 'grid'">
+            <div class="thumbnail d-flex justify-content-center align-items-center">
+                <div class="location">
+                    <Icon icon="mdi:location" class="location-icon detail-icon" />
+                    Žilina
+                </div>
+    
+                <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
+                <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
+            </div>
+            <div class="main d-flex flex-column justify-content-between">
+                <div class="heading">
+                    <h2 class="gradient-text"> {{ prodData.title }} </h2>
+                </div>
+                <div class="grid-details d-flex gap-16 justify-content-between align-items-center">
+                    <div class="price">
+                        <span v-if="prodData.price.specialValue"> {{ prodData.price.specialValue }} </span>
+                        <span v-else> {{ prodData.price.value.$numberDecimal }}€ </span>      
+                    </div>
+    
+                    <div class="count d-flex gap-8 align-items-center">
+                        <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
+                        {{ prodData.count.available }}
+                    </div>
+                </div>
+            </div>
+        </router-link>
+
+        <router-link :to="`/user/${prodData.sellerId}`" class="user-avatar-wrapper" v-if="isInAdmin">
+            <div class="user-avatar-cont pos-relative">
+                <img :src="getAssetUrl(`img/userAvatars/${prodData.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="prodData.avatarPath">
+                <div class="default-avatar-cont" v-else>
+                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                </div>
+            </div>
+            <div class="user-name text-center">
+                {{ prodData.username }}
+            </div>
+        </router-link>
+
+        <div class="item-id-info" v-if="isInAdmin">
+            {{ prodData._id }}
         </div>
-    </router-link>
+    </div>
 </template>
 
 <script>
@@ -82,6 +110,11 @@ export default {
         viewType: {
             type: String,
             default: "list"
+        },
+
+        isInAdmin: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -123,21 +156,14 @@ export default {
 
 <style scoped>
 .product-item {
-    border-radius: 16px;
-    background-color: var(--white-2a);
     height: 116px;
     gap: 20px;
-    transition: box-shadow 0.2s ease-out;
-    position: relative;
 }
-.product-item:hover {
+.product-item:hover { 
     color: var(--white);
     -webkit-box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
     -moz-box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
     box-shadow: 0px 0px 8px 0px rgba(255 ,255, 255, 0.66);
-}
-.product-item:nth-child(even) {
-    background-color: var(--white-7a);
 }
 
 .thumbnail {

@@ -1,13 +1,21 @@
 const User = require("../models/userModel");
+const Rating = require("../models/ratingModel");
 const mongoose = require("mongoose");
 
 const fs = require('fs');
 const path = require('path');
 
 exports.getAllUsers = async (req, res) => {
-    const users = await User.find({}).sort({registeredAt: -1});
+    const users = await User.find({}).sort({createdAt: -1}).lean();
+    const ratings = await Rating.find({}).lean();
+
+    let usersWithRatings = users.map((usr) => ({
+        ...usr,
+        ownRatings: ratings.filter(rt => String(rt.toUserId) === String(usr._id)),
+        ratedOthersCount: ratings.filter(rt => String(rt.fromUserId) === String(usr._id)).length
+    }));
     
-    res.status(200).json(users);
+    res.status(200).json(usersWithRatings);
 };
 
 exports.getUser = async (req, res) => {
