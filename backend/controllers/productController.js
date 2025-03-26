@@ -4,9 +4,15 @@ const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 exports.getAllProducts = async (req, res) => {
-    const products = await Product.find({}).sort({createdAt: -1});
+    const products = await Product.find({}).sort({createdAt: -1}).lean();
+    const users = await User.find({}).lean();
+
+    let productsWithSellers = products.map((prod) => ({
+        ...prod,
+        sellerInfo: users.find(usr => String(usr._id) === String(prod.sellerId))
+    }));
     
-    res.status(200).json(products);
+    res.status(200).json(productsWithSellers);
 };
 
 exports.getLatestProducts = async (req, res) => {

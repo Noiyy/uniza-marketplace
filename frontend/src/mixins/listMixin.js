@@ -74,6 +74,16 @@ export const listMixin = {
             return sortedUsers;
         },
 
+        sortReports(filteredReports, selectedSortFilter) {
+            let sortedReports = JSON.parse(JSON.stringify(filteredReports));
+
+            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
+                this.sortByDate(sortedReports, selectedSortFilter);
+            }
+
+            return sortedReports;
+        },
+
         /* ITEM FILTERS */
         filterProducts(products, searchQuery, selectedSearchCategory, selectedPriceRange, selectedLocation, type) {
             let filteredProducts = JSON.parse(JSON.stringify(products));
@@ -121,6 +131,20 @@ export const listMixin = {
                 filteredUsers = this.filterByValue(filteredUsers, searchQuery.toLowerCase());
 
             return filteredUsers;
+        },
+
+        filterReports(reports, searchQuery, type) {
+            let filteredReports = JSON.parse(JSON.stringify(reports));
+
+            if (type) {
+                if (type == "users") filteredReports = filteredReports.filter(rp => !rp.toProductId);
+                else if (type == "products") filteredReports = filteredReports.filter(rp => rp.toProductId)
+            }
+               
+            if (searchQuery) 
+                filteredReports = this.filterByValue(filteredReports, searchQuery.toLowerCase());
+
+            return filteredReports;
         }
     }
 };

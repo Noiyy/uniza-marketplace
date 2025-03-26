@@ -401,4 +401,37 @@ width */
     background-color: var(--white-10a);
     border-color: transparent;
 }
+
+.list-item-cont .item-id-info {
+    opacity: 0.33;
+    color: var(--white);
+    font-weight: 200;
+    font-size: 12px;
+    position: absolute;
+    bottom: -18px;
+    left: 64px;
+}
+
+.list-item-cont .list-item {
+    border-radius: 16px;
+    background-color: var(--white-2a);
+    transition: box-shadow 0.2s ease-out;
+    position: relative;
+}
+
+.list-item-cont:nth-child(even) .list-item {
+    background-color: var(--white-7a);
+}
+
+.list-item-cont .list-item-controls .btn {
+    background-color: var(--primary);
+    color: var(--black);
+}
+.list-item-cont .list-item-controls .btn:hover {
+    filter: brightness(0.7);
+}
+
+.list-item-cont:nth-child(even) .list-item-controls .btn {
+    background-color: var(--secondary);
+}
 </style>

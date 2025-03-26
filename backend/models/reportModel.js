@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
  
 const reportSchema = new mongoose.Schema({
-	reportedAt: {
+	createdAt: {
 		type: Date,
 		default: Date.now,
 		required: true

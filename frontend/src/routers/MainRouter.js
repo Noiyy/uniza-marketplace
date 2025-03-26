@@ -158,10 +158,14 @@ export default function (emitter, isDev, axiosInstance) {
             } catch (err) {
                 console.error("err", err);
                 next({ path: '/404' });
+                emitter.emit("close-sidebarMenu");
             }
 
             if (found) defaultRouteHandler(to, from, next);
-            else next({ path: '/404' });
+            else {
+                next({ path: '/404' });
+                emitter.emit("close-sidebarMenu");
+            }
 
         } else
             defaultRouteHandler(to, from, next);

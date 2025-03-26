@@ -105,17 +105,19 @@
                             <div id="reports" class="admin-section">
                                 <ItemContentList
                                     :list-title="'Reports'"
-                                    :item-filters="ratingFilters"
-                                    :search-query="ratingsSearchQuery"
-                                    :selected-sort-filter="ratingsSortFilter"
-                                    :sorter-custom-filters="ratingsNavFilters"
-                                    :list-all-items-count="18632"
-                                    :filterClickCallback="filterRatingsHandler"
-                                    :sorterOptionCallback="sortRatingsHandler"
-                                    @update:searchQuery="ratingsSearchHandler"
+                                    :item-filters="reportsFilters"
+                                    :search-query="reportsSearchQuery"
+                                    :selected-sort-filter="reportsSortFilter"
+                                    :sorter-custom-filters="reportsNavFilters"
+                                    :list-all-items-count="allReports ? allReports.length : 0"
+                                    :filterClickCallback="filterReportsHandler"
+                                    :sorterOptionCallback="sortReportsHandler"
+                                    @update:searchQuery="reportsSearchHandler"
                                 >
                                     <template #content>
-                                        aaa
+                                        <ReportsList
+                                            :reports="sortedReports"
+                                        ></ReportsList>
                                     </template>
                                 </ItemContentList>
                             </div>
@@ -140,6 +142,7 @@ import ItemContentList from '../ItemContentList.vue';
 import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
 import UsersList from '../user/UsersList.vue';
+import ReportsList from './ReportsList.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
@@ -159,7 +162,8 @@ export default {
         ItemContentList,
         ProductsList,
         RatingsList,
-        UsersList
+        UsersList,
+        ReportsList
     },
 
     data() {
@@ -220,6 +224,7 @@ export default {
             sortedUsers: [],
 
             usersFilters: [],
+            usersTypeFilter: "active",
             usersSortFilter: "latest",
             usersSearchQuery: "",
             usersNavFilters: [
@@ -233,6 +238,18 @@ export default {
                 { name: "maxProductsBought" },
                 { name: "maxOwnReports" },
                 { name: "maxOthersReports" }
+            ],
+
+            filteredReports: [],
+            sortedReports: [],
+
+            reportsFilters: [],
+            reportsTypeFilter: "all",
+            reportsSortFilter: "latest",
+            reportsSearchQuery: "",
+            reportsNavFilters: [
+                { name: "latest" },
+                { name: "oldest" },
             ],
         }
     },
@@ -312,6 +329,11 @@ export default {
             this.sortedUsers = this.sortUsers(this.filteredUsers, this.usersSortFilter);
         },
 
+        getReportsData() {
+            this.filteredReports = this.filterReports(this.allReports, this.reportsSearchQuery, this.reportsTypeFilter);
+            this.sortedReports = this.sortReports(this.filteredReports, this.reportsSortFilter);
+        },
+
         /* FILTER HANDLERS */
         filterProductsHandler(fltr) {
             this.productsTypeFilter = fltr.name;
@@ -337,6 +359,15 @@ export default {
             this.getUsersData();
         },
 
+        filterReportsHandler(fltr) {
+            this.reportsTypeFilter = fltr.name;
+            this.reportsFilters.forEach(ft => ft.active = false);
+            const selFilter = this.reportsFilters.find(ft => ft.name == this.reportsTypeFilter);
+            if (selFilter) selFilter.active = true;
+
+            this.getReportsData();
+        },
+
         /* SORT HANDLERS */
         sortProductsHandler(fltr) {
             this.productsSortFilter = fltr.name;
@@ -353,6 +384,11 @@ export default {
             this.getUsersData();
         },
 
+        sortReportsHandler(fltr) {
+            this.reportsSortFilter = fltr.name;
+            this.getReportsData();
+        },
+
         /* SEARCH HANDLERS */
         ratingsSearchHandler(newValue) {
             this.ratingsSearchQuery = newValue;
@@ -367,6 +403,11 @@ export default {
         usersSearchHandler(newValue) {
             this.usersSearchQuery = newValue;
             this.getUsersData();
+        },
+
+        reportsSearchHandler(newValue) {
+            this.reportsSearchQuery = newValue;
+            this.getReportsData();
         },
 
         /* SETUP FILTERS */
@@ -387,6 +428,14 @@ export default {
             this.usersFilters = [    
                 { name: "active", count: this.allUsers.filter(usr => !usr.ban).length, active: true },
                 { name: "banned", count: this.allUsers.filter(usr => usr.ban && usr.ban.isBanned).length }
+            ];
+        },
+
+        setupReportFilters() {
+            this.reportsFilters = [    
+                { name: "all", count: this.allReports.length, active: true },
+                { name: "users", count: this.allReports.filter(rp => !rp.toProductId).length },
+                { name: "products", count: this.allReports.filter(rp => rp.toProductId).length }
             ];
         },
 
@@ -419,7 +468,7 @@ export default {
         },
 
         async getAllReports() {
-            const resp = await this.feedbackApi.getAllRatings();
+            const resp = await this.feedbackApi.getAllReports();
             this.allReports = resp.data;
             console.log("reports", resp);
         },
@@ -445,14 +494,17 @@ export default {
         await this.getAllProducts();
         await this.getAllRatings();
         await this.getAllUsers();
+        await this.getAllReports();
 
         this.setupProductFilters();
         this.setupRatingFilters();
         this.setupUserFilters();
+        this.setupReportFilters();
         
         this.getProductsData();
         this.getRatingsData();
         this.getUsersData();
+        this.getReportsData();
 
         this.emitter.emit("hide-loader");
     }

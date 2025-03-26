@@ -75,13 +75,15 @@
 
         <router-link :to="`/user/${prodData.sellerId}`" class="user-avatar-wrapper" v-if="isInAdmin">
             <div class="user-avatar-cont pos-relative">
-                <img :src="getAssetUrl(`img/userAvatars/${prodData.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="prodData.avatarPath">
+                <div class="avatar-overlay"></div>
+
+                <img :src="getAssetUrl(`img/userAvatars/${prodData.sellerInfo.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="prodData.sellerInfo && prodData.sellerInfo.avatarPath">
                 <div class="default-avatar-cont" v-else>
                     <Icon icon="akar-icons:person" class="default-avatar-icon" />
                 </div>
             </div>
             <div class="user-name text-center">
-                {{ prodData.username }}
+                {{ prodData.sellerInfo.username }}
             </div>
         </router-link>
 
@@ -258,5 +260,57 @@ export default {
     background-color: rgba(0, 0, 0, 0.66);
     font-size: 12px;
     padding: 2px 8px;
+}
+
+.user-avatar-wrapper:hover {
+    color: var(--white);
+}
+
+.user-avatar-cont, .default-avatar-cont {
+    flex: 1;
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    border-radius: 50%;
+    display: flex;
+}
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+}
+
+.default-avatar-cont {
+    font-size: 28px;
+    background: var(--white-7a);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-name {
+    margin-top: 8px;
+    font-weight: initial;
+    line-height: 100%;
+}
+
+.user-avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.33);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s ease-in;
 }
 </style>

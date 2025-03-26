@@ -279,12 +279,10 @@ export default {
         getMenuBtnPos() {
             function getElPosition(element) {
                 const rect = element.getBoundingClientRect();
-                const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-                const scrollTop = window.scrollY || document.documentElement.scrollTop;
 
                 return {
-                    x: rect.left + scrollLeft,
-                    y: rect.top + scrollTop,
+                    x: rect.left,
+                    y: rect.top,
                 };
             }
 
@@ -401,6 +399,7 @@ export default {
 
         this.getMenuBtnPos();
         this.emitter.on("resized-window", () => this.getMenuBtnPos());
+        // this.emitter.on("update-menuBtnPos", () => this.getMenuBtnPos());
     },
 
     unmounted() {

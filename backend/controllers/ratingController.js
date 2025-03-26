@@ -2,7 +2,8 @@ const Rating = require("../models/ratingModel");
 const mongoose = require("mongoose");
 
 exports.getAllRatings = async (req, res) => {
-    const ratings = await Rating.find({}).sort({createdAt: -1});
+    // const ratings = await Rating.find({}).sort({createdAt: -1});
+    const ratings = await fetchRatingsWithUsers({});
     
     res.status(200).json(ratings);
 };

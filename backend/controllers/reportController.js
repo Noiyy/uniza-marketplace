@@ -2,7 +2,7 @@ const Report = require("../models/reportModel");
 const mongoose = require("mongoose");
 
 exports.getAllReports = async (req, res) => {
-    const users = await Report.find({}).sort({reportedAt: -1});
+    const users = await fetchReportsWithUsers({});
     
     res.status(200).json(users);
 };
@@ -47,3 +47,89 @@ exports.deleteReport = async (req, res) => {
    
     res.status(200).json({message: 'Report deleted.'});
 }
+
+const fetchReportsWithUsers = async (filter) => {
+    return await Report.aggregate([
+        {
+            $match: filter
+        },
+        {
+            $lookup: {
+                from: 'users',
+                let: { fromUserId: '$fromUserId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$fromUserId'] } } },
+                    { $project: { _id: 1, avatarPath: 1 } }
+                ],
+                as: 'fromUser'
+            }
+        },
+        {
+            $unwind: {
+                path: '$fromUser',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                let: { toUserId: '$toUserId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$toUserId'] } } },
+                    { $project: { _id: 1, avatarPath: 1 } }
+                ],
+                as: 'toUser'
+            }
+        },
+        {
+            $unwind: {
+                path: '$toUser',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
+                from: 'products',
+                let: { productId: '$toProductId' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$productId'] } } },
+                    { $project: { _id: 1, title: 1, images: 1 } }
+                ],
+                as: 'toProduct'
+            }
+        },
+        {
+            $unwind: {
+                path: '$toProduct',
+                preserveNullAndEmptyArrays: true
+            }
+        }
+    ]);
+};
+
+async function initTestReports() {
+    const reports = [
+        {
+            description: "Salami tongue boudin, chicken pork loin porchetta cupim biltong chuck swine. Kielbasa alcatra tongue pork belly picanha shank, tenderloin chicken venison cow spare ribs pork filet mignon pancetta strip steak.",
+            fromUserId: "679679676468b5e69af79120",
+            toUserId: "67c4433b1e8440e30e55fe36",
+            toProductId: "67c0eb52ace7292bf8dfdec2"
+        },
+        {
+            description: "zavadzajuce obrazky takmer vsetkych jeho produktov",
+            fromUserId: "67c4433b1e8440e30e55fe36",
+            toUserId: "679679676468b5e69af79120",
+        },
+        {
+            description: "podvod, dostal som uplne nieco ine",
+            fromUserId: "679679676468b5e69af79120",
+            toUserId: "67c4433b1e8440e30e55fe36",
+            toProductId: "67c0eb52ace7292bf8dfdec3"
+        },
+    ];
+
+    await Report.deleteMany({});
+    await Report.insertMany(reports);
+}
+
+// initTestReports().catch(err => console.error(err));

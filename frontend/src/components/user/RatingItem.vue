@@ -10,9 +10,16 @@
             </button>
         </div>
 
-        <div class="rating-item list-item flex-1 d-flex gap-16">
+        <div class="rating-item list-item flex-1 d-flex gap-16" :class="isInAdmin ? 'smaller' : ''">
             <div class="main d-flex gap-24">
-                <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative">
+                <div v-if="isInAdmin">
+                    <FromToObjectInfos
+                        :from-obj="ratingData.fromUser"
+                        :to-obj="ratingData.toUser"
+                        :created-at="ratingData.createdAt"
+                    ></FromToObjectInfos>
+                </div>
+                <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative" v-else>
                     <img v-if="ratingData.fromUser && ratingData.fromUser.avatarPath" :src="getAssetUrl(`img/userAvatars/${ratingData.fromUser.avatarPath}`)" class="user-avatar" alt="User avatar" >
                     <div class="default-avatar-cont" v-else>
                         <Icon icon="akar-icons:person" class="default-avatar-icon" />
@@ -56,6 +63,8 @@
 </template>
 
 <script>
+import FromToObjectInfos from './FromToObjectInfos.vue';
+
 import { Icon } from '@iconify/vue';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -77,7 +86,8 @@ export default {
     },
 
     components: {
-        Icon
+        Icon,
+        FromToObjectInfos
     },
 
     data() {
@@ -222,5 +232,26 @@ export default {
 
 .rating-values span {
     font-weight: 600;
+}
+
+.rating-item.smaller .main, .rating-item.smaller .product-info {
+    padding: 8px;
+}
+
+.rating-item.smaller .rating-values {
+    gap: 2px !important;
+}
+
+.rating-item.smaller .rating-heading {
+    gap: 8px !important;
+}
+
+.rating-item.smaller .rating-title {
+    font-size: 14px;
+    line-height: 14px;
+}
+
+.rating-item.smaller .rating-description-cont {
+    max-height: 36px;
 }
 </style>
