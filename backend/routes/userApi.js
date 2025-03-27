@@ -14,7 +14,7 @@ router.get("/getAllUsers", getAllUsers);
 router.get("/getLoggedUser", protect, getLoggedUser);
 router.get("/:id", getUser);
 router.patch('/update/:id', updateUser);
-router.delete('/delete/:id', deleteUser);
+router.delete('/delete/:id', protect, deleteUser);
 
 // Upload avatar
 const storage = multer.diskStorage({

@@ -1,13 +1,13 @@
 <template>
     <div class="product-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
         <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
-            <button class="btn btn-icon" @click="deleteProduct()">
+            <button class="btn btn-icon" @click="showDeleteProduct()">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
-            <button class="btn btn-icon" @click="editProduct()">
+            <router-link role="button" class="btn btn-icon" :to="`product/${prodData._id}/edit`">
                 <Icon icon="mdi:pencil" class="control-icon" />
-            </button>
+            </router-link>
         </div>
 
         <router-link :to="`/product/${prodData._id}`" class="product-item list-item d-flex flex-1 list" v-if="viewType == 'list'"> <!-- :class="viewType == 'grid' ? 'grid' : ''" -->
@@ -136,6 +136,13 @@ export default {
 
             }
         ),
+
+        showDeleteProduct() {
+            this.emitter.emit("show-delete-modal", {
+                type: "product",
+                data: this.prodData
+            });
+        }
     },
     
     computed: {

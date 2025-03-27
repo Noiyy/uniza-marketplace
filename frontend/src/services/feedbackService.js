@@ -13,10 +13,10 @@ class FeedbackService extends DefaultService {
         return await this.apiClient.get(`/reports/${reportId}`);
     }
     async addReport(reportData) {
-        return await this.apiClient.post('/reports/add', reportData);
+        return await this.apiClient.post('/reports/add', reportData, { withCredentials: true });
     }
     async deleteReport(reportId) {
-        return await this.apiClient.delete(`/reports/delete/${reportId}`);
+        return await this.apiClient.delete(`/reports/delete/${reportId}`, { withCredentials: true });
     }
 
     /* RATING ROUTES */
@@ -30,13 +30,13 @@ class FeedbackService extends DefaultService {
         return await this.apiClient.get(`/ratings/user/${userId}`);
     }
     async addRating(ratingData) {
-        return await this.apiClient.post('/ratings/add', ratingData);
+        return await this.apiClient.post('/ratings/add', ratingData, { withCredentials: true });
     }
     async updateRating(ratingId, ratingData) {
-        return await this.apiClient.patch(`/ratings/update/${ratingId}`, ratingData);
+        return await this.apiClient.patch(`/ratings/update/${ratingId}`, ratingData, { withCredentials: true });
     }
     async deleteRating(ratingId) {
-        return await this.apiClient.delete(`/ratings/delete/${ratingId}`);
+        return await this.apiClient.delete(`/ratings/delete/${ratingId}`, { withCredentials: true });
     }
 }
 

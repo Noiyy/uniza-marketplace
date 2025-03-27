@@ -156,10 +156,10 @@ exports.deleteProduct = async (req, res) => {
 
     // Only owner or admin is allowed to
     if (productCheck.sellerId.toString() !== user.id && !user.isAdmin)  
-        res.status(401).json({error: 'User not authorized'});
+        return res.status(401).json({error: 'User not authorized'});
 
-    const product = await Product.findOneAndDelete({_id: id});
-    res.status(200).json({ message: 'Product deleted.', delProductId: product.id });
+    await Product.findOneAndDelete({_id: id});
+    res.status(200).json({ success: true, deletedId: id });
 }
 
 exports.updateProductPrice = async (req, res) => {

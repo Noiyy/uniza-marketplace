@@ -185,6 +185,10 @@ a.btn.secondary:hover {
     border-radius: 50%;
 }
 
+.btn.smaller {
+    padding: 2px 24px;
+}
+
 input.styled {
     background-color: var(--black);
     color: var(--white);

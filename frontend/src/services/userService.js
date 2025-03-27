@@ -19,7 +19,7 @@ class UserService extends DefaultService {
         return await this.apiClient.put(`/user/update/${userId}`, userData);
     }
     async deleteUser(userId) {
-        return await this.apiClient.delete(`/user/delete/${userId}`);
+        return await this.apiClient.delete(`/user/delete/${userId}`, { withCredentials: true });
     }
     async uploadAvatar(formData) {
         return await this.apiClient.post('/user/uploadAvatar', formData, {

@@ -132,12 +132,26 @@
 
         <Footer></Footer>
     </div>
+
+    <!-- <Modal
+        v-model:is-shown="deleteModalIsShown"
+    ></Modal> -->
+    <!-- Delete confirm modal -->
+    <ConfirmModal
+        v-model:is-shown="deleteModalIsShown"
+        :body-text="confirmModalBodyText"
+        :item-name="itemToDeleteName"
+        @yes="confirmedDeleteHandler"
+        @close="closedDeleteModal"
+    ></ConfirmModal>
 </template>
 
 <script>
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
 import ItemContentList from '../ItemContentList.vue';
+import Modal from '../Modal.vue';
+import ConfirmModal from '../ConfirmModal.vue';
 
 import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
@@ -163,7 +177,9 @@ export default {
         ProductsList,
         RatingsList,
         UsersList,
-        ReportsList
+        ReportsList,
+        Modal,
+        ConfirmModal
     },
 
     data() {
@@ -251,6 +267,11 @@ export default {
                 { name: "latest" },
                 { name: "oldest" },
             ],
+
+            deleteModalIsShown: false,
+            itemToDelete: null,
+            itemToDeleteInfo: "",
+            itemToDeleteName: "",
         }
     },
 
@@ -260,6 +281,42 @@ export default {
 
             }
         ),
+
+        async confirmedDeleteHandler() {
+            this.emitter.emit("show-loader");
+            console.log("do delete");
+
+            if (!this.itemToDelete) {
+                this.$toast.error("InvalidItemToDelete");
+                return;
+            }
+            let resp;
+            const itemType = this.itemToDelete.type;
+
+            if (itemType == "product") resp = await this.productApi.deleteProduct(this.itemToDelete.data._id);
+            else if (itemType == "report") resp = await this.feedbackApi.deleteReport(this.itemToDelete.data._id);
+            else if (itemType == "user") resp = await this.userApi.deleteUser(this.itemToDelete.data._id);
+            else if (itemType == "rating") resp = await this.feedbackApi.deleteRating(this.itemToDelete.data._id);
+
+            if (resp.data.success) {
+                if (itemType == "product") await this.getProducts();
+                if (itemType == "user") await this.getUsers();
+                if (itemType == "rating") await this.getRatings();
+                if (itemType == "report") await this.getReports();
+                
+                this.$toast.success("ItemDeleteSuccess");
+            }
+            else this.$toast.error("ItemDeleteFailed");
+
+            this.deleteModalIsShown = false;
+            this.emitter.emit("hide-loader");
+        },
+
+        closedDeleteModal() {
+            this.itemToDelete = null;
+            this.itemToDeleteInfo = "";
+            this.itemToDeleteName = "";
+        },
 
         stickyNavbarHandler() {
             // set navbar top position
@@ -439,6 +496,30 @@ export default {
             ];
         },
 
+        async getProducts() {
+            await this.getAllProducts();
+            this.setupProductFilters();
+            this.getProductsData();
+        },
+
+        async getRatings() {
+            await this.getAllRatings();
+            this.setupRatingFilters();
+            this.getRatingsData();
+        },
+
+        async getUsers() {
+            await this.getAllUsers();
+            this.setupUserFilters();
+            this.getUsersData();
+        },
+
+        async getReports() {
+            await this.getAllReports();
+            this.setupReportFilters();
+            this.getReportsData();
+        },
+
         /* ####################### */
         /* RESTY */
         /* ####################### */
@@ -480,10 +561,14 @@ export default {
 
             }
         ),
+
+        confirmModalBodyText() {
+            return `About deleting ${this.itemToDeleteInfo}`;
+        },
     },
 
     created() {
-
+    
     },
 
     async mounted() {
@@ -491,22 +576,40 @@ export default {
 
         this.stickyNavbarHandler();
 
-        await this.getAllProducts();
-        await this.getAllRatings();
-        await this.getAllUsers();
-        await this.getAllReports();
-
-        this.setupProductFilters();
-        this.setupRatingFilters();
-        this.setupUserFilters();
-        this.setupReportFilters();
-        
-        this.getProductsData();
-        this.getRatingsData();
-        this.getUsersData();
-        this.getReportsData();
+        await this.getProducts();
+        await this.getUsers();
+        await this.getRatings();
+        await this.getReports();
 
         this.emitter.emit("hide-loader");
+
+        this.emitter.on("show-delete-modal", (data) => {
+            console.log("xd?", data);
+            const itemType = data.type;
+            const itemData = data.data;
+
+            this.itemToDelete = data;
+
+            if (itemType == "product") {
+                this.itemToDeleteInfo = `product`;
+                this.itemToDeleteName = `${itemData.title} (${itemData._id})`;
+            } else if (itemType == "report") {
+                this.itemToDeleteInfo = `report`;
+                this.itemToDeleteName = `(${itemData._id})`;
+            } else if (itemType == "user") {
+                this.itemToDeleteInfo = `user`;
+                this.itemToDeleteName = `${itemData.username} (${itemData._id})`;
+            } else if (itemType == "rating") {
+                this.itemToDeleteInfo = `rating`;
+                this.itemToDeleteName = `${itemData.title} (${itemData._id})`;
+            }
+
+            this.deleteModalIsShown = true;
+        });
+    },
+
+    unmounted() {
+        this.emitter.off("show-delete-modal");
     }
 }
 </script>

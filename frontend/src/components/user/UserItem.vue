@@ -1,7 +1,7 @@
 <template>
     <div class="user-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
         <div class="list-item-controls d-flex flex-column gap-8">
-            <button class="btn btn-icon" @click="deleteUser()">
+            <button class="btn btn-icon" @click="showDeleteUser()">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
@@ -126,8 +126,11 @@ export default {
 
         },
 
-        deleteUser() {
-
+        showDeleteUser() {
+            this.emitter.emit("show-delete-modal", {
+                type: "user",
+                data: this.userData
+            });
         },
 
         editUser() {

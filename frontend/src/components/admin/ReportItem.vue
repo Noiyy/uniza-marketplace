@@ -1,7 +1,7 @@
 <template>
      <div class="report-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
         <div class="list-item-controls d-flex flex-column gap-8">
-            <button class="btn btn-icon" @click="deleteReport()">
+            <button class="btn btn-icon" @click="showDeleteReport()">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
         </div>
@@ -74,8 +74,11 @@ export default {
             }
         ),
 
-        deleteReport() {
-
+        showDeleteReport() {
+            this.emitter.emit("show-delete-modal", {
+                type: "report",
+                data: this.reportData
+            });
         }
     },
     

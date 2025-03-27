@@ -1,7 +1,7 @@
 <template>
     <div class="rating-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
         <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
-            <button class="btn btn-icon" @click="deleteRating()">
+            <button class="btn btn-icon" @click="showDeleteRating()">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
@@ -102,6 +102,13 @@ export default {
 
             }
         ),
+
+        showDeleteRating() {
+            this.emitter.emit("show-delete-modal", {
+                type: "rating",
+                data: this.ratingData
+            });
+        }
     },
     
     computed: {

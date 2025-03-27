@@ -88,16 +88,19 @@ exports.deleteUser = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + id});
 
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
         res.status(401).json({error: 'Auth user not found'});
 
-    // Only owner or admin is allowed to
-    if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+    // Only admin is allowed to
+    if (!userCheck.isAdmin) 
+        return res.status(401).json({error: 'Auth user not authorized'});
     
-    const user = await User.findOneAndDelete({_id: id});
-    res.status(200).json({ message: 'User deleted.', delUserId: user.id });
+    await User.findOneAndDelete({_id: id});
+    res.status(200).json({ success: true, delUserId: id });
 }
 
 exports.uploadAvatar = async (req, res) => {

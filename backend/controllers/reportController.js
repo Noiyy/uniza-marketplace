@@ -1,4 +1,5 @@
 const Report = require("../models/reportModel");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 exports.getAllReports = async (req, res) => {
@@ -41,11 +42,23 @@ exports.addReport = async (req, res) => {
 exports.deleteReport = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No report found for id ' + id});
+
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    const reportCheck = await Report.findById(id);
+    if (!reportCheck) return res.status(404).json({error: 'No report found for id ' + id});
+
+    // Only admin is allowed to
+    if (!user.isAdmin)  
+        return res.status(401).json({error: 'User not authorized'});
     
-    const report = await Report.findOneAndDelete({_id: id});
-    if(!report) return res.status(404).json({error: 'No report found for id ' + id});
-   
-    res.status(200).json({message: 'Report deleted.'});
+    await Report.findOneAndDelete({_id: id});
+    res.status(200).json({ success: true, deletedId: id });
 }
 
 const fetchReportsWithUsers = async (filter) => {
