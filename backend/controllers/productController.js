@@ -3,6 +3,9 @@ const ProductHistory = require("../models/productHistoryModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
+const fs = require('fs');
+const path = require('path');
+
 exports.getAllProducts = async (req, res) => {
     const products = await Product.find({}).sort({createdAt: -1}).lean();
     const users = await User.find({}).lean();
@@ -102,7 +105,6 @@ exports.uploadProductImages = async (req, res) => {
     try {
         const { prevImages, productId } = req.body;
         const newFiles = req.files;
-        console.log("are there?", newFiles);
     
         if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(404).json({error: 'No product found for id ' + productId});
     
@@ -123,19 +125,18 @@ exports.uploadProductImages = async (req, res) => {
             res.status(401).json({error: 'Auth user not authorized'});
     
         // remove previous images
-        console.log("prev", prevImages);
-        // if (prevImages && prevImages.length) {
-        //     prevImages.forEach(img => {
-        //         const oldFilePath = path.join(__dirname, '../../frontend/src/assets/img/products/', img);
-        //         if (fs.existsSync(oldFilePath)) {
-        //             fs.unlinkSync(oldFilePath);
-        //         }
-        //     });
-        // }
+        if (prevImages && prevImages.length) {
+            prevImages.forEach(img => {
+                const oldFilePath = path.join(__dirname, '../../frontend/src/assets/img/products/', img);
+                if (fs.existsSync(oldFilePath)) {
+                    fs.unlinkSync(oldFilePath);
+                }
+            });
+        }
     
-        res.json({ message: 'Files uploaded successfully', filenames: newFiles.map(fl => fl.name) });
+        res.json({ message: 'Files uploaded successfully', filenames: newFiles.map(fl => fl.filename) });
     } catch (err) {
-        console.error(error);
+        console.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };

@@ -198,6 +198,7 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  opacity: 0.75;
 }
 
 /* Scrollbar
@@ -434,4 +435,89 @@ width */
 .list-item-cont:nth-child(even) .list-item-controls .btn {
     background-color: var(--secondary);
 }
+
+.multiselect {
+  color: var(--white);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+}
+
+.multiselect__placeholder {
+  color: var(--white) !important;
+  opacity: 0.4;
+  font-size: 16px !important;
+  padding-left: 5px;
+}
+
+.multiselect__tags {
+  background-color: var(--black) !important;
+  border: none !important;
+}
+
+.multiselect__input {
+  background-color: var(--black) !important;
+  color: var(--white) !important;
+}
+.multiselect__input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+} 
+
+.multiselect__content-wrapper {
+  border: none !important;
+  background: var(--black) !important;
+  color: var(--white) !important;
+}
+
+
+.multiselect__content-wrapper {
+  box-shadow: 0px 8px 16px rgba(255, 154, 158, 0.2);
+}
+
+.multiselect__select::before {
+  border-width: 7px 7px 0 !important;
+  top: 70% !important;
+}
+
+.multiselect__single {
+  background: var(--black) !important;
+  color: var(--white) !important;
+}
+
+.input-cont:has(.multiselect--active) .input-tag {
+  z-index: 51;
+}
+
+.input-cont:has(.multiselect--above) .input-tag {
+  z-index: 1;
+}
+
+.multiselect__option--selected {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--white) !important;
+}
+
+.multiselect__option--highlight {
+  background: var(--green) !important;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: var(--red) !important;
+}
+
+.multiselect--disabled .multiselect__current, .multiselect--disabled .multiselect__select {
+  background: var(--black) !important;
+}
+
+/* .multiselect {
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--primary);
+    position: relative;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+input.styled:focus-visible {
+    border: 2px solid var(--secondary);
+    outline: none !important;
+} */
 </style>

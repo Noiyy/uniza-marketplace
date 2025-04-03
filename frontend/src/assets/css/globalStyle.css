@@ -35,6 +35,7 @@
 html {
     scroll-behavior: smooth;
     position: relative;
+    color-scheme: dark;
 }
 
 body {
@@ -208,14 +209,18 @@ input.styled.secondary:focus-visible {
     border: 2px solid var(--primary);
 }
 
+input:disabled {
+    cursor: not-allowed;
+}
+
 .form-row, .input-cont {
     position: relative;
 }
 
-.form-row .input-tag, .input-cont .input-tag {
+.form-row .input-tag, .input-cont .input-tag, .product-description-edit .input-tag {
     position: absolute;
     top: -16px;
-    left: 24px;
+    left: 14px;
     padding: 4px 24px;
     color: var(--primary);
     background-color: var(--black);

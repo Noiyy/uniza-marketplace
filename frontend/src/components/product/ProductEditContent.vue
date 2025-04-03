@@ -9,9 +9,10 @@
                     <div class="product-editable">
                         <div class="heading-cont d-flex flex-column gap-8">
                             <div class="edit-heading d-flex justify-content-between gap-32">
-                                <div class="heading-title d-flex align-items-end">
+                                <router-link :to="`/product/${product._id}`" class="heading-title d-flex gap-8 align-items-end">
                                     <h1> Edit Product </h1>
-                                </div>
+                                    <Icon icon="prime:arrow-up-right" class="arrow-icon" />
+                                </router-link>
 
                                 <div class="edit-options d-flex gap-32 align-items-center">
                                     <div class="nav-btns-wrapper d-flex">
@@ -75,30 +76,53 @@
                                 </div>
 
                                 <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                                    <div class="input-cont d-flex flex-column gap-8">
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
                                         <div class="input-tag"> Category </div>
-                                        <input type="text" class="styled" :placeholder="'Category'" required>
+                                        <Multiselect
+                                            v-model="productMainCtg"
+                                            :options="mainCategories"
+                                            :track-by="'_id'"
+                                            :allow-empty="false"
+                                            :label="'name'"
+                                            :multiple="false"
+                                            :show-labels="false"
+                                        ></Multiselect>
                                     </div>
 
                                     <Icon icon="mdi:arrow-right" class="input-row-divider icon" />
 
-                                    <div class="input-cont d-flex flex-column gap-8">
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
                                         <div class="input-tag"> Sub category </div>
-                                        <input  type="text" class="styled" :placeholder="'Sub category'" required>
+                                        <Multiselect
+                                            v-model="productSubCtg"
+                                            :options="subCategories"
+                                            :track-by="'_id'"
+                                            :allow-empty="true"
+                                            :label="'name'"
+                                            :multiple="false"
+                                            :show-labels="false"
+                                        ></Multiselect>
                                     </div>
                                 </div>
 
                                 <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                                    <div class="input-cont d-flex flex-column gap-8">
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
                                         <div class="input-tag"> Price </div>
-                                        <input v-model="product.price.value.$numberDecimal" type="number" class="styled" :placeholder="'Price'" required>
+                                        <input v-model="productPrice" type="number" class="styled" :placeholder="'Price'">
+                                        <span class="price-currency"> € </span>
                                     </div>
 
                                     <span class="input-row-divider montserrat"> Or </span>
 
-                                    <div class="input-cont d-flex flex-column gap-8">
-                                        <div class="input-tag"> Price </div>
-                                        <input type="text" class="styled" :placeholder="'Special price'" required>
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                        <Multiselect
+                                            v-model="productSpecialPrice"
+                                            :options="getSpecialPrices"
+                                            :allow-empty="false"
+                                            :multiple="false"
+                                            :show-labels="false"
+                                        ></Multiselect>
+                                        <div class="input-tag"> Special Price </div>
                                     </div>
                                 </div>
 
@@ -111,16 +135,23 @@
                                     </div>
 
                                     <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="product.address.asProfile ? 'disabled' : ''">
-                                        <div class="input-cont d-flex flex-column gap-8">
+                                        <div class="input-cont d-flex flex-column gap-8 flex-1">
                                             <div class="input-tag"> Address </div>
-                                            <input type="text" class="styled" :placeholder="'Address'" required>
+                                            <input type="text" class="styled" :placeholder="'Address'" :disabled="product.address.asProfile">
                                         </div>
     
                                         <span class="input-row-divider montserrat"> Or </span>
     
-                                        <div class="input-cont d-flex flex-column gap-8">
+                                        <div class="input-cont d-flex flex-column gap-8 flex-1">
                                             <div class="input-tag"> Dorm </div>
-                                            <input type="text" class="styled" :placeholder="'Dorm'" required>
+                                            <Multiselect
+                                                :disabled="product.address.asProfile"
+                                                v-model="productDorm"
+                                                :options="getDorms"
+                                                :allow-empty="false"
+                                                :multiple="false"
+                                                :show-labels="false"
+                                            ></Multiselect>
                                         </div>
                                     </div>
                                 </div>
@@ -135,12 +166,12 @@
                                     </div>
 
                                     <div class="input-row d-flex gap-8 align-items-center justify-content-between">
-                                        <div class="input-cont d-flex flex-column gap-8">
+                                        <div class="input-cont d-flex flex-column gap-8 flex-1">
                                             <div class="input-tag"> Count </div>
                                             <input v-model="product.count.available" type="number" class="styled" :placeholder="'Count'" required>
                                         </div>
     
-                                        <div class="product-stats">
+                                        <div class="product-stats d-flex justify-content-end gap-8 flex-2">
                                             sold:
                                             <span> {{ product.count.sold }} </span>
                                         </div>
@@ -150,7 +181,7 @@
                         </div>
 
                         <div class="product-description-edit">
-                            <h2> Description </h2>
+                            <h2 class="input-tag"> Description </h2>
                             <Quill
                                 v-model="productDescription"
                             ></Quill>
@@ -158,7 +189,13 @@
                     </div>
 
                     <div class="product-sales" id="sales">
-                        sales
+                        <div class="sales-heading d-flex flex-column gap-8">
+                            <div class="d-flex gap-32 justify-content-between align-items-center">
+                                <h2> SALES </h2>
+                                <Icon icon="ic:baseline-plus" class="plus-icon" />
+                            </div>
+                            <div class="line-divider"></div>
+                        </div>
                     </div>
 
                 </div>
@@ -179,6 +216,9 @@ import Quill from './Quill.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
+import Multiselect from 'vue-multiselect';
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 export default {
     name: 'ProducEditContent',
 
@@ -194,7 +234,8 @@ export default {
         Footer,
         Checkbox,
         Quill,
-        Icon
+        Icon,
+        Multiselect
     },
 
     data() {
@@ -208,6 +249,15 @@ export default {
             imageBlobs: [],
 
             productDescription: "",
+
+            mainCategories: [],
+            subCategories: [],
+
+            productPrice: null,
+            productSpecialPrice: null,
+
+            productDorm: null,
+            productAdress: null,
         }
     },
 
@@ -268,40 +318,60 @@ export default {
         },
 
         scrollToSales() {
-            sales.scrollIntoView();
+            console.log("scroll");
+            const el = document.getElementById("sales");
+            el.scrollIntoView();
+        },
+
+        async uploadImages() {
+            const imageFiles = this.productImages.filter(img => img.url).map(img => img.file);
+
+            const imageFormData = new FormData();
+            imageFormData.append('productId', this.product._id);
+
+            for (let i = 0; i < this.prevImages.length; i++) {
+                imageFormData.append('prevImages[]', this.prevImages[i]);
+            }
+            for (let i = 0; i < imageFiles.length; i++) {
+                imageFormData.append('imageFiles', imageFiles[i]);
+            }
+
+            try {
+                const uploadResp = await this.productApi.uploadProductImages(imageFormData);
+                console.log("upload?", uploadResp);
+                return uploadResp.data.filenames;
+
+            } catch (err) {
+                console.error(err);
+            }
         },
 
         async saveProduct() {
             this.emitter.emit("show-loader");
             console.log("save?", this.product);
-            console.log(this.productImages);
             // console.log(this.productDescription);
-
-            console.log("prev images", this.prevImages);
-            const imageFiles = this.productImages.filter(img => img.url).map(img => img.file);
-
-            const imageFormData = new FormData();
-            imageFormData.append('imageFiles', imageFiles);
-            imageFormData.append('prevImages', this.prevImages);
-            imageFormData.append('productId', this.product._id);
-
-            const uploadResp = await this.productApi.uploadProductImages(imageFormData);
-            console.log("upload?", uploadResp);
+    
+            const newImages = await this.uploadImages();
+            console.log("heh", newImages);
+            let images = this.productImages.filter(img => !img.url && img);
+            images = [...images, ...newImages];
+            console.log("joj", images);
 
             const post = {
                 ...this.product,
-                description: this.productDescription
+                description: this.productDescription,
+                images
             }
             console.log("post", post);
 
-            // const resp = await this.productApi.updateProduct(this.product._id, post);
-            // console.log("did?", resp);
-            // if (resp.data._id) {
-            //     this.$toast.success("ProductEditSuccess");
-            //     this.$router.push({ ProductDetail, params: { id: resp.data._id } });
-            // } else {
-            //     this.$toast.error("ProductEditFailed");
-            // }
+            const resp = await this.productApi.updateProduct(this.product._id, post);
+            console.log("did?", resp);
+            if (resp.data._id) {
+                this.$toast.success("ProductEditSuccess");
+                // this.$router.push({ name: "ProductDetail", params: { id: resp.data._id } });
+            } else {
+                this.$toast.error("ProductEditFailed");
+            }
 
             this.emitter.emit("hide-loader");
         }
@@ -311,6 +381,11 @@ export default {
         ...mapGetters(
             {
                 getAllCategories: "product/getAllCategories",
+                getMainCategories: "product/getMainCategories",
+                getSubCategories: "product/getSubCategories",
+
+                getSpecialPrices: "product/getSpecialPrices",
+                getDorms: "product/getDorms",
             }
         ),
     },
@@ -322,10 +397,35 @@ export default {
         this.productMainCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.mainCategory);
         if (this.product.category.subCategory) this.productSubCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.subCategory);
 
+        this.productPrice = this.product.price.value.$numberDecimal ? this.product.price.value.$numberDecimal : null;
+        this.productSpecialPrice = this.product.specialValue ? this.product.specialValue : null;
+
         this.emitter.emit("hide-loader");
     },
 
     mounted() {
+        this.mainCategories = this.getMainCategories;
+        this.subCategories = this.getSubCategories;
+
+        setTimeout(() => {
+            if (this.$route.hash) this.scrollToSales();
+        }, 200);
+    },
+
+    watch: {
+        productPrice(newVal) {
+            if (newVal !== null) this.productSpecialPrice = null;
+        },
+        productSpecialPrice(newVal) {
+            if (newVal !== null) this.productPrice = null;
+        },
+
+        productAdress(newVal) {
+            if (newVal !== null) this.productDorm = null;
+        },
+        productDorm(newVal) {
+            if (newVal !== null) this.productAdress = null;
+        }
 
     }
 }
@@ -334,6 +434,14 @@ export default {
 <style scoped>
 #product-edit {
     margin-top: 72px;
+}
+
+.edit-heading .heading-title:hover {
+    color: rgba(255, 255, 255, 0.66);
+}
+
+.edit-heading .heading-title .arrow-icon {
+    font-size: 24px;
 }
 
 .edit-heading .heading-title h1 {
@@ -409,14 +517,16 @@ export default {
 .images-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: minmax(100px, auto);
+    grid-auto-rows: minmax(90px, auto);
     gap: 16px;
+    overflow: auto;
+    max-height: 340px;
 }
 
 .images-wrapper img {
-    height: 100%;
     object-fit: cover;
-    aspect-ratio: 1 / 0.75;
+    height: 100%;
+    width: 100%;
 }
 
 .add-img-cont {
@@ -435,6 +545,7 @@ export default {
 
 .product-description-edit {
     margin-top: 64px;
+    position: relative;
 }
 
 .info-edit {
@@ -443,6 +554,7 @@ export default {
 
 .input-row.disabled, .input-cont.disabled {
     opacity: 0.33;
+    cursor: not-allowed;
 }
 
 .input-row-divider {
@@ -493,8 +605,30 @@ export default {
     margin-top: 8px;
 }
 
+.price-currency {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    opacity: 0.5;
+}
+
+.input-cont input {
+    width: 100%;
+}
 
 .product-sales {
     margin-top: 48px;
+}
+
+.product-sales .plus-icon {
+    font-size: 32px;
+}
+
+.sales-heading h2 {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 100%;
 }
 </style>

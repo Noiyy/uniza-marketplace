@@ -158,3 +158,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+frontend/src/assets/img/products/*
+!frontend/src/assets/img/products/.gitkeep
+
+frontend/src/assets/img/userAvatars/*
+!frontend/src/assets/img/userAvatars/.gitkeep

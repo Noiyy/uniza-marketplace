@@ -9,7 +9,7 @@
                 <Icon icon="mdi:chevron-down" class="chevron-icon" />
             </div>
         </div>
-        <div class="filters-dropdown-content scrollbar">
+        <div class="filters-dropdown-content">
             <div class="option d-flex gap-8" v-for="fltr in sortFilters" :key="fltr.name"
                 :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
                 @click="optionCallback(fltr)"> 

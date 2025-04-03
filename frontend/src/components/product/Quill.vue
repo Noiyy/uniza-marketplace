@@ -105,6 +105,7 @@ export default {
 
 .ql-toolbar.ql-snow {
     font-family: "Montserrat", serif;
+    padding-top: 20px;
 }
 
 .ql-toolbar, .ql-toolbar.ql-snow, .ql-container, .ql-container.ql-snow {

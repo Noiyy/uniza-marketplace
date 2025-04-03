@@ -214,6 +214,7 @@ export default {
 
             try {
                 const resp = await this.userApi.uploadAvatar(formData);
+                console.log("man", resp);
                 if (resp.data.file) {
                     this.user.avatarPath = resp.data.file.filename;
                     this.$toast.success("SavedAvatarSuccess");

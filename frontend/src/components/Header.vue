@@ -46,7 +46,7 @@
                                     {{ selectedSearchCategory ? selectedSearchCategory.name : 'All categories' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
-                                <div class="filters-dropdown-content scrollbar">
+                                <div class="filters-dropdown-content">
                                     <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
                                         :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
                                         @click="selectMainCtgHandler(ctg)"> 
@@ -77,7 +77,7 @@
                                         <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                     </div>
                                 </div>
-                                <div class="filters-dropdown-content scrollbar" @click="(e) => e.stopPropagation()">
+                                <div class="filters-dropdown-content" @click="(e) => e.stopPropagation()">
                                     <div class="price-range-info d-flex justify-content-between gap-32">
                                         <div class="price-input-cont d-flex gap-8 align-items-center">
                                             <input type="number" min="0" :value="selectedPriceRange[0]" @input="(e) => setPriceRange('from', e)">
@@ -109,7 +109,7 @@
                                     {{ selectedLocation ? selectedLocation : 'Anywhere' }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
-                                <div class="filters-dropdown-content scrollbar">
+                                <div class="filters-dropdown-content">
                                     <div class="option" @click="selectNearMeLocation">
                                         Near me
                                     </div>
@@ -412,7 +412,7 @@ export default {
 header {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 53;
     box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.33);
     display: flex;
 }
@@ -611,7 +611,7 @@ header {
 }
 
 .header-right .menu-btn {
-    z-index: 16;
+    z-index: 56;
 }
 
 .pattern {

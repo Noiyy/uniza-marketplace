@@ -192,7 +192,7 @@ export default {
     color: var(--white);
     padding: 48px;
     transition: right 0.3s ease-in-out;
-    z-index: 15;
+    z-index: 55;
     box-shadow: 39px 4px 24.2px 35px var(--primary, #FF9A9E);
 }
 

@@ -43,7 +43,7 @@
                                             <router-link :to="`/product/${product._id}/edit`" role="button" class="btn primary btn-icon">
                                                 <Icon icon="mdi:pencil" class="opt-icon" />
                                             </router-link>
-                                            <router-link :to="`/product/${product._id}/edit#sales`" role="button" class="btn primary btn-icon">
+                                            <router-link :to="{ path: `/product/${product._id}/edit`, hash: '#sales' }" role="button" class="btn primary btn-icon">
                                                 <Icon icon="material-symbols:shopping-cart" class="opt-icon" />
                                             </router-link>
                                         </template>
@@ -57,14 +57,15 @@
                         <div class="product-main">
                             <div class="product-showcase d-flex gap-32">
                                 <div class="main-img-cont pos-relative">
-                                    <img v-if="product.images && product.images.length" :src="getMainImg()" class="img-fluid" />
-                                    <span> {{ shownMainImgIndex+1 }}/{{ product.images.length }} </span>
+                                    <img v-if="productHasImages" :src="getMainImg()" class="img-fluid" />
+                                    <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
+                                    <span v-if="productHasImages"> {{ shownMainImgIndex+1 }}/{{ product.images.length }} </span>
 
-                                    <Icon icon="gridicons:fullscreen" class="main-img-icon fullscreen" @click="imgLightboxVisible = true" />
+                                    <Icon v-if="productHasImages" icon="gridicons:fullscreen" class="main-img-icon fullscreen" @click="imgLightboxVisible = true" />
                                     <Icon icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" @click="bookmarkProduct()" />
 
-                                    <Icon icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
-                                    <Icon icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
+                                    <Icon v-if="productHasImages" icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
+                                    <Icon v-if="productHasImages" icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
                                 </div>
                                 <div class="images-price d-flex flex-column gap-24 align-items-end">
                                     <div class="price d-flex gap-24 align-items-center">
@@ -72,8 +73,8 @@
                                         <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
                                         <span class="montserrat" v-else> {{ product.price.value.$numberDecimal }}€ </span>      
                                     </div>
-                                    <div class="other-images-wrapper d-flex flex-wrap gap-8 scrollbar">
-                                        <template v-if="product.images && product.images.length">
+                                    <div class="other-images-wrapper">
+                                        <template v-if="productHasImages">
                                             <img v-for="(image, index) in product.images" :key="index" 
                                                 :src="getAssetUrl(`img/products/${image}`)" class="img-fluid"
                                                 @mouseover="shownMainImgIndex = index"
@@ -393,6 +394,10 @@ export default {
         patternBgStyle() {
             return `
                 background: url(${this.patternImgSrc}) 0% 0% / 80% 150% repeat`;
+        },
+
+        productHasImages() {
+            return this.product && this.product.images && this.product.images.length;
         }
     },
 
@@ -490,7 +495,7 @@ export default {
 
 .product-showcase img {
     object-fit: cover;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.075);
 }
 
 .product-showcase .main-img-cont img {
@@ -517,10 +522,23 @@ export default {
     font-weight: 800;
 }
 
+.other-images-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-auto-rows: minmax(90px, auto);
+    gap: 12px;
+
+    width: 100%;
+    max-height: 21vw;
+    overflow: auto;
+}
+
 .other-images-wrapper img {
     border-radius: 8px;
-    max-width: 112px; 
     cursor: pointer;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
 }
 
 .under-showcase {
@@ -707,6 +725,12 @@ export default {
 .history-wrapper .hidden-overlay {
     top: 0;
     height: 100%;
+}
+
+.main-img-cont .no-img {
+    object-fit: initial;
+    height: 75%;
+    opacity: 0.2;
 }
 
 </style>

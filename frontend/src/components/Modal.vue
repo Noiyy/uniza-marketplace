@@ -104,7 +104,7 @@ export default {
 .modal-el {
     display: none;
     position: fixed;
-    z-index: 50;
+    z-index: 75;
     left: 0;
     top: 0;
     width: 100%;

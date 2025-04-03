@@ -645,7 +645,7 @@ export default {
 .admin-navbar {
     position: sticky;
     top: 123px;
-    z-index: 9;
+    z-index: 52;
     margin-top: 8px;
     background: #25201D;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.85));
