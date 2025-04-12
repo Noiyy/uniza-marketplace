@@ -118,6 +118,7 @@ export default {
 
     const pscResp = await this.miscApi.getAllPSC();
     if (pscResp.data) {
+      console.log("all psc", pscResp.data);
       this.setAllPSC(pscResp.data);
     }
     this.emitter.emit("hide-loader");
@@ -396,6 +397,9 @@ width */
 }
 .nav-btns-wrapper .btn.nav-btn:hover {
     background-color: var(--white-5a);
+}
+.nav-btns-wrapper .btn.nav-btn:active {
+  border: none;
 }
 
 .nav-btns-wrapper .btn.nav-btn.active {

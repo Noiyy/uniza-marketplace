@@ -48,6 +48,7 @@ export default {
 
     methods: {
       initQuill() {
+        console.log("init quill");
 
         const quillOptions = {
             // debug: 'info',
@@ -80,13 +81,17 @@ export default {
     },
 
     mounted() {
-        this.initQuill();
+        setTimeout(() => {
+            this.initQuill();
+        }, 500);
     },
 
     watch: {
         modelValue(newValue) {
-            if (newValue !== this.quillInstance.root.innerHTML) {
-            this.quillInstance.setText(newValue);
+            if (this.quillInstance) {
+                if (newValue !== this.quillInstance.root.innerHTML) {
+                this.quillInstance.setText(newValue);
+                }
             }
         }
     }

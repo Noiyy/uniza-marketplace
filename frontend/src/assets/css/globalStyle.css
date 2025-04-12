@@ -190,6 +190,22 @@ a.btn.secondary:hover {
     padding: 2px 24px;
 }
 
+.btn:disabled {
+    cursor: not-allowed !important;
+}
+
+.btn.primary:disabled:hover {
+    border: 2px solid transparent;
+}
+
+.btn.secondary:disabled {
+    opacity: 1;
+    color: rgba(255, 255, 255, 0.5);
+}
+.btn.secondary:disabled::before {
+    opacity: 0.65;
+}
+
 input.styled {
     background-color: var(--black);
     color: var(--white);

@@ -39,7 +39,13 @@ const productSchema = new mongoose.Schema({
 		sold: { type: Number, default: 0, required: true },
 		deleteOnZero: { type: Boolean, default: false, required: true }
 	},
-	history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductHistory' }]
+	history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductHistory' }],
+	status: {
+		type: String,
+		required: true,
+		default: "onSale",
+		enum: ["onSale", "saleEnded"]
+	},
 });
  
 module.exports = mongoose.model('Product', productSchema);

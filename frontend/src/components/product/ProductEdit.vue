@@ -8,7 +8,7 @@
                 </div>
 
                 <div class="sales-view-link d-flex justify-content-end flex-1">
-                    <a role="button" class="btn" href="#sales" @click.prevent="scrollToSales()">
+                    <a role="button" class="btn" href="#sales" @click.prevent="$emit('scroll-to-sales')">
                         <Icon icon="material-symbols:shopping-cart" class="sales-icon" />
                         Sales
                         <Icon icon="mdi:arrow-down" class="arrow-icon" />
@@ -23,26 +23,31 @@
                         <div class="images-count montserrat"> {{ productImages ? productImages.length : 0 }} </div>
                     </div>
 
-                    <div class="images-wrapper">
-                        <div v-for="(img, index) in productImages" :key="index" class="img-cont">
-                            <div class="main-img-tag" v-if="index == 0"> Main </div>
-                            <div class="remove-img-cont" @click="removeImg(img, index)">
-                                <Icon icon="material-symbols:close" class="remove-icon" />
-                            </div>
+                    <VueDraggableNext :list="productImages" handle=".drag-icon"
+                        class="images-wrapper" :class="!loadedData ? 'loading' : ''">
+                        <template v-if="loadedData">
+                            <div v-for="(img, index) in productImages" :key="index" class="img-cont">
+                                <div class="main-img-tag" v-if="index == 0"> Main </div>
+                                <div class="remove-img-cont" @click="removeImg(img, index)">
+                                    <Icon icon="material-symbols:close" class="remove-icon" />
+                                </div>
 
-                            <img :src="img && img.url ? img.url : getAssetUrl(`img/products/${img}`)" class="img-fluid"  alt="product img" />
-                        </div>
-
-                        <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
-                            :title="'Add image'"
-                            @submit.prevent="uploadImages" @click="triggerFileInput">
-                            <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
-                                type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
-                            <div class="add-img-icon-cont">
-                                <Icon icon="ic:baseline-plus" class="plus-icon" />
+                                <Icon icon="material-symbols:drag-pan" class="drag-icon" />
+    
+                                <img :src="img && img.url ? img.url : getAssetUrl(`img/products/${img}`)" class="img-fluid"  alt="product img" />
                             </div>
-                        </form>
-                    </div>
+    
+                            <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
+                                :title="'Add image'"
+                                @submit.prevent="uploadImages" @click="triggerFileInput">
+                                <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
+                                    type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
+                                <div class="add-img-icon-cont">
+                                    <Icon icon="ic:baseline-plus" class="plus-icon" />
+                                </div>
+                            </form>
+                        </template>
+                    </VueDraggableNext>
                 </div>
                 <div class="info-edit flex-1 d-flex flex-column gap-32">
                     <div class="input-cont d-flex flex-column gap-8">
@@ -54,13 +59,14 @@
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
                             <div class="input-tag"> Category </div>
                             <Multiselect
-                                v-model="productMainCtg"
+                                v-model="localProductMainCtg"
                                 :options="mainCategories"
                                 :track-by="'_id'"
                                 :allow-empty="false"
                                 :label="'name'"
                                 :multiple="false"
                                 :show-labels="false"
+                                @update:modelValue="mainCtgChangeHandler"
                             ></Multiselect>
                         </div>
 
@@ -69,7 +75,7 @@
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
                             <div class="input-tag"> Sub category </div>
                             <Multiselect
-                                v-model="productSubCtg"
+                                v-model="localProductSubCtg"
                                 :options="subCategories"
                                 :track-by="'_id'"
                                 :allow-empty="true"
@@ -110,9 +116,26 @@
                         </div>
 
                         <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="product.address.asProfile ? 'disabled' : ''">
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-cont address-cont d-flex flex-column gap-8 flex-1">
                                 <div class="input-tag"> Address </div>
-                                <input type="text" class="styled" :placeholder="'Address'" :disabled="product.address.asProfile">
+                                <Multiselect
+                                    :disabled="product.address.asProfile"
+                                    v-model="productAddress"
+                                    :options="filteredAddresses"
+                                    @search-change="onAddressSearchChange"
+                                    :internal-search="false"
+                                    :allow-empty="false"
+                                    :multiple="false"
+                                    :show-labels="false"
+                                    :track-by="'_id'"
+                                    >
+                                    <template #option="props">
+                                        {{ props.option.city }} - {{ props.option.postalCode }} - {{ props.option.region }}
+                                    </template>
+                                    <template #singleLabel="props">
+                                        {{ props.option.city }} - {{ props.option.postalCode }} - {{ props.option.region }}
+                                    </template>
+                                </Multiselect>
                             </div>
 
                             <span class="input-row-divider montserrat"> Or </span>
@@ -143,7 +166,7 @@
                         <div class="input-row d-flex gap-8 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
                                 <div class="input-tag"> Count </div>
-                                <input v-model="product.count.available" type="number" class="styled" :placeholder="'Count'" required>
+                                <input v-model="product.count.available" type="number" min="1" max="9999" class="styled" :placeholder="'Count'" required>
                             </div>
 
                             <div class="product-stats d-flex justify-content-end gap-8 flex-2">
@@ -184,26 +207,64 @@ import Quill from './Quill.vue';
 import Multiselect from 'vue-multiselect';
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import { VueDraggableNext } from 'vue-draggable-next';
+
 export default {
     name: 'ProductEdit',
 
-    inject: ['emitter'],
-    emits: [],
+    inject: ['emitter', 'productApi'],
+    emits: ['scroll-to-sales'],
 
     props: {
+        product: {
+            type: Object,
+            default: null
+        },
 
+        productMainCtg: {
+            type: Object,
+            default: null
+        },
+
+        productSubCtg: {
+            type: Object,
+            default: null
+        },
     },
 
     components: {
         Checkbox,
         Quill,
         Icon,
-        Multiselect
+        Multiselect,
+        VueDraggableNext
     },
 
     data() {
         return {
+            prevImages: [],
+            productImages: [],
+            imageBlobs: [],
 
+            mainCategories: [],
+            subCategories: [],
+
+            productDescription: "",
+
+            productPrice: null,
+            productSpecialPrice: null,
+
+            productDorm: null,
+            productAddress: null,
+            filteredAddresses: [],
+
+            localProductMainCtg: null,
+            localProductSubCtg: null,
+
+            loadedData: false,
+
+            prevProductPrice: null,
+            prevProductCount: null
         }
     },
 
@@ -213,21 +274,218 @@ export default {
 
             }
         ),
+
+        onAddressSearchChange(searchQuery) {
+            this.filteredAddresses = this.filterByValue(this.getAllPSC, searchQuery);
+        },
+
+        triggerFileInput() {
+            this.$refs.imageInput.click();
+        },
+
+        onFileChange(event) {
+            this.imageBlobs = [];
+
+            const files = event.target.files;
+            if (!files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const blobUrl = URL.createObjectURL(file);
+
+                this.imageBlobs.push({
+                    file,
+                    url: blobUrl
+                });
+            }
+            event.target.value = "";
+
+            this.productImages = [...this.productImages, ...this.imageBlobs];
+        },
+
+        removeImg(img, index) {
+            console.log("wat", img);
+            if (img.url) {
+                URL.revokeObjectURL(this.productImages[index].url);
+            } else {
+                this.prevImages.push(this.productImages[index]);
+            }
+            this.productImages.splice(index, 1);
+        },
+
+        async uploadImages() {
+            const imageFiles = this.productImages.filter(img => img.url).map(img => img.file);
+
+            const imageFormData = new FormData();
+            imageFormData.append('productId', this.product._id);
+
+            for (let i = 0; i < this.prevImages.length; i++) {
+                imageFormData.append('prevImages[]', this.prevImages[i]);
+            }
+            for (let i = 0; i < imageFiles.length; i++) {
+                imageFormData.append('imageFiles', imageFiles[i]);
+            }
+
+            try {
+                const uploadResp = await this.productApi.uploadProductImages(imageFormData);
+                console.log("upload?", uploadResp);
+                return uploadResp.data.filenames;
+
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async saveProduct() {
+            this.emitter.emit("show-loader");
+            console.log("save?", this.product);
+            // console.log(this.productDescription);
+
+            console.log(this.localProductMainCtg, this.localProductSubCtg);
+    
+            const newImages = await this.uploadImages();
+            console.log("heh", newImages);
+            let images = this.productImages.filter(img => !img.url && img);
+            images = [...images, ...newImages];
+            console.log("joj", images);
+
+            if (this.product.address.asProfile) {
+                this.product.address.custom = null;
+                this.productAddress = null;
+                this.productDorm = null;
+            }
+
+            const post = {
+                ...this.product,
+                category: {
+                    mainCategory: this.localProductMainCtg._id
+                },
+                description: this.productDescription,
+                images,
+            }
+
+            if (this.localProductSubCtg) post.category.subCategory = this.localProductSubCtg._id;
+            if (this.productPrice) { 
+                post.price.value = `${this.productPrice}`;
+                post.price.specialValue = null;
+            }
+            if (this.productSpecialPrice) {
+                post.price.specialValue = this.productSpecialPrice;
+                post.price.value = null;
+            }
+            if (this.productAddress) {
+                post.address.custom = {
+                    region: this.productAddress.region,
+                    city: this.productAddress.city,
+                    postalCode: this.productAddress.postalCode
+                };
+            }
+            if (this.productDorm) {
+                post.address.custom = { dorm: this.productDorm };
+            }
+            post.count.available = Math.round(post.count.available);
+
+            // History
+            if (this.prevProductCount != post.count.available) {
+                post.prevCount = this.prevProductCount
+            }
+            if ((this.productPrice && this.prevProductPrice != this.productPrice) || (this.productSpecialPrice && this.prevProductPrice != this.productSpecialPrice)) {
+                post.prevPrice = this.prevProductPrice;
+            }
+
+            console.log("post", post);
+
+            const resp = await this.productApi.updateProduct(this.product._id, post);
+            console.log("did?", resp);
+            if (resp.data._id) {
+                this.$toast.success("ProductEditSuccess");
+                // this.$router.push({ name: "ProductDetail", params: { id: resp.data._id } });
+            } else {
+                this.$toast.error("ProductEditFailed");
+            }
+
+            this.emitter.emit("hide-loader");
+        },
+
+        mainCtgChangeHandler() {
+            this.localProductSubCtg = null;
+            this.subCategories = this.getSubCategories.filter(ctg => ctg.parentName == this.localProductMainCtg.name);
+        }
     },
     
     computed: {
         ...mapGetters(
             {
+                getMainCategories: "product/getMainCategories",
+                getSubCategories: "product/getSubCategories",
 
+                getSpecialPrices: "product/getSpecialPrices",
+                getDorms: "product/getDorms",
+                getAllPSC: 'misc/getAllPSC',
             }
         ),
     },
 
-    created() {
+    mounted() {
+        this.filteredAddresses = this.getAllPSC;
 
+        this.mainCategories = this.getMainCategories;
+
+        this.productImages = this.product.images;
+        this.productDescription = this.product.description;
+
+        this.productPrice = this.product.price.value.$numberDecimal ? this.product.price.value.$numberDecimal : null;
+        this.productSpecialPrice = this.product.specialValue ? this.product.specialValue : null;
+
+        this.prevProductPrice = this.productPrice || this.productSpecialPrice;
+        this.prevProductCount = JSON.parse(JSON.stringify(this.product.count.available));
+
+        this.localProductMainCtg = this.productMainCtg;
+        this.localProductSubCtg = this.productSubCtg;
+
+        if (this.product.address.custom) {
+            if (this.product.address.custom.dorm) this.productDorm = this.product.address.custom.dorm;
+            else if (this.product.address.custom.region) this.productAddress = this.product.address.custom;
+        }
+
+        if (this.localProductMainCtg) {
+            this.subCategories = this.getSubCategories.filter(ctg => ctg.parentName == this.localProductMainCtg.name);
+        }
+
+        this.loadedData = true;
+        this.emitter.on("loaded-edit-component", (name) => {
+            if (name !== 'ProductEdit') {
+                this.loadedData = false;
+                return;
+            }
+
+            setTimeout(() => {
+                this.loadedData = true;
+            }, 500);
+        });
+
+        this.emitter.on("save-product", () => this.saveProduct());
     },
 
-    mounted() {
+    unmounted() {
+        this.emitter.off("loaded-edit-component");
+        this.emitter.off("save-product");
+    },
+
+    watch: {
+        productPrice(newVal) {
+            if (newVal !== null) this.productSpecialPrice = null;
+        },
+        productSpecialPrice(newVal) {
+            if (newVal !== null) this.productPrice = null;
+        },
+
+        productAddress(newVal) {
+            if (newVal !== null) this.productDorm = null;
+        },
+        productDorm(newVal) {
+            if (newVal !== null) this.productAddress = null;
+        }
 
     }
 }
@@ -303,7 +561,10 @@ export default {
     grid-auto-rows: 90px;
     gap: 16px;
     overflow: auto;
-    max-height: 340px;
+    height: 340px;
+}
+.images-wrapper.loading {
+    background-color: var(--white-5a);
 }
 
 .images-wrapper img {
@@ -413,5 +674,28 @@ export default {
     font-size: 20px;
     font-weight: bold;
     line-height: 100%;
+}
+
+.drag-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: var(--primary);
+    filter: drop-shadow(0px 0px 8px #000000);
+    opacity: 0;
+    transition: opacity 0.15s ease-in;
+    cursor: grab;
+}
+
+.img-cont:hover .drag-icon {
+    opacity: 1;
+}
+</style>
+
+<style>
+.address-cont .multiselect__content-wrapper {
+    width: 200%;
 }
 </style>

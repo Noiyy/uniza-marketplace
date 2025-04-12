@@ -1,9 +1,9 @@
 <template>
-    <div class="product-wrapper">
+    <div class="product-wrapper" :class="isPreview ? 'preview' : ''">
         <div class="product-heading d-flex flex-column gap-8">
             <div class="heading-main d-flex justify-content-between gap-32">
                 <div class="product-title d-flex flex-column gap-8 ">
-                    <div class="breadcrumbs d-flex gap-8">
+                    <div class="breadcrumbs d-flex gap-8" v-if="!isPreview">
                             <router-link to="/browse"> Browse </router-link>
                             <span> > </span>
                             <router-link :to="`/browse?ctg=${productMainCtg.name}`" v-if="productMainCtg">
@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="product-heading-options d-flex align-items-center">
-                    <div class="options-wrapper d-flex gap-16 align-items-center">
+                    <div class="options-wrapper d-flex gap-16 align-items-center" v-if="!isPreview">
                         <div class="back d-flex align-items-center" @click="$router.back()">
                             <Icon icon="mdi:arrow-left-top" class="back-icon" />
                             back
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="line-divider"></div>
+            <div class="line-divider" v-if="!isPreview"></div>
         </div>
 
         <div class="product-main">
@@ -48,10 +48,12 @@
                 <div class="main-img-cont pos-relative">
                     <img v-if="productHasImages" :src="getMainImg()" class="img-fluid" />
                     <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
-                    <span v-if="productHasImages"> {{ shownMainImgIndex+1 }}/{{ product.images.length }} </span>
+                    <span v-if="productHasImages" class="product-images-count"> 
+                        {{ shownMainImgIndex+1 }}/{{ product.images.length }}
+                    </span>
 
                     <Icon v-if="productHasImages" icon="gridicons:fullscreen" class="main-img-icon fullscreen" @click="imgLightboxVisible = true" />
-                    <Icon icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" @click="bookmarkProduct()" />
+                    <Icon v-if="!isPreview && getLoggedUser" icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" @click="bookmarkProduct()" />
 
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
@@ -62,8 +64,8 @@
                         <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
                         <span class="montserrat" v-else> {{ product.price.value.$numberDecimal }}€ </span>      
                     </div>
-                    <div class="other-images-wrapper">
-                        <template v-if="productHasImages">
+                    <div class="other-images-wrapper" :class="!loadedData ? 'loading' : ''">
+                        <template v-if="productHasImages && loadedData">
                             <img v-for="(image, index) in product.images" :key="index" 
                                 :src="getAssetUrl(`img/products/${image}`)" class="img-fluid"
                                 @mouseover="shownMainImgIndex = index"
@@ -110,8 +112,8 @@
 
                 <div class="product-seller-info d-flex gap-32">
                     <div class="seller-btns d-flex gap-16 align-items-end">
-                        <button class="btn secondary"> MESSAGE </button>
-                        <button class="btn primary"> 
+                        <button class="btn secondary" :disabled="isPreview" @click="openChatWithSeller()"> MESSAGE </button>
+                        <button class="btn primary" :disabled="isPreview" @click="copyTelNumber()"> 
                             <Icon icon="ic:baseline-phone" class="phone-icon" />
                             0901 632 913
                         </button>
@@ -142,7 +144,7 @@
             <div v-html="product.description"></div>
         </div>
 
-        <div class="product-misc-options pos-relative">
+        <div class="product-misc-options pos-relative" v-if="!isPreview">
             <div class="options-wrapper d-flex gap-32">
                 <div class="pattern" :style="patternBgStyle"></div>
 
@@ -231,6 +233,8 @@ export default {
                         
             userAvatarPath: null,
             userRatingAvg: null,
+
+            loadedData: false
         }
     },
 
@@ -308,6 +312,14 @@ export default {
 
         viewSimilarProducts() {
             
+        },
+
+        openChatWithSeller() {
+
+        },
+
+        copyTelNumber() {
+
         }
     },
     
@@ -336,12 +348,26 @@ export default {
     },
 
     mounted() {
+        this.loadedData = true;
+        this.emitter.on("loaded-edit-component", (name) => {
+            if (name !== 'ProductDetail') {
+                this.loadedData = false;
+                return;
+            }
 
+            setTimeout(() => {
+                this.loadedData = true;
+            }, 500);
+        });
     }
 }
 </script>
 
 <style scoped>
+.product-wrapper.preview {
+    margin-top: 48px;
+}
+
 .back {
     gap: 4px;
     cursor: pointer;
@@ -449,8 +475,12 @@ export default {
     gap: 12px;
 
     width: 100%;
+    min-height: 15vw;
     max-height: 21vw;
     overflow: auto;
+}
+.other-images-wrapper.loading {
+    background-color: var(--white-5a);
 }
 
 .other-images-wrapper img {
@@ -576,5 +606,9 @@ export default {
 
     background: rgba(26, 21, 18, 0.97);
     backdrop-filter: blur(20px);
+}
+
+.product-images-count {
+    user-select: none;
 }
 </style>
