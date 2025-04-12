@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const Sale = require("../models/saleModel");
 const ProductHistory = require("../models/productHistoryModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
@@ -19,7 +20,18 @@ exports.getAllProducts = async (req, res) => {
 };
 
 exports.getLatestProducts = async (req, res) => {
-    const products = await Product.find({}).sort({createdAt: -1}).limit(4);
+    const uniqueSales = await Sale.aggregate([
+        { $sort: { createdAt: -1 } },
+        { 
+          $group: { 
+            _id: "$productId",
+            latestSale: { $first: "$$ROOT" }
+          }
+        },
+        { $replaceRoot: { newRoot: "$latestSale" } },
+        { $limit: 4 }
+    ]);
+    const products = await Product.find({ _id: { $in: uniqueSales.map(sl => new mongoose.Types.ObjectId(sl.productId)) } }).sort({createdAt: -1}).limit(4);
     
     res.status(200).json(products);
 };
@@ -42,6 +54,16 @@ exports.getUserProducts = async (req, res) => {
     if (!products || !products.length) return res.status(404).json({error: 'No products found for user with id ' + userId});
 
     res.status(200).json(products);
+}
+
+exports.getProductHistory = async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No product found for id ' + id});
+
+    const history = await ProductHistory.find({ productId: id }).sort({createdAt: -1});
+    if (!history) return res.status(404).json({error: 'No history found for product with id ' + id});
+
+    res.status(200).json(history);
 }
 
 exports.addProduct = async (req, res) => {

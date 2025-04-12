@@ -372,7 +372,7 @@ export default {
 
         /* DATA GETTERS THROUGH SORTING AND FILTERING */
         getProductsData() {
-            this.filteredProducts = this.filterProducts(this.allProducts, this.productsSearchQuery, this.productsTypeFilter);
+            this.filteredProducts = this.filterProducts(this.allProducts, this.productsSearchQuery, null, null, null, this.productsTypeFilter);
             this.sortedProducts = this.sortProducts(this.filteredProducts, this.productsSortFilter);
         },
 
@@ -470,8 +470,8 @@ export default {
         /* SETUP FILTERS */
         setupProductFilters() {
             this.productFilters = [
-                { name: "onSale", count: 2, active: true },
-                { name: "saleEnded", count: 12 }
+                { name: "onSale", count: this.allProducts.filter(pr => pr.status == "onSale").length, active: true },
+                { name: "saleEnded", count: this.allProducts.filter(pr => pr.status == "saleEnded").length }
             ];
         },
 

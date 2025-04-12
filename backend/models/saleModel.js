@@ -13,7 +13,7 @@ const saleSchema = new mongoose.Schema({
         type: Number,
         require: true, default: 1
     },
-    soldAt: {
+    createdAt: {
         type: Date,
         default: Date.now,
         required: true

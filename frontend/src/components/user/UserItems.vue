@@ -94,6 +94,11 @@ export default {
             type: Array,
             default: []
         },
+
+        user: {
+            type: Object,
+            default: null
+        }
     },
 
     components: {
@@ -143,7 +148,7 @@ export default {
         ),
 
         getProductsData() {
-            this.filteredProducts = this.filterProducts(this.products, this.productsSearchQuery, this.productsTypeFilter);
+            this.filteredProducts = this.filterProducts(this.products, this.productsSearchQuery, null, null, null, this.productsTypeFilter);
             this.sortedProducts = this.sortProducts(this.filteredProducts, this.productsSortFilter);
         },
 
@@ -184,9 +189,8 @@ export default {
 
         setupProductFilters() {
             this.productFilters = [
-                { name: "onSale", count: 2, active: true },
-                { name: "saleEnded", count: 12 },
-                { name: "bought", count: 7 },
+                { name: "onSale", count: this.products.filter(pr => pr.status == 'onSale').length, active: true },
+                { name: "saleEnded", count: this.products.filter(pr => pr.status == 'saleEnded').length },
             ];
         },
 

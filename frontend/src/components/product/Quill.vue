@@ -48,8 +48,6 @@ export default {
 
     methods: {
       initQuill() {
-        console.log("init quill");
-
         const quillOptions = {
             // debug: 'info',
             modules: {
@@ -102,6 +100,7 @@ export default {
 .quill-wrapper {
     border: 1px solid var(--primary);
     border-radius: 8px;
+    min-height: 100px;
 }
 
 .ql-container {

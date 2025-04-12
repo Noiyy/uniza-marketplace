@@ -190,11 +190,39 @@
             <div class="sales-heading d-flex flex-column gap-8">
                 <div class="d-flex gap-32 justify-content-between align-items-center">
                     <h2> SALES </h2>
-                    <Icon icon="ic:baseline-plus" class="plus-icon" />
+                    <Icon icon="ic:baseline-plus" class="plus-icon" @click="salesModalIsShown = true" />
                 </div>
                 <div class="line-divider"></div>
             </div>
+
+            <div class="sales-wrapper d-flex flex-column gap-16 pos-relative" :class="shownSales ? 'shown' : ''">
+                <div class="view-divider-cont" v-if="!shownSales && productSales.length && productSales.length > 3">
+                    <div class="view-divider shorter d-flex justify-content-center align-items-center">
+                        <button class="btn secondary" @click="shownSales = !shownSales"> View </button>
+                        <div class="divider"></div>
+                    </div>
+        
+                    <div class="hidden-overlay"></div>
+                </div>
+
+                <template v-for="(sale, index) in productSales" :key="index">
+                    <SaleItem
+                        :sale-data="sale"
+                        :product-data="product"
+                    ></SaleItem>
+                </template>
+
+                <div class="no-sales text-center" v-if="!productSales || !productSales.length">
+                    This product doesn't have any sales yet! :(
+                </div>
+            </div>
         </div>
+        
+        <SaleModal v-if="allUsers && allUsers.length"
+            v-model:is-shown="salesModalIsShown"
+            :available-users="availableUsersSale"
+            :sale-data="selectedSaleData"
+        ></SaleModal>
     </div>
 </template>
 
@@ -202,8 +230,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Icon } from '@iconify/vue';
 
+import SaleModal from './SaleModal.vue';
+import SaleItem from './SaleItem.vue';
 import Checkbox from '../Checkbox.vue';
 import Quill from './Quill.vue';
+
 import Multiselect from 'vue-multiselect';
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
@@ -212,7 +243,7 @@ import { VueDraggableNext } from 'vue-draggable-next';
 export default {
     name: 'ProductEdit',
 
-    inject: ['emitter', 'productApi'],
+    inject: ['emitter', 'productApi', 'userApi'],
     emits: ['scroll-to-sales'],
 
     props: {
@@ -237,7 +268,9 @@ export default {
         Quill,
         Icon,
         Multiselect,
-        VueDraggableNext
+        VueDraggableNext,
+        SaleItem,
+        SaleModal
     },
 
     data() {
@@ -262,9 +295,17 @@ export default {
             localProductSubCtg: null,
 
             loadedData: false,
-
+            
             prevProductPrice: null,
-            prevProductCount: null
+            prevProductCount: null,
+
+            shownSales: false,
+            salesModalIsShown: false,
+            productSales: [],
+
+            allUsers: [],
+            availableUsersSale: [],
+            selectedSaleData: null
         }
     },
 
@@ -410,7 +451,24 @@ export default {
         mainCtgChangeHandler() {
             this.localProductSubCtg = null;
             this.subCategories = this.getSubCategories.filter(ctg => ctg.parentName == this.localProductMainCtg.name);
-        }
+        },
+
+        async getProductSales() {
+            try {
+                const resp = await this.productApi.getProductSales(this.$route.params.id);
+                this.productSales = resp.data;
+                console.log("sales", this.productSales);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async getAllUsers() {
+            const resp = await this.userApi.getAllUsers();
+            this.allUsers = resp.data;
+            this.availableUsersSale = resp.data.filter(usr => usr && usr._id != this.product.sellerId);
+            console.log("users", this.availableUsersSale);
+        },
     },
     
     computed: {
@@ -426,7 +484,10 @@ export default {
         ),
     },
 
-    mounted() {
+    async mounted() {
+        await this.getProductSales();
+        this.getAllUsers();
+
         this.filteredAddresses = this.getAllPSC;
 
         this.mainCategories = this.getMainCategories;
@@ -465,6 +526,9 @@ export default {
         });
 
         this.emitter.on("save-product", () => this.saveProduct());
+        this.emitter.on("sale-add-success", async () => {
+            this.getProductSales();
+        });
     },
 
     unmounted() {
@@ -660,6 +724,7 @@ export default {
 
 .input-cont input {
     width: 100%;
+    font-weight: bold;
 }
 
 .product-sales {
@@ -668,6 +733,11 @@ export default {
 
 .product-sales .plus-icon {
     font-size: 32px;
+    transition: transform 0.15s ease-in;
+}
+.product-sales .plus-icon:hover {
+    transform: scale(1.3);
+    cursor: pointer;
 }
 
 .sales-heading h2 {
@@ -692,10 +762,34 @@ export default {
 .img-cont:hover .drag-icon {
     opacity: 1;
 }
+
+.sales-wrapper {
+    margin-top: 16px;
+    max-height: 250px;
+    overflow: hidden;
+}
+
+.sales-wrapper.shown {
+    max-height: initial;
+    overflow: initial;
+}
+
+.sales-wrapper .hidden-overlay {
+    top: 0;
+    height: 100%;
+}
+
+.no-sales {
+    opacity: 0.66;
+}
 </style>
 
 <style>
 .address-cont .multiselect__content-wrapper {
     width: 200%;
+}
+
+.info-edit .multiselect__single {
+    font-weight: bold;
 }
 </style>

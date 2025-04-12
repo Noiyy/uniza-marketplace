@@ -394,10 +394,10 @@ export default {
 
 .product-showcase .main-img-cont {
     flex: 1.5;
+    max-width: 500px;
     border-radius: 16px;
     overflow: hidden;
-    min-height: 25vw;
-    max-height: 27vw;
+    height: 25vw;
 }
 
 .main-img-icon {
@@ -470,8 +470,8 @@ export default {
 
 .other-images-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    grid-auto-rows: 90px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-auto-rows: 60px;
     gap: 12px;
 
     width: 100%;
@@ -582,6 +582,10 @@ export default {
 .product-misc-options .options-wrapper .option {
     z-index: 2;
     user-select: none;
+    transition: color 0.15s ease-in;
+}
+.product-misc-options .options-wrapper .option:hover {
+    color: rgba(255, 255, 255, 0.66);
 }
 
 .product-misc-options .pattern {
@@ -610,5 +614,12 @@ export default {
 
 .product-images-count {
     user-select: none;
+}
+
+/* XL */
+@media(min-width: 1400px) { 
+    .product-showcase .main-img-cont {
+        height: 20vw;
+    }
 }
 </style>

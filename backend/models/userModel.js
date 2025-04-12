@@ -31,9 +31,11 @@ const userSchema = new mongoose.Schema({
         average: { type:  mongoose.Schema.Types.Decimal128 }, // product.price.toString(); // Convert Decimal128 to string
         count: { type: Number },
     },
-    boughtProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
-    soldProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
-    onSaleProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    boughtProducts: { 
+        type: Number,
+        required: true,
+        default: 0
+    }, 
     isAdmin: {
         type: Boolean
     },

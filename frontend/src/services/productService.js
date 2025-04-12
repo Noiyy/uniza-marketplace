@@ -18,6 +18,9 @@ class ProductService extends DefaultService {
     async getUserProducts(userId) {
         return await this.apiClient.get(`/userProducts/${userId}`);
     }
+    async getProductHistory(productId) {
+        return await this.apiClient.get(`/${productId}/history`);
+    }
     async addProduct(productData) {
         return await this.apiClient.post("/add", productData, { withCredentials: true });
     }
@@ -62,13 +65,13 @@ class ProductService extends DefaultService {
         return await this.apiClient.get(`/sales/${saleId}`);
     }
     async addSale(productId, saleData) {
-        return await this.apiClient.post(`/${productId}/sales/add`, saleData);
+        return await this.apiClient.post(`/${productId}/sales/add`, saleData, { withCredentials: true });
     }
     async confirmSale(productId, saleId) {
         return await this.apiClient.post(`/${productId}/sales/${saleId}/confirm`);
     }
     async deleteSale(saleId) {
-        return await this.apiClient.delete(`/sales/delete/${saleId}`);
+        return await this.apiClient.delete(`/sales/delete/${saleId}`, { withCredentials: true });
     }
 }
 

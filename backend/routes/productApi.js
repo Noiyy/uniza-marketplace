@@ -1,5 +1,8 @@
 const express = require('express');
-const { getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct, deleteProduct, uploadProductImages } = require("../controllers/productController");
+const { 
+    getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct,
+    deleteProduct, uploadProductImages, getProductHistory
+} = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { getAllSales, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
 
@@ -17,6 +20,8 @@ router.get("/getAllProducts", getAllProducts);
 router.get("/getLatestProducts", getLatestProducts);
 router.get("/:id", getProduct);
 router.get("/userProducts/:userId", getUserProducts);
+router.get("/:id/history", getProductHistory);
+
 router.post("/add", protect, addProduct);
 router.patch('/update/:id', protect, updateProduct);
 router.delete('/delete/:id', protect, deleteProduct);
@@ -56,8 +61,8 @@ router.get("/categories/:id", getCategory);
 router.get("/sales/getAllSales", getAllSales);
 router.get("/:id/sales", getProductSales);
 router.get("/sales/:saleId", getSale);
-router.post("/:id/sales/add", addSale);
+router.post("/:id/sales/add", protect, addSale);
 router.post("/:id/sales/:saleId/confirm", confirmSale);
-router.delete('/sales/delete/:id', deleteSale);
+router.delete('/sales/delete/:id', protect, deleteSale);
 
 module.exports = router;

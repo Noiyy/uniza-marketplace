@@ -1,19 +1,29 @@
 <template>
-    <div class="history-item d-flex justify-content-between" :class="historyData.historyType ? historyData.historyType : ''">
-        <div class="item-main d-flex gap-24 align-items-center">
-            <div class="item-misc d-flex gap-8 align-items-center">
-                <div class="type-indicator"></div>
-                Sold 2x
-            </div>
-            <div class="item-info">
-                Count of left: 2
-            </div>
+    <div class="history-item d-flex justify-content-between" :class="historyData.historyType ? `type-${historyData.historyType}` : ''">
+        <div class="item-main d-flex gap-32 align-items-center">
+            <slot name="content">
+                <div class="item-misc d-flex gap-16 align-items-center">
+                    <div class="type-indicator"></div>
+                    <span v-if="historyData.historyType == 'sale'"> Sold {{ historyData.newValue }}x </span>
+                    <span v-else-if="historyData.historyType == 'count'"> Added +{{ historyData.newValue - historyData.oldValue }} </span>
+                    <span v-else-if="historyData.historyType == 'priceChange'"> Changed price </span>
+                </div>
+                <div class="item-info">
+                    <span v-if="historyData.historyType == 'count'"> Count of available left: {{ historyData.newValue }} </span>
+                    <span v-if="historyData.historyType == 'sale'"> Count of available left: {{ historyData.oldValue }} </span>
+                    <span v-if="historyData.historyType == 'priceChange'" class="d-flex gap-8 align-items-center"> 
+                        {{ historyData.oldValue }}€
+                        <Icon icon="formkit:arrowright" class="arrow-icon" :class="historyData.oldValue > historyData.newValue ? 'lower' : 'higher'" />
+                        {{ historyData.newValue }}€
+                    </span>
+                </div>
+            </slot>
         </div>
 
         <div class="item-date d-flex gap-8 align-items-center montserrat">
             <Icon icon="lets-icons:date-fill" class="date-icon" />
-            <span class="date"> 17.12.2024  </span> <!-- {{ isoToDateString(historyData.timestamp) }} -->
-            <span class="time"> 14:44 </span> <!-- {{ isoToDayTime(historyData.timestamp) }} -->
+            <span class="date"> {{ isoToDateString(historyData.timestamp || historyData.createdAt) }}  </span>
+            <span class="time"> {{ isoToDayTime(historyData.timestamp || historyData.createdAt) }} </span>
         </div>
     </div>
 </template>
@@ -29,7 +39,12 @@ export default {
 
     props: {
         historyData: {
-            type: Number, // Object
+            type: Object,
+            default: null
+        },
+
+        productData: {
+            type: Object,
             default: null
         }
     },
@@ -75,6 +90,16 @@ export default {
     margin-top: 16px;
 }
 
+.history-item.type-count .type-indicator {
+    background-color: var(--blue);
+}
+.history-item.type-priceChange .type-indicator {
+    background-color: var(--accent);
+}
+.history-item.type-sale .type-indicator {
+    background-color: var(--green);
+}
+
 .type-indicator {
     height: 32px;
     width: 16px;
@@ -97,5 +122,16 @@ export default {
 
 .item-date .time {
     font-weight: 100;
+}
+
+.arrow-icon.lower {
+    color: var(--green);
+}
+.arrow-icon.higher {
+    color: var(--red);
+}
+
+.item-misc {
+    font-weight: 300;
 }
 </style>

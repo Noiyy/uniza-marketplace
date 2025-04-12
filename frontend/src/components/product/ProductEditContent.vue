@@ -143,7 +143,6 @@ export default {
         },
 
         changedComponent() {
-            console.log("changed");
             this.emitter.emit("loaded-edit-component", this.shownComponent);
         },
 

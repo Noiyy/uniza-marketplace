@@ -60,6 +60,7 @@ export default {
   -ms-user-select: none;
   user-select: none;
   line-height: 100%;
+  font-weight: 300;
 }
 
 .checkbox-cont input {

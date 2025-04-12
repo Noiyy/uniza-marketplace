@@ -8,7 +8,7 @@ const historySchema = new mongoose.Schema({
     },
     historyType: { 
         type: String,
-        enum: ["priceChange", "count", "sale", "end"],
+        enum: ["priceChange", "count", "sale"],
         required: true
     },
     oldValue: {

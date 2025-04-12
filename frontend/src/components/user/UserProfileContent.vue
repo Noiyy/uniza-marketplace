@@ -73,9 +73,9 @@
                                     </div>
 
                                     <div class="stats d-flex gap-24">
-                                        <div> <span class="gradient-text">12</span> sold </div>
-                                        <div> <span class="gradient-text">3</span> on sale </div>
-                                        <div> <span class="gradient-text">7</span> bought </div>
+                                        <div> <span class="gradient-text"> {{ getSoldProductsCount() }} </span> sold </div>
+                                        <div> <span class="gradient-text"> {{ userProducts.filter(pr => pr.status == "onSale").length }} </span> on sale </div>
+                                        <div> <span class="gradient-text"> {{ user.boughtProducts }} </span> bought </div>
                                     </div>
 
                                     <div class="view-divider full d-flex justify-content-center align-items-center">
@@ -90,6 +90,7 @@
                     <UserItems v-if="loadedProducts && loadedRatings"
                         :products="userProducts"
                         :ratings="userRatings"
+                        :user="user"
                     ></UserItems>
 
                 </div>
@@ -238,6 +239,10 @@ export default {
             const el = document.querySelector(".user-ratings");
             el.scrollIntoView();
             this.emitter.emit("show-hidden-user-ratings");
+        },
+
+        getSoldProductsCount() {
+            return this.userProducts.reduce((acc, current) => acc + current.count.sold, 0);
         }
     },
 

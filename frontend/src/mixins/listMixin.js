@@ -101,6 +101,12 @@ export const listMixin = {
             if (selectedPriceRange && selectedPriceRange[1] && selectedPriceRange[1] != 9999)
                 filteredProducts = filteredProducts.filter(prod => prod.price.value && +prod.price.value.$numberDecimal && +prod.price.value.$numberDecimal <= selectedPriceRange[1]);
             // if (this.selectedLocation) filteredProducts = filteredProducts.filter(prod => prod)
+
+            if (type) {
+                if (type == "onSale") filteredProducts = filteredProducts.filter(prod => prod.status == "onSale");
+                else if (type == "saleEnded") filteredProducts = filteredProducts.filter(prod => prod.status == "saleEnded");
+            }
+
             if (searchQuery) 
                 filteredProducts = this.filterByValue(filteredProducts, searchQuery.toLowerCase());
 

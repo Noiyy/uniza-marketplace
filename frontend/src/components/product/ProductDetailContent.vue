@@ -10,51 +10,58 @@
                         <img :src="getAssetUrl('img/logo-w_light.svg')" aria-hidden="true" class="img-fluid"> 
                     </div>
 
-                    <ProductDetail v-if="product"
-                        :product="product"
-                        :product-main-ctg="productMainCtg"
-                        :product-sub-ctg="productSubCtg"
-                    ></ProductDetail>
-
-                    <div class="product-history" v-if="product">
-                        <div class="history-heading d-flex flex-column gap-8">
-                            <div class="d-flex gap-32 justify-content-between align-items-center">
-                                <h2> PRODUCT HISTORY </h2>
-                                <div class="created-at d-flex gap-24 align-items-center">
-                                    Created at
-                                    <span> {{ isoToDateString(product.createdAt) }} </span> 
+                    <template v-if="product">
+                        <ProductDetail
+                            :product="product"
+                            :product-main-ctg="productMainCtg"
+                            :product-sub-ctg="productSubCtg"
+                        ></ProductDetail>
+    
+                        <div class="product-history">
+                            <div class="history-heading d-flex flex-column gap-8">
+                                <div class="d-flex gap-32 justify-content-between align-items-center">
+                                    <h2> PRODUCT HISTORY </h2>
+                                    <div class="created-at d-flex gap-24 align-items-center">
+                                        Created at
+                                        <span> {{ isoToDateString(product.createdAt) }} </span> 
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="line-divider"></div>
-                        </div>
-                    </div>
-
-                    <div class="history-content d-flex flex-column gap-24">
-                        <div class="sale-ended d-flex flex-column text-center"> <!-- v-if="saleEnded" -->
-                            <div class="sale-ended-title pos-relative">
-                                <h2 class="pos-relative"> sale ended </h2>
                                 <div class="line-divider"></div>
                             </div>
-                            <div class="date montserrat"> 18.12.2024 </div>
                         </div>
-
-                        <div class="history-wrapper d-flex flex-column gap-16 pos-relative" :class="shownHistory ? 'shown' : ''">
-                            <div class="view-divider-cont"> <!-- v-if="!shownHistory && prod.history.length &&  prod.history.length > 5" -->
-                                <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                                    <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
-                                    <div class="divider"></div>
+    
+                        <div class="history-content d-flex flex-column gap-24">
+                            <div class="sale-ended d-flex flex-column text-center" v-if="product.status === 'saleEnded'">
+                                <div class="sale-ended-title pos-relative" >
+                                    <h2 class="pos-relative"> sale ended </h2>
+                                    <div class="line-divider"></div>
                                 </div>
-                    
-                                <div class="hidden-overlay"></div>
+                                <div class="date montserrat"> 18.12.2024 </div>
                             </div>
+    
+                            <div class="history-wrapper d-flex flex-column gap-16 pos-relative" :class="shownHistory ? 'shown' : ''">
+                                <div class="view-divider-cont" v-if="!shownHistory && productHistory.length && productHistory.length > 3">
+                                    <div class="view-divider shorter d-flex justify-content-center align-items-center">
+                                        <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
+                                        <div class="divider"></div>
+                                    </div>
+                        
+                                    <div class="hidden-overlay"></div>
+                                </div>
+    
+                                <template v-for="(hist, index) in productHistory" :key="index">
+                                    <HistoryItem
+                                        :history-data="hist"
+                                        :product-data="product"
+                                    ></HistoryItem>
+                                </template>
 
-                            <template v-for="(hist, index) in 7" :key="index">
-                                <HistoryItem
-                                    :history-data="hist"
-                                ></HistoryItem>
-                            </template>
+                                <div class="no-history text-center" v-if="!productHistory || !productHistory.length">
+                                    This product didn't have any significant changes made yet!
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </div>
         </section>
@@ -105,7 +112,8 @@ export default {
             productMainCtg: null,
             productSubCtg: null,
 
-            shownHistory: false
+            shownHistory: false,
+            productHistory: []
         }
     },
 
@@ -124,7 +132,16 @@ export default {
                 console.log("product", this.product);
             } catch (err) {
                 console.error(err);
-                // this.$router.push("/404");
+            }
+        },
+
+        async getProductHistory() {
+            try {
+                const resp = await this.productApi.getProductHistory(this.$route.params.id);
+                this.productHistory = resp.data;
+                console.log("history", this.productHistory);
+            } catch (err) {
+                console.error(err);
             }
         },
     },
@@ -146,9 +163,15 @@ export default {
     async created() {
         this.emitter.emit("show-loader");   
         await this.getProductDetail();
+        await this.getProductHistory();
 
         this.productMainCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.mainCategory);
         if (this.product.category.subCategory) this.productSubCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.subCategory);
+
+        this.emitter.on("sale-add-success", () => {
+            this.getProductDetail();
+            this.getProductHistory();
+        });
     },
 
     mounted() {
@@ -235,6 +258,10 @@ export default {
     object-fit: initial;
     height: 75%;
     opacity: 0.2;
+}
+
+.no-history {
+    opacity: 0.66;
 }
 
 </style>
