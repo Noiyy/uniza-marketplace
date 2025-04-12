@@ -40,7 +40,7 @@
                         <KeepAlive>
                             <component :is="shownComponent"
                                 v-if="shownComponent === 'ProductDetail' && loadedCategories"
-                                :product="product"
+                                :product="productEditedData"
                                 :product-main-ctg="productMainCtg"
                                 :product-sub-ctg="productSubCtg"
                                 :is-preview="true"
@@ -103,7 +103,8 @@ export default {
 
             loadedCategories: false,
 
-            shownComponent: "ProductEdit"
+            shownComponent: "ProductEdit",
+            productEditedData: null
         }
     },
 
@@ -134,7 +135,14 @@ export default {
 
         showProductDetail() {
             if (this.shownComponent === "ProductDetail") return;
-            this.shownComponent = 'ProductDetail';
+            this.emitter.on("get_prod-edited-data-2", (data) => {
+                this.productEditedData = data;
+
+                console.log(this.productEditedData);
+                this.shownComponent = 'ProductDetail';
+            });
+
+            this.emitter.emit("get_prod-edited-data");
         },
 
         showProductEditor() {

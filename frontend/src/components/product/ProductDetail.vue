@@ -62,12 +62,15 @@
                     <div class="price d-flex gap-24 align-items-center">
                         <h3 class="gradient-text"> Price </h3>
                         <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
-                        <span class="montserrat" v-else> {{ product.price.value.$numberDecimal }}€ </span>      
+                        <span class="montserrat" v-else> {{ product.price.value && typeof product.price.value === "string" ?
+                            product.price.value :
+                            product.price.value.$numberDecimal
+                        }}€ </span>      
                     </div>
                     <div class="other-images-wrapper" :class="!loadedData ? 'loading' : ''">
                         <template v-if="productHasImages && loadedData">
                             <img v-for="(image, index) in product.images" :key="index" 
-                                :src="getAssetUrl(`img/products/${image}`)" class="img-fluid"
+                                :src="image.url ? image.url : getAssetUrl(`img/products/${image}`)" class="img-fluid"
                                 @mouseover="shownMainImgIndex = index"
                                 @click="imgLightboxVisible = true"
                     
@@ -78,7 +81,7 @@
 
                 <VueEasyLightbox
                     :visible="imgLightboxVisible"
-                    :imgs="product.images.map(img => getAssetUrl(`img/products/${img}`))"
+                    :imgs="product.images.map(img => img.url ? img.url : getAssetUrl(`img/products/${img}`))"
                     :index="shownMainImgIndex"
                     @hide="imgLightboxVisible = false"
                 ></VueEasyLightbox>
@@ -89,7 +92,7 @@
                         <span> Location </span>
                         <div class="location d-flex gap-8 align-items-center">
                             <Icon icon="mdi:location" class="location-icon detail-icon" />
-                            Žilina
+                            {{ getProductLocation }}
                         </div>
                     </div>
 
@@ -269,7 +272,8 @@ export default {
 
         getMainImg() {
             const indx = this.shownMainImgIndex;
-            return this.getAssetUrl(`img/products/${this.product.images[indx ? indx : 0]}`);
+            const shownImg = this.product.images[indx ? indx : 0];
+            return shownImg.url ? shownImg.url : this.getAssetUrl(`img/products/${shownImg}`);
         },
 
         showPrevImage() {
@@ -337,6 +341,19 @@ export default {
 
         productHasImages() {
             return this.product && this.product.images && this.product.images.length;
+        },
+
+        getProductLocation() {
+            if (this.product) {
+                const customAddress = this.product.address.custom;
+                if (customAddress) {
+                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                } else if (this.product.address.asProfile) {
+                    return "asProfile";
+                } else {
+                    return "Žilina";
+                }
+            }
         }
     },
 
@@ -357,6 +374,7 @@ export default {
 
             setTimeout(() => {
                 this.loadedData = true;
+                console.log("more",this.product);
             }, 500);
         });
     }
@@ -610,6 +628,10 @@ export default {
 
     background: rgba(26, 21, 18, 0.97);
     backdrop-filter: blur(20px);
+}
+
+.location {
+    font-size: 14px;
 }
 
 .product-images-count {

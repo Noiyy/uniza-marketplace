@@ -30,7 +30,7 @@
                 </div>
                 <div class="location">
                     <Icon icon="mdi:location" class="location-icon detail-icon" />
-                    Žilina
+                    {{ getProductLocation }}
                 </div>
                 <div class="d-flex gap-16 justify-content-between align-items-center">
                     <div class="views">
@@ -49,7 +49,7 @@
             <div class="thumbnail d-flex justify-content-center align-items-center">
                 <div class="location">
                     <Icon icon="mdi:location" class="location-icon detail-icon" />
-                    Žilina
+                    {{ getProductLocation }}
                 </div>
     
                 <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
@@ -142,7 +142,7 @@ export default {
                 type: "product",
                 data: this.prodData
             });
-        }
+        },
     },
     
     computed: {
@@ -151,6 +151,19 @@ export default {
 
             }
         ),
+
+        getProductLocation() {
+            if (this.prodData) {
+                const customAddress = this.prodData.address.custom;
+                if (customAddress) {
+                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                } else if (this.prodData.address.asProfile) {
+                    return "asProfile";
+                } else {
+                    return "Žilina";
+                }
+            }
+        }
     },
 
     created() {
@@ -258,6 +271,10 @@ export default {
 
 .product-item.grid .detail-icon {
     font-size: 16px;
+}
+
+.location {
+    font-size: 13px;
 }
 
 .product-item.grid .location {

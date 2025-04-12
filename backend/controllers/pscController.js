@@ -17,7 +17,8 @@ async function initPSC() {
         'PSC': 'postalCode'
     };
     
-    fs.createReadStream('./data/OBCE_edit.csv')
+    // fs.createReadStream('./data/OBCE_edit.csv')
+    fs.createReadStream('./data/obce-mesta-edit.csv')
         .pipe(csvParser())
         .on('data', (row) => {
             const pscData = {};

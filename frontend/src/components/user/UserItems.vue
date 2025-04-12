@@ -257,7 +257,7 @@ export default {
 .user-products, .user-ratings { /* , .user-ratings */
     max-height: 345px;
     overflow: hidden;
-    scroll-margin-top: 24px;
+    scroll-margin-top: 139px;
 }
 .user-products.shown, .user-ratings.shown { /* , .user-ratings.shown */
     max-height: initial;

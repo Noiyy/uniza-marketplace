@@ -119,7 +119,7 @@
                                     <div class="search-options" v-if="locationSearch">
                                         <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`"
                                             :class="selectedLocation && selectedLocation == `${loc.city}, ${loc.postalCode}` ? 'selected' : ''">
-                                            {{ loc.city }} - {{ loc.postalCode }} - {{ loc.region }}
+                                            {{ loc.city }} - {{ loc.region }} - {{ loc.postalCode }} 
                                         </div>
                                     </div>
 

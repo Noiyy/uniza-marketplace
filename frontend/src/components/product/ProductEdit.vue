@@ -130,10 +130,10 @@
                                     :track-by="'_id'"
                                     >
                                     <template #option="props">
-                                        {{ props.option.city }} - {{ props.option.postalCode }} - {{ props.option.region }}
+                                        {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
                                     </template>
                                     <template #singleLabel="props">
-                                        {{ props.option.city }} - {{ props.option.postalCode }} - {{ props.option.region }}
+                                        {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
                                     </template>
                                 </Multiselect>
                             </div>
@@ -377,15 +377,7 @@ export default {
             }
         },
 
-        async saveProduct() {
-            this.emitter.emit("show-loader");
-            console.log("save?", this.product);
-            // console.log(this.productDescription);
-
-            console.log(this.localProductMainCtg, this.localProductSubCtg);
-    
-            const newImages = await this.uploadImages();
-            console.log("heh", newImages);
+        setupEditedProductData(newImages = []) {
             let images = this.productImages.filter(img => !img.url && img);
             images = [...images, ...newImages];
             console.log("joj", images);
@@ -434,6 +426,20 @@ export default {
                 post.prevPrice = this.prevProductPrice;
             }
 
+            return post;
+        },
+
+        async saveProduct() {
+            this.emitter.emit("show-loader");
+            console.log("save?", this.product);
+            // console.log(this.productDescription);
+
+            console.log(this.localProductMainCtg, this.localProductSubCtg);
+    
+            const newImages = await this.uploadImages();
+            console.log("heh", newImages);
+
+            const post = this.setupEditedProductData(newImages);
             console.log("post", post);
 
             const resp = await this.productApi.updateProduct(this.product._id, post);
@@ -529,6 +535,13 @@ export default {
         this.emitter.on("sale-add-success", async () => {
             this.getProductSales();
         });
+
+        this.emitter.on("get_prod-edited-data", () => {
+            const newImages = this.productImages.filter(img => img.url);
+            let data = this.setupEditedProductData(newImages);
+
+            this.emitter.emit("get_prod-edited-data-2", data);
+        });
     },
 
     unmounted() {
@@ -556,6 +569,10 @@ export default {
 </script>
 
 <style scoped>
+#sales {
+    scroll-margin-top: 139px;
+}
+
 .under-heading {
     margin-top: 2px;
 }

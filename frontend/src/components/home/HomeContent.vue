@@ -64,7 +64,7 @@
                                     <div class="prod-additional-info d-flex justify-content-between align-items-center">
                                         <div class="prod-location d-flex gap-8 align-items-center">
                                             <Icon icon="mdi:location" class="location-icon" />
-                                            Žilina
+                                            {{ getProductLocation(prod) }}
                                         </div>
 
                                         <div class="prod-seller-cont">
@@ -131,6 +131,19 @@ export default {
             this.latestProducts = resp.data;
             console.log("latestProducts", this.latestProducts);
             this.emitter.emit("hide-loader");
+        },
+
+        getProductLocation(prod) {
+            if (prod) {
+                const customAddress = prod.address.custom;
+                if (customAddress) {
+                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                } else if (prod.address.asProfile) {
+                    return "asProfile";
+                } else {
+                    return "Žilina";
+                }
+            }
         }
     },
     
