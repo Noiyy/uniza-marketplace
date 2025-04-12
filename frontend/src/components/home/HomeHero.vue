@@ -9,40 +9,37 @@
                     
                     <div class="hero-grid">
                         <router-link :to="`/browse?ctg=${'clothing'}`"
-                            class="item animate gradient-straight d-flex flex-column align-items-center justify-content-center gap-8">
+                            class="item animate black d-flex flex-column align-items-end text-end justify-content-center gap-8">
                             <div>
-                                <h1> Clothing </h1>
-                                <p> footwear, accessories ... </p>
+                                <h1> Books </h1>
+                                <p> fiction, textbooks, homemade ... </p>
                             </div>
-                            <Icon icon="lsicon:clothes-filled" class="icon" />
+                            <img :src="getAssetUrl('img/books-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'tickets'}`"
-                            class="item animate pattern d-flex flex-column align-items-center justify-content-center gap-8">
-                            <div class="glass" :style="patternBgStyle"></div>
-                            <div class="above-glass">
-                                <div>
-                                    <h1> Tickets </h1>
-                                    <p> plane tickets, festivals ... </p>
-                                </div>
-                                <Icon icon="mdi:ticket" class="icon" />
+                            class="item animate full d-flex flex-column align-items-center justify-content-center gap-8">
+                            <div>
+                                <h1> Tickets </h1>
+                                <p> plane tickets, festivals ... </p>
                             </div>
+                            <img :src="getAssetUrl('img/tickets-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'services'}`"
-                            class="item animate secondary d-flex align-items-center justify-content-around gap-8">
+                            class="item animate black d-flex align-items-center justify-content-left gap-8">
                             <div>
-                                <h1> Services </h1>
-                                <p> tutoring, accomodation ... </p>
+                                <h1> Pc & phone </h1>
+                                <p> laptops, mouses ... </p>
                             </div>
-                            <Icon icon="ri:service-fill" class="icon" />
+                            <img :src="getAssetUrl('img/pc-min.png')" alt="">
                         </router-link>
 
                         <router-link :to="`/browse?ctg=${'music'}`"
-                            class="item animate gradient-angle d-flex align-items-center">
+                            class="item animate full d-flex align-items-center">
                             <div class="info">
                                 <h1> Music </h1>
                                 <p> drums, keyboard ... </p>
                             </div>
-                            <Icon icon="tdesign:music-filled" class="icon" />
+                            <img :src="getAssetUrl('img/music-min.png')" alt="">
                         </router-link>
                         <div class="item mid d-flex flex-column justify-content-center align-items-center">
                             <h1> 621817 </h1>
@@ -50,45 +47,37 @@
                             <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo">
                         </div>
                         <router-link :to="`/browse?ctg=${'electronics'}`"
-                            class="item animate secondary d-flex align-items-center justify-content-between gap-16">
+                            class="item animate full d-flex align-items-center justify-content-between gap-16">
                             <div class="text-left">
                                 <h1> Electronics </h1>
                                 <p> microwaves, refrigerators ... </p>
                             </div>
-                            <Icon icon="material-symbols:microwave" class="icon" />
+                            <img :src="getAssetUrl('img/electro-min.png')" alt="">
                         </router-link>
 
                         <router-link :to="`/browse?ctg=${'books'}`"
-                            class="item animate pattern d-flex">
-                            <div class="glass" :style="patternBgStyle"></div>
-                            <div class="above-glass d-flex flex-row-reverse justify-content-around flex-1">
-                                <div class="text-left">
-                                    <h1> Books </h1>
-                                    <p> fiction, textbooks, homemade ... </p>
-                                </div>
-                                <Icon icon="ic:baseline-book" class="icon" />
+                            class="item animate full d-flex justify-content-center align-items-center">
+                            <div class="">
+                                <h1> Clothing </h1>
+                                <p> footwear, accessories ... </p>
                             </div>
+                            <img :src="getAssetUrl('img/clothing-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'furniture'}`"
-                            class="item animate primary d-flex flex-column-reverse align-items-center justify-content-center">
+                            class="item animate black d-flex flex-column-reverse align-items-center justify-content-center">
                             <div>
                                 <h1> Furniture </h1>
                                 <p> chairs, tables, drawers ... </p>
                             </div>
-                            <Icon icon="material-symbols:chair" class="icon" />
+                            <img :src="getAssetUrl('img/furniture-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'pcPhone'}`"
-                            class="item animate pattern d-flex align-items-center">
-                            <div class="glass" :style="patternBgStyle"></div>
-                            <div class="above-glass d-flex flex-column flex-1">
-                                <div class="text-left">
-                                    <h1> PC & Phone </h1>
-                                    <p> laptops, mouses ... </p>
-                                </div>
-                                <div class="icon-cont d-flex justify-content-end">
-                                    <Icon icon="icon-park-solid:laptop" class="icon" />
-                                </div>
+                            class="item animate white d-flex align-items-center">
+                            <div class="text-left">
+                                <h1> Services </h1>
+                                <p> tutoring, accomodation ... </p>
                             </div>
+                            <img :src="getAssetUrl('img/services-min.png')" alt="">
                         </router-link>
                     </div>
 
@@ -171,15 +160,15 @@ export default {
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: auto;
     grid-template-areas:
-        "first first first second second third third third third"
-        "first first first second second third third third third"
-        "first first first mid mid mid fourth fourth fourth"
-        "fifth fifth fifth mid mid mid fourth fourth fourth"
-        "fifth fifth fifth mid mid mid fourth fourth fourth"
-        "sixth sixth sixth sixth seventh seventh fourth fourth fourth"
-        "sixth sixth sixth sixth seventh seventh eighth eighth eighth"
-        "sixth sixth sixth sixth seventh seventh eighth eighth eighth"
-        "sixth sixth sixth sixth seventh seventh eighth eighth eighth"
+        "first first first second second  third   third    third third"
+        "first first first second second  third   third    third third"
+        "first first first mid    mid     mid     fourth fourth fourth"
+        "fifth fifth fifth mid    mid     mid     fourth fourth fourth"
+        "fifth fifth fifth mid    mid     mid     fourth fourth fourth"
+        "sixth sixth sixth sixth  seventh seventh fourth fourth fourth"
+        "sixth sixth sixth sixth  seventh seventh eighth eighth eighth"
+        "sixth sixth sixth sixth  seventh seventh eighth eighth eighth"
+        "sixth sixth sixth sixth  seventh seventh eighth eighth eighth"
         ;
 
 }
@@ -187,15 +176,39 @@ export default {
 .hero-grid .item {
     border-radius: 24px;
     position: relative;
-    color: var(--black);
+    color: var(--white);
     padding: 16px;
     transition: transform 0.2s ease-out, filter 0.2s ease-out;
+    overflow: hidden;
 }
 .hero-grid .item.animate:hover {
     cursor: pointer;
     transform: scale(1.1, 1.1);
-    filter: drop-shadow(0px 0px 10px #000000);
+    /* filter: drop-shadow(0px 0px 10px #fff); */
     z-index: 5;
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(255,255,255,1);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(255,255,255,1);
+    box-shadow: 0px 0px 8px 0px rgba(255,255,255,1);
+}
+
+.hero-grid img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    max-height: 100%;
+    z-index: 1;
+}
+
+.hero-grid .item h1, .hero-grid .item p {
+    z-index: 2;
+    position: relative;
+    text-shadow: 
+    1px 1px 0 black, 
+    -1px 1px 0 black, 
+    1px -1px 0 black, 
+    -1px -1px 0 black;
+    filter: drop-shadow(0px 0px 1.8px #000);
 }
 
 .hero-grid .item h1 {
@@ -208,33 +221,45 @@ export default {
     font-weight: 500;
 }
 
-.hero-grid .item:nth-child(1) {
-    grid-area: first;
+.hero-grid .item:nth-child(1) { grid-area: first; }
+.hero-grid .item:nth-child(2) { grid-area: second; }
+.hero-grid .item:nth-child(3) { grid-area: third; }
+.hero-grid .item:nth-child(4) { grid-area: fourth; }
+.hero-grid .item:nth-child(5) { grid-area: mid; }
+.hero-grid .item:nth-child(6) { grid-area: fifth; }
+.hero-grid .item:nth-child(7) { grid-area: sixth; }
+.hero-grid .item:nth-child(8) { grid-area: seventh; }
+.hero-grid .item:nth-child(9) { grid-area: eighth; }
+
+.hero-grid .item:nth-child(1) img {
+    transform: scale(1.2);
 }
-.hero-grid .item:nth-child(2) {
-    grid-area: second;
+.hero-grid .item:nth-child(2) img {
+    
 }
-.hero-grid .item:nth-child(3) {
-    grid-area: third;
+.hero-grid .item:nth-child(3) img {
+    right: 20%;
+    left: initial;
+    transform: scale(1.7);
 }
-.hero-grid .item:nth-child(4) {
-    grid-area: fourth;
+.hero-grid .item:nth-child(4) img {
+    object-position: 50% 40%;
 }
-.hero-grid .item:nth-child(5) {
-    grid-area: mid;
-    color: var(--white);
+.hero-grid .item:nth-child(6) img {
+    object-position: 50% 85%;
 }
-.hero-grid .item:nth-child(6) {
-    grid-area: fifth;
+.hero-grid .item:nth-child(7) img {
+
 }
-.hero-grid .item:nth-child(7) {
-    grid-area: sixth;
+.hero-grid .item:nth-child(8) img {
+    width: 100%;
+    top: 24px;
 }
-.hero-grid .item:nth-child(8) {
-    grid-area: seventh;
-}
-.hero-grid .item:nth-child(9) {
-    grid-area: eighth;
+.hero-grid .item:nth-child(9) img {
+    transform: scale(1.1);
+    width: 100%;
+    height: 100%;
+    top: 24px;
 }
 
 .hero-grid .item:nth-child(1) .icon {
@@ -259,13 +284,19 @@ export default {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    z-index: 1;
+    text-shadow: initial;
 }
 
-.hero-grid .gradient-straight { background: var(--gradient-straight); }
-.hero-grid .gradient-angle { background: var(--gradient-angle); }
-.hero-grid .primary { background: var(--primary); }
-.hero-grid .secondary { background: var(--secondary); }
-/* .hero-grid .pattern { background: var(--white); } */
+.hero-grid .black { background: linear-gradient(288deg, rgba(240, 237, 234, 0.05) 0%, rgba(240, 237, 234, 0.15) 100%); }
+.hero-grid .white { background: linear-gradient(288deg, rgba(240, 237, 234, 0.66) 0%, rgba(240, 237, 234, 1) 100%); }
+.hero-grid .full {  }
+.hero-grid .full img { 
+    border-radius: 24px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .hero-grid .pattern .above-glass {
     position: relative;
@@ -343,7 +374,6 @@ export default {
     transform: rotate(-33deg);
 }
 .hero-grid .item:nth-child(7) h1 {
-    margin-top: 32px;
     font-size: 36px;
 }
 
