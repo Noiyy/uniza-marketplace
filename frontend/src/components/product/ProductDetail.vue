@@ -234,6 +234,7 @@ export default {
 
             shareIsOpen: false,
                         
+            userAddress: null,
             userAvatarPath: null,
             userRatingAvg: null,
 
@@ -251,6 +252,7 @@ export default {
         async getUser() {
             try {
                 const resp = await this.userApi.getUserById(this.product.sellerId);
+                this.userAddress = resp.data.address;
                 this.userAvatarPath = resp.data.avatarPath;
             } catch (err) {
                 console.error(err);
@@ -347,11 +349,18 @@ export default {
             if (this.product) {
                 const customAddress = this.product.address.custom;
                 if (customAddress) {
-                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                    return customAddress.dorm ? 
+                        customAddress.dorm :
+                        `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
                 } else if (this.product.address.asProfile) {
-                    return "asProfile";
+                    let address = this.userAddress;
+                    if (address) {
+                        return address.dorm ?
+                            address.dorm :
+                            `${address.city} - ${address.region} - ${address.postalCode}`;
+                    } else return "invalid";
                 } else {
-                    return "Žilina";
+                    return "-";
                 }
             }
         }

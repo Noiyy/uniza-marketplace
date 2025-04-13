@@ -60,6 +60,31 @@ exports.updateUser = async (req, res) => {
     res.status(200).json(user);
 }
 
+exports.updateUserSettings = async (req, res) => {
+    const { id } = req.params;
+    const { 
+        address,
+        phone
+    } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + id});
+
+    const userCheck = await User.findById(req.user.id);
+    if (!userCheck) 
+        res.status(401).json({error: 'Auth user not found'});
+
+    // Only owner or admin is allowed to
+    if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
+        res.status(401).json({error: 'Auth user not authorized'});
+
+    const user = await User.findOneAndUpdate(
+        { _id: id},
+        { address, phone },
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ success: true, userId: id });
+}
+
 exports.changeUserPassword = async (req, res) => {
 
 }

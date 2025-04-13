@@ -139,9 +139,14 @@ export default {
                 if (customAddress) {
                     return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
                 } else if (prod.address.asProfile) {
-                    return "asProfile";
+                    let address = prod.sellerInfo.address;
+                    if (address) {
+                        return address.dorm ?
+                            address.dorm :
+                            `${address.city} - ${address.region} - ${address.postalCode}`;
+                    } else return "invalid";
                 } else {
-                    return "Žilina";
+                    return "-";
                 }
             }
         }

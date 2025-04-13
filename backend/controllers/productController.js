@@ -31,9 +31,15 @@ exports.getLatestProducts = async (req, res) => {
         { $replaceRoot: { newRoot: "$latestSale" } },
         { $limit: 4 }
     ]);
-    const products = await Product.find({ _id: { $in: uniqueSales.map(sl => new mongoose.Types.ObjectId(sl.productId)) } }).sort({createdAt: -1}).limit(4);
+    const products = await Product.find({ _id: { $in: uniqueSales.map(sl => new mongoose.Types.ObjectId(sl.productId)) } }).sort({createdAt: -1}).limit(4).lean();
+    const users = await User.find({}).lean();
+
+    let productsWithSellers = products.map((prod) => ({
+        ...prod,
+        sellerInfo: users.find(usr => String(usr._id) === String(prod.sellerId))
+    }));
     
-    res.status(200).json(products);
+    res.status(200).json(productsWithSellers);
 };
 
 exports.getProduct = async (req, res) => {

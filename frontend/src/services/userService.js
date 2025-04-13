@@ -16,7 +16,10 @@ class UserService extends DefaultService {
         return await this.apiClient.get(`/user/getLoggedUser`, { withCredentials: true });
     }
     async updateUser(userId, userData) {
-        return await this.apiClient.put(`/user/update/${userId}`, userData);
+        return await this.apiClient.put(`/user/update/${userId}`, userData, { withCredentials: true });
+    }
+    async updateUserSettings(userId, settingsData) {
+        return await this.apiClient.put(`/user/updateSettings/${userId}`, settingsData, { withCredentials: true });
     }
     async deleteUser(userId) {
         return await this.apiClient.delete(`/user/delete/${userId}`, { withCredentials: true });

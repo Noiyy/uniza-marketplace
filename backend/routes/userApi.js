@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUser, updateUser, deleteUser, getLoggedUser, uploadAvatar } = require("../controllers/userController");
+const { getAllUsers, getUser, updateUser, updateUserSettings, deleteUser, getLoggedUser, uploadAvatar } = require("../controllers/userController");
 const router = express.Router();
 
 const crypto = require('crypto');
@@ -13,7 +13,8 @@ const { protect } = require("../middleware/authMiddleware");
 router.get("/getAllUsers", getAllUsers);
 router.get("/getLoggedUser", protect, getLoggedUser);
 router.get("/:id", getUser);
-router.patch('/update/:id', updateUser);
+router.patch('/update/:id', protect, updateUser);
+router.put("/updateSettings/:id", protect, updateUserSettings)
 router.delete('/delete/:id', protect, deleteUser);
 
 // Upload avatar

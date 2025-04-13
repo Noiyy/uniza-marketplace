@@ -13,7 +13,7 @@
                                 <Icon icon="akar-icons:person" class="default-avatar-icon" />
                             </div>
 
-                            <form enctype="multipart/form-data" class="upload-overlay" v-if="getLoggedUser && (getLoggedUser._id == $route.params.id || getLoggedUser.isAdmin)"
+                            <form enctype="multipart/form-data" class="upload-overlay" v-if="canEdit"
                                 @submit.prevent="uploadUserAvatar" @click="triggerFileInput">
                                 <input ref="avatarInput" name="image" @change="onFileChange" style="display: none"
                                     type="file" accept=".jpg, .jpeg, .png, .webp" />
@@ -22,17 +22,44 @@
                         </div>
 
                         <div class="user-info d-flex flex-column gap-64 justify-content-between">
-                            <div class="user-heading d-flex gap-16 justify-content-between">
-                                <div class="name d-flex gap-24 align-items-center">
-                                    <h1 class="gradient-text"> {{ user.username }} </h1>
-                                    <div class="admin-badge" v-if="user.isAdmin">
-                                        ADMIN
+                            <div class="d-flex flex-column gap-8">
+                                <div class="user-heading d-flex gap-16 justify-content-between">
+                                    <div class="name d-flex gap-24 align-items-center">
+                                        <h1 class="gradient-text"> {{ user.username }} </h1>
+                                        <div class="admin-badge" v-if="user.isAdmin">
+                                            ADMIN
+                                        </div>
+                                    </div>
+    
+                                    <div class="joined-on d-flex gap-32 align-items-center">
+                                        <span> {{ isoToDateString(user.createdAt) }} </span>
+                                        Joined on
                                     </div>
                                 </div>
 
-                                <div class="joined-on d-flex gap-32 align-items-center">
-                                    <span> {{ isoToDateString(user.createdAt) }} </span>
-                                    Joined on
+                                <div class="user-misc-info d-flex gap-16 justify-content-between">
+                                    <div class="location d-flex gap-8 align-items-center">
+                                        <Icon icon="mdi:location" class="location-icon" />
+                                        {{ getUserLocation }}
+                                    </div>
+
+                                    <div class="d-flex gap-24">
+                                        <div class="contact-info d-flex gap-8">
+                                            <button class="btn btn-icon" @click="openChatWithUser()">
+                                                <Icon icon="humbleicons:chat" class="chat-icon" />
+                                            </button>
+                                            <button class="btn primary smaller" @click="copyTelNumber()"> 
+                                                <Icon icon="ic:baseline-phone" class="phone-icon" />
+                                                0901 632 913
+                                            </button>
+                                        </div>
+
+                                        <div class="settings-btn-cont" v-if="canEdit">
+                                            <button class="btn btn-icon" @click="settingsModalIsShown = true">
+                                                <Icon icon="mdi:cog" class="settings-icon" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -97,6 +124,64 @@
             </div>
         </section>
 
+        <Modal v-if="canEdit"
+            v-model:is-shown="settingsModalIsShown"
+            :header-text="modalHeading"
+            :modal-id="'user-settings-modal'"
+            @close="closeSettingsModal()">
+            <template #body>
+                <div class="d-flex flex-column gap-32">
+                    <div class="input-row address-inputs d-flex gap-32 align-items-center justify-content-between">
+                        <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-tag"> Address </div>
+                            <Multiselect
+                                v-model="userAddress"
+                                :options="filteredAddresses"
+                                @search-change="onAddressSearchChange"
+                                :internal-search="false"
+                                :allow-empty="false"
+                                :multiple="false"
+                                :show-labels="false"
+                                :track-by="'_id'"
+                                >
+                                <template #option="props">
+                                    {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
+                                </template>
+                                <template #singleLabel="props">
+                                    {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
+                                </template>
+                            </Multiselect>
+                        </div>
+    
+                        <span class="input-row-divider montserrat"> Or </span>
+    
+                        <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-tag"> Dorm </div>
+                            <Multiselect
+                                v-model="userDorm"
+                                :options="getDorms"
+                                :allow-empty="false"
+                                :multiple="false"
+                                :show-labels="false"
+                            ></Multiselect>
+                        </div>
+                    </div>
+    
+                    <div>
+                        <div class="input-cont d-flex flex-column gap-8">
+                            <div class="input-tag"> Phone number </div>
+                            <input v-model="userPhone" type="number" min="1" max="9999" class="styled" :placeholder="'Count'">
+                        </div>
+                    </div>
+    
+                    <div class="btns-cont d-flex gap-16 justify-content-center">
+                        <button class="btn secondary" @click="closeSettingsModal()"> Cancel </button>
+                        <button class="btn primary" @click="saveUserSettings()"> Save </button>
+                    </div>
+                </div>
+            </template>
+        </Modal>
+
         <Footer></Footer>
     </div>
 </template>
@@ -105,6 +190,11 @@
 import Header from '../Header.vue';
 import Footer from '../Footer.vue';
 import UserItems from './UserItems.vue';
+import Modal from '../Modal.vue';
+
+import Multiselect from 'vue-multiselect';
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 import { Icon } from '@iconify/vue';
 
 import { mapGetters, mapActions } from 'vuex';
@@ -129,7 +219,9 @@ export default {
         Header,
         Footer,
         UserItems,
-        Icon
+        Icon,
+        Modal,
+        Multiselect
     },
 
     data() {
@@ -143,7 +235,15 @@ export default {
 
             selectedAvatarFile: null,
 
-            pageTitle: null
+            pageTitle: null,
+
+            settingsModalIsShown: false,
+            modalHeading: "User settings",
+            filteredAddresses: [],
+
+            userAddress: null,
+            userDorm: null,
+            userPhone: null
         }
     },
 
@@ -159,6 +259,10 @@ export default {
                 const resp = await this.userApi.getUserById(this.$route.params.id);
                 this.user = resp.data;
                 this.pageTitle = `${this.user.username} - UNIZA Marketplace`;
+
+                this.userAddress = resp.data.address && !resp.data.address.dorm ? resp.data.address : null;
+                this.userDorm = resp.data.address && resp.data.address.dorm ? resp.data.address.dorm : null
+
                 console.log("user", this.user);
             } catch (err) {
                 console.error(err);
@@ -243,28 +347,114 @@ export default {
 
         getSoldProductsCount() {
             return this.userProducts.reduce((acc, current) => acc + current.count.sold, 0);
+        },
+
+        closeSettingsModal() {
+            this.settingsModalIsShown = false;
+        },
+
+        openChatWithUser() {
+
+        },
+
+        copyTelNumber() {
+
+        },
+
+        onAddressSearchChange(searchQuery) {
+            this.filteredAddresses = this.filterByValue(this.getAllPSC, searchQuery);
+        },
+
+        async saveUserSettings() {
+            this.emitter.emit("show-loader");
+
+            const address = {
+                dorm: this.userDorm ? this.userDorm.dorm : null,
+                region: this.userAddress ? this.userAddress.region : null,
+                city: this.userAddress ? this.userAddress.city : null,
+                postalCode: this.userAddress ? this.userAddress.postalCode : null
+            }
+
+            const post = {
+                address,
+                phone: this.userPhone
+            };
+            console.log("save post", post);
+
+            try {
+                const resp = await this.userApi.updateUserSettings(this.user._id, post);
+                console.log("did?", resp);
+                if (resp.data.success) {
+                    this.$toast.success("UpdateUserSettingsSuccess");
+                    await this.getUserData();
+                    this.closeSettingsModal();
+                } else {
+                    this.$toast.error("UpdateUserSettingsFailed");
+                }
+
+                this.emitter.emit("hide-loader");
+            } catch (err) {
+                this.$toast.error("UpdateUserSettingsFailed");
+                this.emitter.emit("hide-loader");
+                console.error(err);
+            }
+        },
+
+        async getUserData() {
+            this.emitter.emit("show-loader");
+            await this.getUser();
+            await this.getUserProducts();
+            await this.getUserRatings();
+
+            this.emitter.emit("hide-loader");
         }
     },
 
     computed: {
         ...mapGetters(
             {
-                getLoggedUser: "user/getUser"
+                getLoggedUser: "user/getUser",
+                getDorms: "product/getDorms",
+                getAllPSC: 'misc/getAllPSC',
             }
         ),
+
+        canEdit() {
+            const user = this.getLoggedUser;
+            if (!user || !this.user) return false;
+
+            return user && user._id == this.user._id || user && user.isAdmin;
+        },
+
+        getUserLocation() {
+            if (this.user) {
+                const customAddress = this.user.address;
+                if (customAddress && !customAddress.dorm) {
+                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                } else if (customAddress && customAddress.dorm) {
+                    return customAddress.dorm;
+                } else {
+                    return "-";
+                }
+            }
+        }
     },
 
     async created() {
-        this.emitter.emit("show-loader");
-        await this.getUser();
-        await this.getUserProducts();
-        await this.getUserRatings();
-
-        this.emitter.emit("hide-loader");
+        this.getUserData();
     },
 
     mounted() {
+        this.filteredAddresses = this.getAllPSC;
+    },
 
+    watch: {
+        userAddress(newVal) {
+            if (newVal !== null) this.userDorm = null;
+        },
+        userDorm(newVal) {
+            if (newVal !== null) this.userAddress = null;
+        }
     }
 }
 </script>
@@ -370,6 +560,23 @@ export default {
     font-weight: 600;
 }
 
+.location-icon {
+    opacity: 0.66;
+    font-size: 24px;
+}
+
+.chat-icon {
+    font-size: 32px;
+}
+
+.settings-btn-cont .btn {
+    background-color: var(--white-15a);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.address-inputs {
+    margin-top: 32px;
+}
 /* .view-divider.full {
     bottom: 16px;
 } */
