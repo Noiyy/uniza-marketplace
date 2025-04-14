@@ -69,6 +69,13 @@ export default function (emitter, isDev, axiosInstance) {
             meta: { requiresAuth: true, requiresOwner: true, checkExisting: true },
         },
         {
+            path: '/product/add',
+            name: 'ProductAdd',
+            component: () => import ('../../views/product/ProductEditView.vue'),
+            meta: { requiresAuth: true },
+            props: { isAdd: true }
+        },
+        {
             path: '/product/:id',
             name: 'ProductDetail',
             component: () => import ('../../views/product/ProductDetailView.vue'),

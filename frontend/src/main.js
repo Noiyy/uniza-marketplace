@@ -26,6 +26,7 @@ import MiscService from './services/miscService';
 
 const head = createHead();
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
+// const isDev = true;
 
 const axiosInstance = axios.create({
     baseURL: isDev ? "http://localhost:4000/" : "https://unizamarketplace.noiyy.eu/",

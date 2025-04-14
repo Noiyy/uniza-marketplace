@@ -39,7 +39,7 @@
                             <router-link to="/favourites" class="highlightActive" > Favourites </router-link>
                             <!-- <router-link to="/browse" > Auction </router-link> -->
                             <router-link to="/myProducts" class="highlightActive" > My products </router-link>
-                            <router-link to="/addProduct"  class="add-product-link">
+                            <router-link to="/product/add"  class="add-product-link">
                                 <Icon icon="ic:baseline-plus" class="plus-icon" />
                             </router-link>
                             <router-link to="/chat"  class="d-flex gap-8 align-items-center chat-link highlightActive"> 

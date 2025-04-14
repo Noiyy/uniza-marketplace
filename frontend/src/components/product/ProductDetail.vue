@@ -15,7 +15,7 @@
                             </router-link>
                         </div>
                     <div class="product-title-text">
-                        <h1 class="gradient-text"> {{ product.title }} </h1>
+                        <h1 class="gradient-text"> {{ product.title ? product.title : 'Product title' }} </h1>
                     </div>
                 </div>
 
@@ -64,7 +64,9 @@
                         <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
                         <span class="montserrat" v-else> {{ product.price.value && typeof product.price.value === "string" ?
                             product.price.value :
-                            product.price.value.$numberDecimal
+                            product.price.value.$numberDecimal ?
+                                product.price.value.$numberDecimal :
+                                "? "
                         }}€ </span>      
                     </div>
                     <div class="other-images-wrapper" :class="!loadedData ? 'loading' : ''">
@@ -194,7 +196,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'ProductDetail',
 
-    inject: ['emitter', 'userApi', 'feedbackApi'],
+    inject: ['emitter', 'userApi', 'feedbackApi', 'productApi'],
     emits: [],
 
     props: {
@@ -214,6 +216,11 @@ export default {
         },
 
         isPreview: {
+            type: Boolean,
+            default: false
+        },
+
+        isAdd: {
             type: Boolean,
             default: false
         }
@@ -299,7 +306,7 @@ export default {
             try {
                 const resp = await this.productApi.deleteProduct(this.product._id);
 
-                if (resp.data.delProductId) {
+                if (resp.data.deletedId) {
                     this.$toast.success("ProductDeleteSuccess");
                     this.$router.push({ name: "Browse" });
                 } else this.$toast.error("ProductDeleteFailed");
@@ -376,8 +383,10 @@ export default {
     },
 
     async created() {
-        await this.getUser();
-        await this.getUserRatings();
+        if (!this.isAdd) {
+            await this.getUser();
+            await this.getUserRatings();
+        }
 
         this.emitter.emit("hide-loader");
     },

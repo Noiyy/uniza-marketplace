@@ -2,16 +2,19 @@
     <div class="product-edit-content content-wrapper">
         <Header></Header>
 
-        <section id="product-edit">
+        <section id="product-edit" :class="isAdd ? 'add' : ''">
             <div class="container">
-                <div class="content" v-if="product">
+                <div class="content" v-if="product || isAdd">
 
                     <div class="heading-cont d-flex flex-column gap-8">
                         <div class="edit-heading d-flex justify-content-between gap-32">
-                            <router-link :to="`/product/${product._id}`" class="heading-title d-flex gap-8 align-items-end">
+                            <router-link :to="`/product/${product._id}`" class="heading-title d-flex gap-8 align-items-end" v-if="!isAdd">
                                 <h1> Edit Product </h1>
                                 <Icon icon="prime:arrow-up-right" class="arrow-icon" />
                             </router-link>
+                            <div class="heading-title d-flex gap-8 align-items-end" v-else>
+                                <h1> Create product </h1>
+                            </div>
 
                             <div class="edit-options d-flex gap-32 align-items-center">
                                 <div class="nav-btns-wrapper d-flex">
@@ -29,7 +32,9 @@
                                     </button>
                                 </div>
 
-                                <button class="btn primary" @click="saveProduct()"> Save </button>
+                                <button class="btn primary" @click="isAdd ? addProduct() : saveProduct()"> 
+                                    {{ isAdd ? 'Create' : 'Save' }}
+                                </button>
                             </div>
                         </div>
 
@@ -40,10 +45,11 @@
                         <KeepAlive>
                             <component :is="shownComponent"
                                 v-if="shownComponent === 'ProductDetail' && loadedCategories"
-                                :product="productEditedData"
+                                :product="isAdd ? newProductData : productEditedData"
                                 :product-main-ctg="productMainCtg"
                                 :product-sub-ctg="productSubCtg"
                                 :is-preview="true"
+                                :is-add="isAdd"
                             ></component>
                         </KeepAlive>
                     </Transition>
@@ -52,9 +58,10 @@
                         <KeepAlive>
                             <component :is="shownComponent"
                                 v-if="shownComponent === 'ProductEdit' && loadedCategories"
-                                :product="product"
+                                :product="isAdd ? newProductData : product"
                                 :product-main-ctg="productMainCtg"
                                 :product-sub-ctg="productSubCtg"
+                                :is-add="isAdd"
                                 @scroll-to-sales="scrollToSales()"
                             ></component>
                         </KeepAlive>
@@ -84,7 +91,10 @@ export default {
     emits: [],
 
     props: {
-
+        isAdd: {
+            type: Boolean,
+            default: false
+        }
     },
 
     components: {
@@ -104,7 +114,35 @@ export default {
             loadedCategories: false,
 
             shownComponent: "ProductEdit",
-            productEditedData: null
+            productEditedData: null,
+
+            newProductData: {
+                address: {
+                    asProfile: false,
+                    custom: null
+                },
+                category: {
+                    mainCategory: null,
+                    subCategory: null
+                },
+                count: {
+                    available: 1,
+                    sold: 0,
+                    deleteOnZero: false
+                },
+                description: null,
+                history: [],
+                images: [],
+                price: {
+                    value: {
+                        $numberDecimal: null
+                    },
+                    specialValue: null
+                },
+                seenCount: 0,
+                sellerId: null,
+                title: null
+            }
         }
     },
 
@@ -142,7 +180,16 @@ export default {
                 this.shownComponent = 'ProductDetail';
             });
 
-            this.emitter.emit("get_prod-edited-data");
+            if (!this.isAdd)
+                this.emitter.emit("get_prod-edited-data");
+            else {
+                // setup data when adding new product
+                this.emitter.on("get_new-prod-data-2", (data) => {
+                    this.updateNewProductData(data);
+                });
+                this.emitter.emit("get_new-prod-data");
+                this.shownComponent = 'ProductDetail';
+            }
         },
 
         showProductEditor() {
@@ -163,6 +210,46 @@ export default {
             } else {
                 this.emitter.emit("save-product");
             }
+        },
+
+        addProduct() {
+            if (this.shownComponent !== "ProductEdit") {
+                this.shownComponent = "ProductEdit";
+                setTimeout(() => {
+                    this.emitter.emit("add-product");
+                }, 500);
+            } else {
+                this.emitter.emit("add-product");
+            }
+        },
+
+        updateNewProductData(data) {
+           this.newProductData.images = data.images;
+           this.newProductData.address = data.address;
+           this.newProductData.description = data.description;
+           this.newProductData.category.mainCategory = data.ctg;
+           this.newProductData.category.subCategory = data.subCtg;
+           this.newProductData.price = data.price;
+           console.log("hm", data);
+        },
+
+        async setupProductDetail() {
+            if (this.isAdd) {
+                this.loadedCategories = true;
+                return;
+            }
+            await this.getProductDetail();
+
+            this.productMainCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.mainCategory);
+            if (this.product.category.subCategory) this.productSubCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.subCategory);
+            this.loadedCategories = true;
+        },
+
+        setupProductAdd() {
+            if (!this.isAdd) return;
+
+            this.newProductData.sellerId = this.getLoggedUser._id;
+            console.log("heh", this.newProductData);
         }
     },
     
@@ -172,17 +259,17 @@ export default {
                 getAllCategories: "product/getAllCategories",
                 getMainCategories: "product/getMainCategories",
                 getSubCategories: "product/getSubCategories",
+
+                getLoggedUser: "user/getUser",
             }
         ),
     },
 
     async created() {
-        this.emitter.emit("show-loader");   
-        await this.getProductDetail();
+        this.emitter.emit("show-loader");
 
-        this.productMainCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.mainCategory);
-        if (this.product.category.subCategory) this.productSubCtg = this.getAllCategories.find(ctg => ctg._id == this.product.category.subCategory);
-        this.loadedCategories = true;
+        await this.setupProductDetail();
+        this.setupProductAdd();
 
         this.emitter.emit("hide-loader");
     },
@@ -202,6 +289,9 @@ export default {
 
 .edit-heading .heading-title:hover {
     color: rgba(255, 255, 255, 0.66);
+}
+#product-edit.add .edit-heading .heading-title:hover {
+    color: var(--white);
 }
 
 .edit-heading .heading-title .arrow-icon {

@@ -8,7 +8,8 @@
                 </div>
 
                 <div class="sales-view-link d-flex justify-content-end flex-1">
-                    <a role="button" class="btn" href="#sales" @click.prevent="$emit('scroll-to-sales')">
+                    <a role="button" class="btn" :href="isAdd ? '' : '#sales'" @click.prevent="isAdd ? null : $emit('scroll-to-sales')"
+                        :aria-disabled="isAdd ? true : false" :class="isAdd ? 'disabled' : ''">
                         <Icon icon="material-symbols:shopping-cart" class="sales-icon" />
                         Sales
                         <Icon icon="mdi:arrow-down" class="arrow-icon" />
@@ -52,7 +53,7 @@
                 <div class="info-edit flex-1 d-flex flex-column gap-32">
                     <div class="input-cont d-flex flex-column gap-8">
                         <div class="input-tag"> Title </div>
-                        <input v-model="product.title" type="text" class="styled" :placeholder="'Title'" required>
+                        <input v-model="product.title" type="text" class="styled" :placeholder="'Title'">
                     </div>
 
                     <div class="input-row d-flex gap-24 align-items-center justify-content-between">
@@ -89,7 +90,7 @@
                     <div class="input-row d-flex gap-24 align-items-center justify-content-between">
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
                             <div class="input-tag"> Price </div>
-                            <input v-model="productPrice" type="number" class="styled" :placeholder="'Price'">
+                            <input v-model="productPrice" type="number" min="1" max="99999" class="styled" :placeholder="'Price'" @input="(e) => sanitizeInput(e, 'price')">
                             <span class="price-currency"> € </span>
                         </div>
 
@@ -99,7 +100,7 @@
                             <Multiselect
                                 v-model="productSpecialPrice"
                                 :options="getSpecialPrices"
-                                :allow-empty="false"
+                                :allow-empty="true"
                                 :multiple="false"
                                 :show-labels="false"
                             ></Multiselect>
@@ -124,7 +125,7 @@
                                     :options="filteredAddresses"
                                     @search-change="onAddressSearchChange"
                                     :internal-search="false"
-                                    :allow-empty="false"
+                                    :allow-empty="true"
                                     :multiple="false"
                                     :show-labels="false"
                                     :track-by="'_id'"
@@ -146,7 +147,7 @@
                                     :disabled="product.address.asProfile"
                                     v-model="productDorm"
                                     :options="getDorms"
-                                    :allow-empty="false"
+                                    :allow-empty="true"
                                     :multiple="false"
                                     :show-labels="false"
                                 ></Multiselect>
@@ -166,12 +167,14 @@
                         <div class="input-row d-flex gap-8 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
                                 <div class="input-tag"> Count </div>
-                                <input v-model="product.count.available" type="number" min="1" max="9999" class="styled" :placeholder="'Count'" required>
+                                <input v-model="product.count.available" type="number" min="1" max="99999" class="styled" :placeholder="'Count'" @input="(e) => sanitizeInput(e)">
                             </div>
 
                             <div class="product-stats d-flex justify-content-end gap-8 flex-2">
-                                sold:
-                                <span> {{ product.count.sold }} </span>
+                                <template v-if="!isAdd">
+                                    sold:
+                                    <span> {{ product.count.sold }} </span>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -186,7 +189,7 @@
             </div>
         </div>
 
-        <div class="product-sales" id="sales">
+        <div class="product-sales" id="sales" v-if="!isAdd">
             <div class="sales-heading d-flex flex-column gap-8">
                 <div class="d-flex gap-32 justify-content-between align-items-center">
                     <h2> SALES </h2>
@@ -218,7 +221,7 @@
             </div>
         </div>
         
-        <SaleModal v-if="allUsers && allUsers.length"
+        <SaleModal v-if="!isAdd && allUsers && allUsers.length"
             v-model:is-shown="salesModalIsShown"
             :available-users="availableUsersSale"
             :sale-data="selectedSaleData"
@@ -261,6 +264,11 @@ export default {
             type: Object,
             default: null
         },
+
+        isAdd: {
+            type: Boolean,
+            default: false
+        }
     },
 
     components: {
@@ -359,6 +367,7 @@ export default {
 
             const imageFormData = new FormData();
             imageFormData.append('productId', this.product._id);
+            if (this.isAdd) imageFormData.append('isAdd', true);
 
             for (let i = 0; i < this.prevImages.length; i++) {
                 imageFormData.append('prevImages[]', this.prevImages[i]);
@@ -377,9 +386,40 @@ export default {
             }
         },
 
+        productDataIsValid() {
+            // title, mainCategory, price, adresa, count
+            let failed = false;
+            if (!this.product.title) {
+                failed = true;
+                this.$toast.error("InvalidProductTitle");
+            }
+            if (!this.localProductMainCtg || !this.localProductMainCtg._id) {
+                failed = true;
+                this.$toast.error("InvalidProductMainCategory");
+            }
+            if (!this.productPrice && !this.productSpecialPrice) {
+                failed = true;
+                this.$toast.error("InvalidProductPrice");
+            }
+            if (!this.productAddress && !this.productDorm && !this.product.address.asProfile) {
+                failed = true;
+                this.$toast.error("InvalidProductAddress");
+            }
+            if (!this.product.count.available) {
+                failed = true;
+                this.$toast.error("InvalidProductCount");
+            }
+
+            console.log("nee",this.productAddress, this.productDorm, this.product.address.asProfile);
+
+            return !failed;
+        },
+
         setupEditedProductData(newImages = []) {
             let images = this.productImages.filter(img => !img.url && img);
             images = [...images, ...newImages];
+            console.log(this.productImages);
+            console.log(newImages);
             console.log("joj", images);
 
             if (this.product.address.asProfile) {
@@ -404,7 +444,7 @@ export default {
             }
             if (this.productSpecialPrice) {
                 post.price.specialValue = this.productSpecialPrice;
-                post.price.value = null;
+                post.price.value = 0;
             }
             if (this.productAddress) {
                 post.address.custom = {
@@ -419,11 +459,11 @@ export default {
             post.count.available = Math.round(post.count.available);
 
             // History
-            if (this.prevProductCount != post.count.available) {
+            if (this.prevProductCount != post.count.available && !this.isAdd) {
                 post.prevCount = this.prevProductCount
             }
             if ((this.productPrice && this.prevProductPrice != this.productPrice) || (this.productSpecialPrice && this.prevProductPrice != this.productSpecialPrice)) {
-                post.prevPrice = this.prevProductPrice;
+                if (!this.isAdd) post.prevPrice = this.prevProductPrice;
             }
 
             return post;
@@ -436,10 +476,16 @@ export default {
 
             console.log(this.localProductMainCtg, this.localProductSubCtg);
     
+            if (!this.productDataIsValid()) return;
+
             const newImages = await this.uploadImages();
             console.log("heh", newImages);
 
             const post = this.setupEditedProductData(newImages);
+            if (!post) { 
+                this.emitter.emit("hide-loader");
+                return;
+            }
             console.log("post", post);
 
             const resp = await this.productApi.updateProduct(this.product._id, post);
@@ -454,9 +500,63 @@ export default {
             this.emitter.emit("hide-loader");
         },
 
+        async addProduct() {
+            this.emitter.emit("show-loader");
+            console.log("add?", this.product);
+            console.log(this.productDescription);
+
+            console.log(this.localProductMainCtg, this.localProductSubCtg);
+
+            this.emitter.emit("hide-loader");
+            if (!this.productDataIsValid()) return;
+
+            const newImages = await this.uploadImages();
+            console.log("heh", newImages);
+
+            const post = this.setupEditedProductData(newImages);
+            if (!post) {
+                this.emitter.emit("hide-loader");
+                return;
+            }
+            console.log("post", post);
+
+            try {
+                const resp = await this.productApi.addProduct(post);
+                console.log("added?", resp);
+                if (resp.data.id) {
+                    this.$toast.success("ProductAddSuccess");
+                    this.$router.push({ name: "ProductDetail", params: { id: resp.data.id } });
+                } else {
+                    this.$toast.error("ProductAddFailed");
+                }
+            } catch (err) {
+                this.$toast.error("ProductAddFailed");
+                console.error(err);
+            }
+
+            this.emitter.emit("hide-loader");
+        },
+
         mainCtgChangeHandler() {
             this.localProductSubCtg = null;
             this.subCategories = this.getSubCategories.filter(ctg => ctg.parentName == this.localProductMainCtg.name);
+        },
+
+        sanitizeInput(event, inputType) {
+            let valueVar = inputType == "price" ? this.productPrice : this.product.count.available;
+
+            let value = parseFloat(valueVar);
+            if (value < 0.01) {
+                if (inputType == "price") this.productPrice = null;
+                else this.product.count.available = 1;
+                event.preventDefault();
+            }
+
+            if (typeof valueVar == "string" && valueVar.includes('-')) {
+                if (inputType == "price") this.productPrice = 1;
+                else this.product.count.available = 1;
+                event.preventDefault();
+            }
         },
 
         async getProductSales() {
@@ -491,7 +591,7 @@ export default {
     },
 
     async mounted() {
-        await this.getProductSales();
+        if (!this.isAdd) await this.getProductSales();
         this.getAllUsers();
 
         this.filteredAddresses = this.getAllPSC;
@@ -501,8 +601,8 @@ export default {
         this.productImages = this.product.images;
         this.productDescription = this.product.description;
 
-        this.productPrice = this.product.price.value.$numberDecimal ? this.product.price.value.$numberDecimal : null;
-        this.productSpecialPrice = this.product.specialValue ? this.product.specialValue : null;
+        this.productPrice = +this.product.price.value.$numberDecimal ? +this.product.price.value.$numberDecimal : null;
+        this.productSpecialPrice = this.product.price.specialValue ? this.product.price.specialValue : null;
 
         this.prevProductPrice = this.productPrice || this.productSpecialPrice;
         this.prevProductCount = JSON.parse(JSON.stringify(this.product.count.available));
@@ -532,6 +632,8 @@ export default {
         });
 
         this.emitter.on("save-product", () => this.saveProduct());
+        this.emitter.on("add-product", () => this.addProduct());
+
         this.emitter.on("sale-add-success", async () => {
             this.getProductSales();
         });
@@ -542,11 +644,33 @@ export default {
 
             this.emitter.emit("get_prod-edited-data-2", data);
         });
+
+        this.emitter.on("get_new-prod-data", () => {
+            let data = {};
+            // adresa, description, price, ctg, subCtg, images
+            data.address = {
+                asProfile: this.product.address.asProfile,
+                custom: this.productAddress || { dorm: this.productDorm }
+            };
+            data.description = this.productDescription;
+            data.price = {
+                specialValue: this.productSpecialPrice,
+                value: this.productPrice ? {
+                    $numberDecimal: this.productPrice
+                } : null
+            };
+            data.ctg = this.localProductMainCtg;
+            data.subCtg = this.localProductSubCtg;
+            data.images = this.productImages;
+
+            this.emitter.emit("get_new-prod-data-2", data);
+        });
     },
 
     unmounted() {
         this.emitter.off("loaded-edit-component");
         this.emitter.off("save-product");
+        this.emitter.off("add-product");
     },
 
     watch: {
@@ -601,9 +725,14 @@ export default {
     font-size: 20px;
     gap: 4px;
     opacity: 0.33;
+    pointer-events: all;
 }
 .sales-view-link .btn:hover {
     opacity: 1;
+}
+.sales-view-link .btn.disabled:hover {
+    opacity: 0.33;
+    cursor: not-allowed;
 }
 
 .sales-view-link .btn .sales-icon {

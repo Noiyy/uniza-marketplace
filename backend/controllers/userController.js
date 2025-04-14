@@ -45,11 +45,11 @@ exports.updateUser = async (req, res) => {
 
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
 
     // Only owner or admin is allowed to
     if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+        return res.status(401).json({error: 'Auth user not authorized'});
  
     const user = await User.findOneAndUpdate(
         { _id: id},
@@ -70,11 +70,11 @@ exports.updateUserSettings = async (req, res) => {
 
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
 
     // Only owner or admin is allowed to
     if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+        return res.status(401).json({error: 'Auth user not authorized'});
 
     const user = await User.findOneAndUpdate(
         { _id: id},
@@ -96,11 +96,11 @@ exports.banUser = async (req, res) => {
 
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
 
     // Only admin is allowed to
     if (!userCheck.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+        return res.status(401).json({error: 'Auth user not authorized'});
     
     const user = await User.findById({_id: id});
     user.ban(reason);
@@ -118,7 +118,7 @@ exports.deleteUser = async (req, res) => {
 
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
 
     // Only admin is allowed to
     if (!userCheck.isAdmin) 
@@ -141,11 +141,11 @@ exports.uploadAvatar = async (req, res) => {
     
     const userCheck = await User.findById(req.user.id);
     if (!userCheck) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
 
     // Only owner or admin is allowed to
     if (userCheck.id.toString() !== userId && !userCheck.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+        return res.status(401).json({error: 'Auth user not authorized'});
  
     await User.findOneAndUpdate(
         { _id: userId},

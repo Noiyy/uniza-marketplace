@@ -1,6 +1,6 @@
 <template>
     <div class="product-edit">
-      <ProductEditContent></ProductEditContent>
+      <ProductEditContent :is-add=isAdd></ProductEditContent>
     </div>
   </template>
   
@@ -10,7 +10,7 @@ import ProductEditContent from '../../src/components/product/ProductEditContent.
   export default {
     head() {
         return {
-            title: `Product edit - UNIZA Marketplace`,
+            title: `Product ${this.isAdd ? 'add' : 'edit'} - UNIZA Marketplace`,
             meta: [
                 { name: "robots", content: "noindex, nofollow" },
             ]
@@ -18,6 +18,13 @@ import ProductEditContent from '../../src/components/product/ProductEditContent.
     },
   
     name: 'ProductEditView',
+
+    props: {
+      isAdd: {
+        type: Boolean,
+        default: false
+      }
+    },
     
     components: {
         ProductEditContent

@@ -49,7 +49,7 @@ exports.addSale = async (req, res) => {
     
         const user = await User.findById(req.user.id);
         if (!user) 
-            res.status(401).json({error: 'Auth user not found'});
+            return res.status(401).json({error: 'Auth user not found'});
         
         const productCheck = await Product.findById(productId);
         if (!productCheck) return res.status(404).json({error: 'No product found for id ' + productId});
@@ -58,7 +58,7 @@ exports.addSale = async (req, res) => {
     
         // Only owner or admin is allowed to
         if (productCheck.sellerId.toString() !== user.id && !user.isAdmin) 
-            res.status(401).json({error: 'Auth user not authorized'});
+            return res.status(401).json({error: 'Auth user not authorized'});
 
         const post = { productId, userId, count };
         if (!userId) post.confirmed = true;

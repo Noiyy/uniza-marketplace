@@ -83,14 +83,23 @@ exports.addProduct = async (req, res) => {
         count,
         sellerId
     } = req.body;
-
     try {
-        const post = { title, category, price, address, count, sellerId };
+        const user = await User.findById(req.user.id);
+        if (!user) 
+            return res.status(401).json({error: 'Auth user not found'});
+
+        const priceEdit = {
+            specialValue: price.specialValue,
+            value: price.value ? price.value : 0
+        }
+
+        const post = { title, category, price: priceEdit, address, count, sellerId };
         if (description) post.description = description;
         if (images) post.images = images;
 
         const product = new Product(post);
         await product.save();
+
         res.status(201).json({ message: 'Product added successfully', id: product._id });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -114,14 +123,14 @@ exports.updateProduct = async (req, res) => {
 
     const user = await User.findById(req.user.id);
     if (!user) 
-        res.status(401).json({error: 'Auth user not found'});
+        return res.status(401).json({error: 'Auth user not found'});
  
     const productCheck = await Product.findById(id);
     if (!productCheck) return res.status(404).json({error: 'No product found for id ' + id});
 
     // Only owner or admin is allowed to
     if (productCheck.sellerId.toString() !== user.id && !user.isAdmin) 
-        res.status(401).json({error: 'Auth user not authorized'});
+        return res.status(401).json({error: 'Auth user not authorized'});
 
     const product = await Product.findOneAndUpdate(
         { _id: id },
@@ -156,10 +165,10 @@ exports.updateProduct = async (req, res) => {
 
 exports.uploadProductImages = async (req, res) => {
     try {
-        const { prevImages, productId } = req.body;
+        const { prevImages, productId, isAdd } = req.body;
         const newFiles = req.files;
     
-        if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(404).json({error: 'No product found for id ' + productId});
+        if (!isAdd && !mongoose.Types.ObjectId.isValid(productId)) return res.status(404).json({error: 'No product found for id ' + productId});
     
         if (!newFiles) {
             console.error("No file uploaded!");
@@ -168,14 +177,16 @@ exports.uploadProductImages = async (req, res) => {
         
         const userCheck = await User.findById(req.user.id);
         if (!userCheck) 
-            res.status(401).json({error: 'Auth user not found'});
+            return res.status(401).json({error: 'Auth user not found'});
     
-        const productCheck = await Product.findById(productId);
-        if (!productCheck) return res.status(404).json({error: 'No product found for id ' + productId});
-    
-        // Only owner or admin is allowed to
-        if (productCheck.sellerId.toString() !== userCheck.id && !userCheck.isAdmin) 
-            res.status(401).json({error: 'Auth user not authorized'});
+        if (!isAdd) {
+            const productCheck = await Product.findById(productId);
+            if (!productCheck) return res.status(404).json({error: 'No product found for id ' + productId});
+        
+            // Only owner or admin is allowed to
+            if (productCheck.sellerId.toString() !== userCheck.id && !userCheck.isAdmin) 
+                return res.status(401).json({error: 'Auth user not authorized'});
+        }
     
         // remove previous images
         if (prevImages && prevImages.length) {

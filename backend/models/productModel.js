@@ -31,7 +31,7 @@ const productSchema = new mongoose.Schema({
 		specialValue: { type: String, enum: ["agreement", "offer", "inText", "free" ] },
 	},
 	address: {
-		asProfile: { type: Boolean, default: true },
+		asProfile: { type: Boolean, default: false },
 		custom: addressSchema,
 	},
 	count: {
