@@ -233,6 +233,10 @@ input:disabled {
     position: relative;
 }
 
+.input-cont input {
+    font-weight: bold;
+}
+
 .form-row .input-tag, .input-cont .input-tag, .product-description-edit .input-tag {
     position: absolute;
     top: -16px;

@@ -485,6 +485,7 @@ width */
 .multiselect__single {
   background: var(--black) !important;
   color: var(--white) !important;
+  font-weight: bold;
 }
 
 .input-cont:has(.multiselect--active) .input-tag {

@@ -317,7 +317,7 @@ export default {
         ),
 
         onAddressSearchChange(searchQuery) {
-            this.filteredAddresses = this.filterByValue(this.getAllPSC, searchQuery);
+            this.filteredAddresses = this.getSearchedAddresses(this.productAddress, this.getAllPSC, searchQuery);
         },
 
         triggerFileInput() {
@@ -741,7 +741,6 @@ export default {
 
 .input-cont input {
     width: 100%;
-    font-weight: bold;
 }
 
 .product-sales {
@@ -804,9 +803,5 @@ export default {
 <style>
 .address-cont .multiselect__content-wrapper {
     width: 200%;
-}
-
-.info-edit .multiselect__single {
-    font-weight: bold;
 }
 </style>

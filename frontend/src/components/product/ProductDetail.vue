@@ -115,17 +115,17 @@
 
                 <div class="product-seller-info d-flex gap-32">
                     <div class="seller-btns d-flex gap-16 align-items-end">
-                        <button class="btn secondary" :disabled="isPreview" @click="openChatWithSeller()"> MESSAGE </button>
-                        <button class="btn primary" :disabled="isPreview" @click="copyTelNumber()"> 
+                        <button class="btn secondary smaller" :disabled="isPreview" @click="openChatWithSeller()" v-if="getLoggedUser"> MESSAGE </button>
+                        <button class="btn primary smaller" :disabled="isPreview" @click="copyTelNumber()" v-if="userPhone"> 
                             <Icon icon="ic:baseline-phone" class="phone-icon" />
-                            0901 632 913
+                            {{ userPhone }}
                         </button>
                     </div>
                     <router-link :to="`/user/${product.sellerId}`" class="seller d-flex flex-column gap-8 text-end">
                         <span> Seller </span>
 
                         <div class="d-flex gap-8">
-                            <div class="rating-values d-flex gap-8 align-items-center">
+                            <div class="rating-values d-flex gap-8 align-items-end">
                                 <span> {{ userRatingAvg }} </span>
                                 <Icon icon="material-symbols:star" class="star-icon" v-if="userRatingAvg >= 1" />
                                 <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="userRatingAvg > 0" />
@@ -237,6 +237,7 @@ export default {
             userAddress: null,
             userAvatarPath: null,
             userRatingAvg: null,
+            userPhone: null,
 
             loadedData: false
         }
@@ -254,6 +255,7 @@ export default {
                 const resp = await this.userApi.getUserById(this.product.sellerId);
                 this.userAddress = resp.data.address;
                 this.userAvatarPath = resp.data.avatarPath;
+                this.userPhone = resp.data.phone;
             } catch (err) {
                 console.error(err);
                 // this.$router.push("/404");
@@ -325,8 +327,15 @@ export default {
         },
 
         copyTelNumber() {
-
-        }
+            navigator.clipboard.writeText(this.userPhone)
+                .then(() => {
+                    this.$toast.info(`PhoneCopySuccess: ${this.userPhone}`)
+                })
+                .catch(err => {
+                    this.$toast.error("PhoneCopyFailed");
+                    console.error('Failed to copy: ', err);
+                });
+        },
     },
     
     computed: {
@@ -645,6 +654,14 @@ export default {
 
 .product-images-count {
     user-select: none;
+}
+
+.seller-btns .btn {
+    font-size: 14px;
+}
+
+.rating-values {
+    margin-bottom: 6px;
 }
 
 /* XL */

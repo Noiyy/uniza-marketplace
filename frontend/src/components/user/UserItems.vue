@@ -18,6 +18,7 @@
                         :products="sortedProducts"
                         :active-view-type="productsViewType"
                         :wrapper-class="'smaller'"
+                        :seller-data="user"
                     ></ProductsList>
                 </template>
             </ItemContentList>

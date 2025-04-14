@@ -1,3 +1,5 @@
+import Fuse from 'fuse.js';
+
 export const globalMixin = {
     methods: {
         getAssetUrl(path) {
@@ -66,6 +68,35 @@ export const globalMixin = {
             const average = sum / ratings.length;
 
             return Math.round(average * 2) / 2;
+        },
+
+        getSearchedAddresses(address, allAddresses, searchQuery) {
+            const fuseOptions = {
+                keys: ['city'],
+                isCaseSensitive: false,
+                ignoreDiacritics: true, // Normalize diacritics (e.g., "í" → "i")
+                threshold: 0.3, // Fuzzy matching threshold (lower = stricter match)
+                includeScore: true, // Include relevance score in results
+            };
+            const fuse = new Fuse(allAddresses, fuseOptions);
+
+            const results = searchQuery
+                ? fuse.search(searchQuery).map(({ item }) => item)
+                : allAddresses;
+            let sortedResults = results;
+
+            // Ensure selected option is always at the top
+            if (address) {
+                const index = sortedResults.findIndex(
+                (item) => item._id === address._id
+                );
+                if (index > -1) {
+                const [selectedItem] = sortedResults.splice(index, 1);
+                sortedResults.unshift(selectedItem);
+                }
+            }
+
+            return sortedResults;
         }
     }
 };

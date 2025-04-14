@@ -224,7 +224,7 @@ export default {
         filterLocations() {
             if (!this.getAllPSC || !this.getAllPSC.length) return [];
 
-            this.filteredLocations = this.filterByValue(this.getAllPSC, this.locationSearch);
+            this.filteredLocations = this.getSearchedAddresses(null, this.getAllPSC, this.locationSearch);
         },
 
         selectNearMeLocation() {

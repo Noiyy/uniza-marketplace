@@ -5,6 +5,7 @@
                 :prod-data="prod"
                 :view-type="activeViewType"
                 :is-in-admin="isInAdmin"
+                :seller-data="sellerData"
             ></ProductItem>
         </template>
     </div>
@@ -44,6 +45,11 @@ export default {
         isInAdmin: {
             type: Boolean,
             default: false
+        },
+
+        sellerData: {
+            type: Object,
+            default: null
         }
     },
 

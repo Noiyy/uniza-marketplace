@@ -117,6 +117,11 @@ export default {
         isInAdmin: {
             type: Boolean,
             default: false
+        },
+
+        sellerData: {
+            type: Object,
+            default: null
         }
     },
 
@@ -158,7 +163,7 @@ export default {
                 if (customAddress) {
                     return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
                 } else if (this.prodData.address.asProfile) {
-                    let address = this.prodData.sellerInfo.address;
+                    let address = this.prodData.sellerInfo ? this.prodData.sellerInfo.address : this.sellerData.address;
                     if (address) {
                         return address.dorm ?
                             address.dorm :

@@ -45,12 +45,12 @@
 
                                     <div class="d-flex gap-24">
                                         <div class="contact-info d-flex gap-8">
-                                            <button class="btn btn-icon" @click="openChatWithUser()">
+                                            <button class="btn btn-icon" @click="openChatWithUser()" v-if="getLoggedUser">
                                                 <Icon icon="humbleicons:chat" class="chat-icon" />
                                             </button>
-                                            <button class="btn primary smaller" @click="copyTelNumber()"> 
+                                            <button class="btn primary smaller" @click="copyTelNumber()" v-if="user.phone"> 
                                                 <Icon icon="ic:baseline-phone" class="phone-icon" />
-                                                0901 632 913
+                                                {{ user.phone }}
                                             </button>
                                         </div>
 
@@ -139,7 +139,7 @@
                                 :options="filteredAddresses"
                                 @search-change="onAddressSearchChange"
                                 :internal-search="false"
-                                :allow-empty="false"
+                                :allow-empty="true"
                                 :multiple="false"
                                 :show-labels="false"
                                 :track-by="'_id'"
@@ -160,7 +160,7 @@
                             <Multiselect
                                 v-model="userDorm"
                                 :options="getDorms"
-                                :allow-empty="false"
+                                :allow-empty="true"
                                 :multiple="false"
                                 :show-labels="false"
                             ></Multiselect>
@@ -170,7 +170,16 @@
                     <div>
                         <div class="input-cont d-flex flex-column gap-8">
                             <div class="input-tag"> Phone number </div>
-                            <input v-model="userPhone" type="number" min="1" max="9999" class="styled" :placeholder="'Count'">
+                            <VueTelInput
+                                v-model="userPhone"
+
+                                :inputOptions="telInputOptions"
+                                :preferred-countries="preferredCountries"
+                                :mode="telInputMode"
+                                :valid-characters-only="telInputValidCharactersOnly"
+                                @input="telInputHandler"
+                                @validate="validatePhone">
+                            </VueTelInput>
                         </div>
                     </div>
     
@@ -194,6 +203,9 @@ import Modal from '../Modal.vue';
 
 import Multiselect from 'vue-multiselect';
 import "vue-multiselect/dist/vue-multiselect.min.css";
+
+import { VueTelInput } from 'vue-tel-input';
+import 'vue-tel-input/vue-tel-input.css';
 
 import { Icon } from '@iconify/vue';
 
@@ -221,7 +233,8 @@ export default {
         UserItems,
         Icon,
         Modal,
-        Multiselect
+        Multiselect,
+        VueTelInput
     },
 
     data() {
@@ -243,7 +256,20 @@ export default {
 
             userAddress: null,
             userDorm: null,
-            userPhone: null
+            userPhone: null,
+
+            userPhoneNumIsValid: false,
+            telInputOptions: {
+                placeholder: 'CisloPlaceholder',
+                showSearchBox: true,
+                searchBoxPlaceholder: "HladajKrajinu",
+                required: false,
+            },
+            telInputValidCharactersOnly: true,
+            telInputMode: "international",
+            preferredCountries: [
+                "sk", "cz", "ua", "pl", "at", "hu", "ro", "de", "fr"
+            ]
         }
     },
 
@@ -261,7 +287,8 @@ export default {
                 this.pageTitle = `${this.user.username} - UNIZA Marketplace`;
 
                 this.userAddress = resp.data.address && !resp.data.address.dorm ? resp.data.address : null;
-                this.userDorm = resp.data.address && resp.data.address.dorm ? resp.data.address.dorm : null
+                this.userDorm = resp.data.address && resp.data.address.dorm ? resp.data.address.dorm : null;
+                this.userPhone = resp.data.phone;
 
                 console.log("user", this.user);
             } catch (err) {
@@ -358,22 +385,50 @@ export default {
         },
 
         copyTelNumber() {
+            navigator.clipboard.writeText(this.userPhone)
+                .then(() => {
+                    this.$toast.info(`PhoneCopySuccess: ${this.userPhone}`)
+                })
+                .catch(err => {
+                    this.$toast.error("PhoneCopyFailed");
+                    console.error('Failed to copy: ', err);
+                });
+        },
 
+        telInputHandler(event) {
+            console.log(this.userPhone);
+            if (this.userPhone.length > 16) {
+                this.phoneNum = this.phoneNum.slice(0, this.phoneNum.length-2);
+            }
+        },
+
+        validatePhone(phoneObj) {
+            if (!phoneObj || !phoneObj.valid) this.userPhoneNumIsValid = false;
+            else this.userPhoneNumIsValid = true;
         },
 
         onAddressSearchChange(searchQuery) {
-            this.filteredAddresses = this.filterByValue(this.getAllPSC, searchQuery);
+            this.filteredAddresses = this.getSearchedAddresses(this.userAddress, this.getAllPSC, searchQuery);
         },
 
         async saveUserSettings() {
-            this.emitter.emit("show-loader");
-
             const address = {
                 dorm: this.userDorm ? this.userDorm.dorm : null,
                 region: this.userAddress ? this.userAddress.region : null,
                 city: this.userAddress ? this.userAddress.city : null,
                 postalCode: this.userAddress ? this.userAddress.postalCode : null
             }
+
+            if (this.userPhone && !this.userPhoneNumIsValid) {
+                this.$toast.error("InvalidPhoneNumber");
+                return;
+            }
+            if (!this.userDorm && !this.userAddress && !this.userPhone) {
+                this.$toast.error("NothingToSave");
+                return;
+            }
+
+            this.emitter.emit("show-loader");
 
             const post = {
                 address,
@@ -580,4 +635,49 @@ export default {
 /* .view-divider.full {
     bottom: 16px;
 } */
+
+.contact-info .btn {
+    font-size: 14px;
+}
+</style>
+
+<style>
+.vue-tel-input {
+    padding: 4px 8px;
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+}
+.vue-tel-input:focus-within {
+    box-shadow: none;
+    border: 2px solid var(--secondary);
+}
+
+.vue-tel-input input {
+    background: transparent;
+}
+
+.vue-tel-input .vti__dropdown-arrow {
+    color: var(--white-50a);
+    transition: color 0.15s ease-in;
+}
+
+.vue-tel-input .vti__dropdown:hover, .vue-tel-input .vti__dropdown.open {
+    background-color: initial;
+}
+
+.vue-tel-input .vti__dropdown:hover .vti__dropdown-arrow {
+    color: var(--white);
+}
+
+.vue-tel-input .vti__dropdown-list {
+    background-color: var(--black);
+    border: none;
+    color: var(--white);
+}
+
+.vue-tel-input .vti__dropdown-item.highlighted {
+    background-color: var(--white-5a);
+}
 </style>
