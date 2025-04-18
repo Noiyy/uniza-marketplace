@@ -13,7 +13,9 @@
         <router-link :to="`/user/${userData._id}`" class="user-item list-item d-flex flex-1">
             <div class="user-main d-flex gap-8">
 
-                <div class="user-avatar-wrapper">
+                <div class="user-avatar-wrapper pos-relative">
+                    <div class="admin-badge-small" v-if="userData.isAdmin"> Admin </div>
+
                     <div class="user-avatar-cont pos-relative">
                         <img :src="getAssetUrl(`img/userAvatars/${userData.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="userData.avatarPath">
                         <div class="default-avatar-cont" v-else>
@@ -256,5 +258,14 @@ export default {
 
 .user-info .info-cont .info-content span {
     font-weight: 500;
+}
+
+.admin-badge-small {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    font-size: 10px;
 }
 </style>

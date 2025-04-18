@@ -6,7 +6,7 @@ const {
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { getAllSales, getSalesInLast96Hours, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect, protectAdmin } = require("../middleware/authMiddleware");
 
 const crypto = require('crypto');
 const multer = require('multer');
@@ -24,7 +24,7 @@ router.get("/:id/history", getProductHistory);
 
 router.post("/add", protect, addProduct);
 router.patch('/update/:id', protect, updateProduct);
-router.delete('/delete/:id', protect, deleteProduct);
+router.delete('/delete/:id', protectAdmin, deleteProduct);
 
 // Upload product images
 const storage = multer.diskStorage({

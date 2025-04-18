@@ -67,15 +67,32 @@ exports.updateRating = async (req, res) => {
     const { 
         title,
         description,
-        ratingValue,
-        productId,
+        ratedProduct,
+        ratedUser
     } = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No rating found for id ' + id});
- 
-    const rating = await Rating.findOneAndUpdate({_id: id}, { title, description, ratingValue, productId }, {returnOriginal: false});
-    if (!rating) return res.status(404).json({error: 'No rating found for id ' + id});
- 
-    res.status(200).json(rating)
+    
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    const ratingCheck = await Rating.findById(id);
+    if (!ratingCheck) return res.status(404).json({error: 'No rating found for id ' + id});
+
+    // Only admin is allowed to
+    if (!user.isAdmin)  
+        return res.status(401).json({error: 'User not authorized'});
+
+     const rating = await Rating.findOneAndUpdate(
+        { _id: id },
+        { title, description, productId: ratedProduct ? ratedProduct._id : null, toUserId: ratedUser._id },
+        { new: true, runValidators: true }
+    );
+    
+    res.status(200).json({success: true, newData: rating});
 }
 
 exports.deleteRating = async (req, res) => {

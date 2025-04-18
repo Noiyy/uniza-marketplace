@@ -40,15 +40,6 @@
                             </div>
     
                             <div class="history-wrapper d-flex flex-column gap-16 pos-relative" :class="shownHistory ? 'shown' : ''">
-                                <div class="view-divider-cont" v-if="!shownHistory && productHistory.length && productHistory.length > 3">
-                                    <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
-                                        <div class="divider"></div>
-                                    </div>
-                        
-                                    <div class="hidden-overlay"></div>
-                                </div>
-    
                                 <template v-for="(hist, index) in productHistory" :key="index">
                                     <HistoryItem
                                         :history-data="hist"
@@ -58,6 +49,15 @@
 
                                 <div class="no-history text-center" v-if="!productHistory || !productHistory.length">
                                     This product didn't have any significant changes made yet!
+                                </div>
+
+                                <div class="view-divider-cont" v-if="!shownHistory && productHistory.length && productHistory.length > 3">
+                                    <div class="view-divider shorter d-flex justify-content-center align-items-center">
+                                        <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
+                                        <div class="divider"></div>
+                                    </div>
+                        
+                                    <div class="hidden-overlay"></div>
                                 </div>
                             </div>
                         </div>

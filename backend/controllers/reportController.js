@@ -39,6 +39,33 @@ exports.addReport = async (req, res) => {
     }
 }
 
+exports.confirmReport = async (req, res) => {
+    const { id } = req.params
+    const { confirmed } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No report found for id ' + id});
+
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    const reportCheck = await Report.findById(id);
+    if (!reportCheck) return res.status(404).json({error: 'No report found for id ' + id});
+
+    // Only admin is allowed to
+    if (!user.isAdmin)  
+        return res.status(401).json({error: 'User not authorized'});
+
+    await Report.findOneAndUpdate(
+        { _id: id },
+        { viewed: confirmed },
+        { new: true, runValidators: true }
+    );
+    res.status(200).json({ success: true, confirmedId: id });
+};
+
 exports.deleteReport = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No report found for id ' + id});

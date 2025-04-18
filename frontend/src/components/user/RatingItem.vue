@@ -5,7 +5,7 @@
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
-            <button class="btn btn-icon" @click="editRating()">
+            <button class="btn btn-icon" @click="showEditRating()">
                 <Icon icon="mdi:pencil" class="control-icon" />
             </button>
         </div>
@@ -105,6 +105,13 @@ export default {
 
         showDeleteRating() {
             this.emitter.emit("show-delete-modal", {
+                type: "rating",
+                data: this.ratingData
+            });
+        },
+
+        showEditRating() {
+            this.emitter.emit("show-edit-modal", {
                 type: "rating",
                 data: this.ratingData
             });

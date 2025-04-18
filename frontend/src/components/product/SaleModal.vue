@@ -21,32 +21,28 @@
                         <template #option="props">
                             <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
                                 <div class="user-avatar-cont pos-relative">
-                                    <!-- <img :src="getAssetUrl(`img/userAvatars/${productData.sellerInfo.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="productData.sellerInfo && productData.sellerInfo.avatarPath">
+                                    <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
                                     <div class="default-avatar-cont" v-else>
-                                        <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                    </div> -->
-                                    <div class="default-avatar-cont">
                                         <Icon icon="akar-icons:person" class="default-avatar-icon" />
                                     </div>
                                 </div>
                                 <div class="user-name text-center">
                                     {{ props.option.username }}
+                                    <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
                                 </div>
                             </div>
                         </template>
                         <template #singleLabel="props">
                             <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
                                 <div class="user-avatar-cont pos-relative">
-                                    <!-- <img :src="getAssetUrl(`img/userAvatars/${productData.sellerInfo.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="productData.sellerInfo && productData.sellerInfo.avatarPath">
+                                    <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
                                     <div class="default-avatar-cont" v-else>
-                                        <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                    </div> -->
-                                    <div class="default-avatar-cont">
                                         <Icon icon="akar-icons:person" class="default-avatar-icon" />
                                     </div>
                                 </div>
                                 <div class="user-name text-center">
-                                    {{ props.option.username }}
+                                    {{ props.option.username }} 
+                                    <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
                                 </div>
                             </div>
                         </template>
@@ -182,9 +178,6 @@ export default {
 .user-avatar-cont {
     transition: filter 0.2s ease-in;
 }
-.seller:hover .user-avatar-cont {
-    filter: brightness(0.66);
-}
 
 .user-avatar-cont, .default-avatar-cont {
     flex-shrink: 0;
@@ -213,5 +206,13 @@ export default {
 
 .user-avatar-wrapper:hover .avatar-overlay {
     opacity: 1;
+}
+
+.user-name {
+    line-height: 100%;
+}
+
+.admin-badge-small {
+    margin-left: 8px;
 }
 </style>

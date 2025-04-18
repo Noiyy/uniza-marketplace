@@ -21,6 +21,11 @@ const reportSchema = new mongoose.Schema({
 	description: {
 		type: String,
 		required: true
+	},
+	viewed: {
+		type: Boolean,
+		default: false,
+		required: true
 	}
 });
  

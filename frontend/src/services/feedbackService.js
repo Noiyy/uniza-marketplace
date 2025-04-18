@@ -15,6 +15,9 @@ class FeedbackService extends DefaultService {
     async addReport(reportData) {
         return await this.apiClient.post('/reports/add', reportData, { withCredentials: true });
     }
+    async confirmReport(reportId, confirmed) {
+        return await this.apiClient.post(`/reports/confirm/${reportId}`, { confirmed }, { withCredentials: true });
+    }
     async deleteReport(reportId) {
         return await this.apiClient.delete(`/reports/delete/${reportId}`, { withCredentials: true });
     }
@@ -33,7 +36,7 @@ class FeedbackService extends DefaultService {
         return await this.apiClient.post('/ratings/add', ratingData, { withCredentials: true });
     }
     async updateRating(ratingId, ratingData) {
-        return await this.apiClient.patch(`/ratings/update/${ratingId}`, ratingData, { withCredentials: true });
+        return await this.apiClient.post(`/ratings/update/${ratingId}`, ratingData, { withCredentials: true });
     }
     async deleteRating(ratingId) {
         return await this.apiClient.delete(`/ratings/delete/${ratingId}`, { withCredentials: true });

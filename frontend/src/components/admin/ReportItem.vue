@@ -4,9 +4,15 @@
             <button class="btn btn-icon" @click="showDeleteReport()">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
+            <button class="btn btn-icon viewed-btn" :class="isConfirmed ? 'confirmed' : ''"
+                @click="confirmReport()">
+                <Icon icon="charm:circle-tick" class="viewed-icon" />
+            </button>
         </div>
 
-        <div class="report-item list-item flex-1 d-flex gap-16">
+        <div class="report-item list-item flex-1 d-flex gap-16 pos-relative">
+            <div class="not-confirmed-indicator" v-if="!isConfirmed"> ! </div>
+
             <div class="main d-flex gap-24">
                 <div>
                     <FromToObjectInfos
@@ -41,7 +47,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'ReportItem',
 
-    inject: ['axios', 'emitter'],
+    inject: ['axios', 'emitter', 'feedbackApi'],
     emits: [],
 
     props: {
@@ -79,6 +85,20 @@ export default {
                 type: "report",
                 data: this.reportData
             });
+        },
+
+        async confirmReport() {
+            this.emitter.emit("show-loader");
+            const resp = await this.feedbackApi.confirmReport(this.reportData._id, !this.reportData.viewed);
+            console.log(resp);
+
+            if (resp.data.success) {
+                this.$toast.success("ConfirmReportSuccess");
+                this.emitter.emit("confirmed-report", this.reportData._id);
+            } else {
+                this.$toast.error("ConfirmReportFailed");
+            }
+            this.emitter.emit("hide-loader");
         }
     },
     
@@ -88,6 +108,10 @@ export default {
 
             }
         ),
+
+        isConfirmed() {
+            return this.reportData.viewed;
+        }
     },
 
     created() {
@@ -117,5 +141,28 @@ export default {
     margin-right: 16px;
 }
 
+.viewed-btn {
+    background-color: var(--white-15a) !important;
+    color: var(--white) !important;
+}
+.viewed-btn.confirmed {
+    color: var(--green) !important;
+}
+
+.not-confirmed-indicator {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--red);
+    border-radius: 50%;
+    color: var(--white);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
+}
 
 </style>

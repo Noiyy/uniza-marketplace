@@ -513,16 +513,12 @@ width */
   background: var(--black) !important;
 }
 
-/* .multiselect {
-    background-color: var(--black);
-    color: var(--white);
-    border: 2px solid var(--primary);
-    position: relative;
-    padding: 8px 16px;
-    border-radius: 8px;
+.admin-badge-small {
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 8px;
+  background-color: var(--accent);
+  color: var(--black);
+  padding: 0 8px;
 }
-input.styled:focus-visible {
-    border: 2px solid var(--secondary);
-    outline: none !important;
-} */
 </style>

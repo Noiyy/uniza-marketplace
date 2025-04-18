@@ -17,7 +17,7 @@
                             <a role="button" :href="`#${itm.href}`" class="btn nav-btn" v-for="itm in navItems" :key="itm.name"
                                 :class="navItemClasses(itm)" @click.prevent="adminNavItemClick(itm)">
                                 {{ itm.name }}
-                                <span class="new-indicator" v-if="itm.newCount"> 11 </span>
+                                <span class="new-indicator" v-if="itm.newCount"> {{ itm.newCount }} </span>
                             </a>
                         </nav>
 
@@ -84,7 +84,7 @@
                                 </ItemContentList>
                             </div>
 
-                            <div id="support" class="admin-section">
+                            <!-- <div id="support" class="admin-section">
                                 <ItemContentList
                                     :list-title="'Support'"
                                     :item-filters="ratingFilters"
@@ -100,7 +100,7 @@
                                         aaa
                                     </template>
                                 </ItemContentList>
-                            </div>
+                            </div> -->
 
                             <div id="reports" class="admin-section">
                                 <ItemContentList
@@ -133,9 +133,141 @@
         <Footer></Footer>
     </div>
 
-    <!-- <Modal
-        v-model:is-shown="deleteModalIsShown"
-    ></Modal> -->
+    <!-- Edit modal -->
+    <Modal
+        v-model:is-shown="editModalIsShown"
+        :header-text="`Edit ${itemToEditInfo}`"
+        :modal-id="'edit-modal'"
+        @close="closeEditModal">
+        <template #body>
+            <div class="edit-modal-body" v-if="itemToEdit">
+                <div class="edit-content d-flex flex-column gap-32">
+                    <div class="input-cont d-flex flex-column gap-8">
+                        <div class="input-tag"> Rating title </div>
+                        <input v-model="itemToEdit.data.title" type="text" class="styled" :placeholder="'Title'">
+                    </div>
+
+                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
+                        <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-tag"> Rated by </div>
+                            <Multiselect
+                                disabled
+                                v-model="itemToEdit.data.ratedByUser"
+                                :options="allUsers"
+                                :allow-empty="true"
+                                :multiple="false"
+                                :show-labels="false"
+                                :track-by="'_id'"
+                                @search-change="onUserSearchChange" 
+                                :internal-search="false"
+                                >
+                                <template #option="props">
+                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                        <div class="user-avatar-cont pos-relative">
+                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                            <div class="default-avatar-cont" v-else>
+                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="user-name text-center">
+                                            {{ props.option.username }}
+                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #singleLabel="props">
+                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                        <div class="user-avatar-cont pos-relative">
+                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                            <div class="default-avatar-cont" v-else>
+                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="user-name text-center">
+                                            {{ props.option.username }} 
+                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </Multiselect>
+                        </div>
+
+                        <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-tag"> Rated user </div>
+                            <Multiselect
+                                v-model="itemToEdit.data.ratedUser"
+                                :options="allUsers.filter(usr => usr._id != itemToEdit.data.ratedByUser._id)"
+                                :allow-empty="true"
+                                :multiple="false"
+                                :show-labels="false"
+                                :track-by="'_id'"
+                                @search-change="onUserSearchChange" 
+                                :internal-search="false"
+                                >
+                                <template #option="props">
+                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                        <div class="user-avatar-cont pos-relative">
+                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                            <div class="default-avatar-cont" v-else>
+                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="user-name text-center">
+                                            {{ props.option.username }}
+                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #singleLabel="props">
+                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                        <div class="user-avatar-cont pos-relative">
+                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                            <div class="default-avatar-cont" v-else>
+                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                            </div>
+                                        </div>
+                                        <div class="user-name text-center">
+                                            {{ props.option.username }} 
+                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </Multiselect>
+                        </div>
+                    </div>
+
+                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
+                        <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
+
+                        <div class="input-cont d-flex flex-column gap-8 flex-1">
+                            <div class="input-tag"> Rated product </div>
+                            <Multiselect
+                                v-model="itemToEdit.data.ratedProduct"
+                                :options="itemToEdit.data.ratedUser ? allProducts.filter(prd => prd.sellerId == itemToEdit.data.ratedUser._id) : []"
+                                :track-by="'_id'"
+                                :allow-empty="true"
+                                :label="'title'"
+                                :multiple="false"
+                                :show-labels="false"
+                            ></Multiselect>
+                        </div>
+                    </div>
+
+                    <div class="input-cont description-cont d-flex flex-column gap-8">
+                        <div class="input-tag"> Description </div>
+                        <textarea v-model="itemToEdit.data.description" type="text" class="styled" :placeholder="'Description'"></textarea>
+                    </div>
+
+                    <div class="btns-wrapper d-flex gap-8 justify-content-end">
+                        <button class="btn primary  " @click="confirmedEditHandler()"> Edit </button>
+                        <button class="btn secondary" @click="closeEditModal()"> Cancel </button>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+    </Modal>
+
     <!-- Delete confirm modal -->
     <ConfirmModal
         v-model:is-shown="deleteModalIsShown"
@@ -158,6 +290,10 @@ import RatingsList from '../user/RatingsList.vue';
 import UsersList from '../user/UsersList.vue';
 import ReportsList from './ReportsList.vue';
 
+import Multiselect from 'vue-multiselect';
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
+import { Icon } from '@iconify/vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -179,7 +315,9 @@ export default {
         UsersList,
         ReportsList,
         Modal,
-        ConfirmModal
+        ConfirmModal,
+        Multiselect,
+        Icon
     },
 
     data() {
@@ -198,15 +336,15 @@ export default {
                     name: "Ratings",
                     href: "ratings"
                 },
-                {
-                    name: "Support",
-                    href: "support",
-                    newCount: 11
-                },
+                // {
+                //     name: "Support",
+                //     href: "support",
+                //     newCount: 11
+                // },
                 {
                     name: "Reports",
                     href: "reports",
-                    newCount: 11
+                    newCount: 0
                 },
             ],
             allProducts: [],
@@ -272,6 +410,11 @@ export default {
             itemToDelete: null,
             itemToDeleteInfo: "",
             itemToDeleteName: "",
+
+            editModalIsShown: false,
+            itemToEdit: null,
+            itemToEditInfo: "",
+            itemToEditName: "",
         }
     },
 
@@ -281,6 +424,31 @@ export default {
 
             }
         ),
+
+        async confirmedEditHandler() {
+            this.emitter.emit("show-loader");
+
+            if (!this.itemToEdit) {
+                this.$toast.error("InvalidItemToEdit");
+                return;
+            }
+            let resp;
+            const itemType = this.itemToEdit.type;
+
+            if (itemType == "rating") resp = await this.feedbackApi.updateRating(this.itemToEdit.data._id, this.itemToEdit.data);
+            else if (itemType == "user") resp = await this.userApi.updateUser(this.itemToEdit.data._id, this.itemToEdit.data);
+
+            if (resp.data.success) {
+                if (itemType == "user") await this.getUsers();
+                if (itemType == "rating") await this.getRatings();
+                
+                this.$toast.success("ItemEditSuccess");
+            }
+            else this.$toast.error("ItemEditFailed");
+
+            this.editModalIsShown = false;
+            this.emitter.emit("hide-loader");
+        },
 
         async confirmedDeleteHandler() {
             this.emitter.emit("show-loader");
@@ -316,6 +484,13 @@ export default {
             this.itemToDelete = null;
             this.itemToDeleteInfo = "";
             this.itemToDeleteName = "";
+        },
+
+        closeEditModal() {
+            this.editModalIsShown = false;
+            this.itemToEdit = null;
+            this.itemToEditInfo = "";
+            this.itemToEditName = "";
         },
 
         stickyNavbarHandler() {
@@ -368,6 +543,10 @@ export default {
 
             const el = document.getElementById(item.href);
             el.scrollIntoView();
+        },
+
+        onUserSearchChange(searchQuery) {
+            // this.filteredUsers = this.filterByValue(this.availableUsers, searchQuery);
         },
 
         /* DATA GETTERS THROUGH SORTING AND FILTERING */
@@ -516,6 +695,9 @@ export default {
 
         async getReports() {
             await this.getAllReports();
+            const reportsNavItem = this.navItems.find(itm => itm.href == "reports");
+            reportsNavItem.newCount = this.allReports.filter(rp => !rp.viewed).length;
+
             this.setupReportFilters();
             this.getReportsData();
         },
@@ -568,7 +750,9 @@ export default {
     },
 
     created() {
-    
+        this.emitter.on("confirmed-report", (id) => {
+            this.getReports();
+        });
     },
 
     async mounted() {
@@ -606,10 +790,41 @@ export default {
 
             this.deleteModalIsShown = true;
         });
+
+        this.emitter.on("show-edit-modal", (data) => {
+            const itemType = data.type;
+            const itemData = ({
+                ...data.data,
+                ratedByUser: this.allUsers.find(usr => usr._id == data.data.fromUserId),
+                ratedUser: this.allUsers.find(usr => usr._id == data.data.toUserId),
+                ratedProduct: data.data.productId ? this.allProducts.find(prd => prd._id == data.data.productId) : null
+            });
+            const dataEdit = ({ type: itemType, data: itemData});
+            console.log("wat", dataEdit);
+
+            this.itemToEdit = dataEdit;
+
+            if (itemType == "product") {
+                this.itemToEditInfo = `product`;
+                this.itemToEditName = `${itemData.title} (${itemData._id})`;
+            } else if (itemType == "report") {
+                this.itemToEditInfo = `report`;
+                this.itemToEditName = `(${itemData._id})`;
+            } else if (itemType == "user") {
+                this.itemToEditInfo = `user`;
+                this.itemToEditName = `${itemData.username} (${itemData._id})`;
+            } else if (itemType == "rating") {
+                this.itemToEditInfo = `rating`;
+                this.itemToEditName = `${itemData.title} (${itemData._id})`;
+            }
+
+            this.editModalIsShown = true;
+        });
     },
 
     unmounted() {
         this.emitter.off("show-delete-modal");
+        this.emitter.off("show-edit-modal");
     }
 }
 </script>
@@ -657,5 +872,55 @@ export default {
 
 .admin-section {
     scroll-margin-top: 180px;
+}
+
+.edit-modal-body .edit-content {
+    margin-top: 48px;
+}
+
+.modal-el .user-avatar-cont {
+    transition: filter 0.2s ease-in;
+}
+
+.modal-el .user-avatar-cont, .default-avatar-cont {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+    border-radius: 50%;
+}
+.modal-el .user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+}
+
+.modal-el .default-avatar-cont {
+    font-size: 16px;
+    background: var(--white-5a);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-el .user-avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.modal-el .user-name {
+    line-height: 100%;
+}
+
+.modal-el .admin-badge-small {
+    margin-left: 8px;
+}
+
+.description-cont textarea {
+    min-height: 100px;
+    max-height: 25vh;
 }
 </style>

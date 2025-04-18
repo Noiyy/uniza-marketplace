@@ -206,7 +206,7 @@ a.btn.secondary:hover {
     opacity: 0.65;
 }
 
-input.styled {
+input.styled, textarea.styled {
     background-color: var(--black);
     color: var(--white);
     border: 2px solid var(--primary);
@@ -214,18 +214,18 @@ input.styled {
     padding: 8px 16px;
     border-radius: 8px;
 }
-input.styled:focus-visible {
+input.styled:focus-visible, textarea.styled:focus-visible {
     border: 2px solid var(--secondary);
     outline: none !important;
 }
-input.styled.secondary {
+input.styled.secondary, textarea.styled.secondary {
     border: 2px solid var(--secondary);
 }
-input.styled.secondary:focus-visible {
+input.styled.secondary:focus-visible, textarea.styled.secondary:focus-visible {
     border: 2px solid var(--primary);
 }
 
-input:disabled {
+input:disabled, textarea:disabled {
     cursor: not-allowed;
 }
 
@@ -233,7 +233,7 @@ input:disabled {
     position: relative;
 }
 
-.input-cont input {
+.input-cont input, .input-cont textarea {
     font-weight: bold;
 }
 

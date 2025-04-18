@@ -26,7 +26,7 @@
                             back
                         </div>
                         <template v-if="getLoggedUser && (getLoggedUser._id == product.sellerId || getLoggedUser.isAdmin)">
-                            <button class="btn primary btn-icon" @click="deleteProduct()">
+                            <button class="btn primary btn-icon" @click="deleteProduct()" v-if="getLoggedUser.isAdmin">
                                 <Icon icon="mdi:trash" class="opt-icon" />
                             </button>
                             <router-link :to="`/product/${product._id}/edit`" role="button" class="btn primary btn-icon">
