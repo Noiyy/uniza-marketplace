@@ -11,17 +11,17 @@
 
                     <div class="left d-flex flex-column align-items-center gap-16">
                         <router-link to="/browse" class="btn secondary"> browse </router-link>
-                        171 products sold in last 96 hours
+                        <span> {{ soldVeryRecentlyCount }} products sold in last 96 hours </span>
                     </div>
     
                     <div class="mid d-flex flex-column align-items-center gap-16">
-                        frequently asked questions
+                        <span> frequently asked questions </span>
                         <router-link to="/faq" class="btn secondary"> faq </router-link>
                     </div>
     
                     <div class="right d-flex flex-column align-items-center gap-16">
                         <router-link to="/support" class="btn secondary"> support </router-link>
-                        contact us in case of need
+                        <span> contact us in case of need </span> 
                     </div>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                     <h1> LATEST SOLD PRODUCTS </h1>
                     <div class="line-divider"></div>
     
-                    <div class="latest-products-wrapper">
+                    <div class="latest-products-wrapper" v-if="latestProducts && latestProducts.length">
                         <router-link :to="`/product/${prod._id}`" class="product d-flex gap-24 justify-content-between" v-for="(prod) in latestProducts" :key="prod._id">
                             <div class="prod-header d-flex flex-column">
                                 <div class="prod-thumbnail d-flex justify-content-center align-items-center">
@@ -53,7 +53,7 @@
                                     <div class="prod-count d-flex gap-8 align-items-center">
                                         <Icon icon="fluent:book-number-24-regular" class="count-icon" />
                                         {{ prod.count.available }}
-                                     </div>
+                                        </div>
                                 </div>
 
                                 <div class="prod-info d-flex flex-column gap-16">
@@ -74,6 +74,11 @@
                                 </div>
                             </div>
                         </router-link>
+                    </div>
+
+                    <div class="no-items text-center pos-relative" v-else>
+                        <span> Seems like no products were sold yet :( </span>
+                        <Icon icon="game-icons:capybara" class="no-items-icon" />
                     </div>
     
                 </div>
@@ -114,7 +119,8 @@ export default {
         return {
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
 
-            latestProducts: []
+            latestProducts: [],
+            soldVeryRecentlyCount: 0
         }
     },
 
@@ -125,12 +131,16 @@ export default {
         //     }
         // ),
         async getLatestProducts() {
-            this.emitter.emit("show-loader");
             const resp = await this.productApi.getLatestProducts();
 
             this.latestProducts = resp.data;
             console.log("latestProducts", this.latestProducts);
-            this.emitter.emit("hide-loader");
+        },
+
+        async getSalesInLast96Hours() {
+            const resp = await this.productApi.getSalesInLast96Hours();
+            this.soldVeryRecentlyCount = resp.data;
+            console.log("sold in 96h", resp.data);
         },
 
         getProductLocation(prod) {
@@ -164,8 +174,13 @@ export default {
         }
     },
 
-    created() {
-        this.getLatestProducts();
+    async created() {
+        this.emitter.emit("show-loader");
+
+        await this.getLatestProducts();
+        await this.getSalesInLast96Hours();
+
+        this.emitter.emit("hide-loader");
     },
 
     mounted() {
@@ -226,6 +241,12 @@ export default {
     z-index: 2;
 }
 
+.under-hero span {
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 14px;
+}
+
 #latestProducts {
     margin-top: 128px;
 }
@@ -238,11 +259,13 @@ export default {
 }
 
 .latest-products-wrapper {
-    margin-top: 32px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     gap: 20px;
+}
+.latest-products-wrapper, .no-items {
+    margin-top: 32px;
 }
 
 .product {

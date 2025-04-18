@@ -58,6 +58,9 @@ class ProductService extends DefaultService {
     async getAllSales() {
         return await this.apiClient.get('/sales/getAllSales');
     }
+    async getSalesInLast96Hours() {
+        return await this.apiClient.get('/sales/getInLast96Hours');
+    }
     async getProductSales(productId) {
         return await this.apiClient.get(`/${productId}/sales`);
     }

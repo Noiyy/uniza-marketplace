@@ -4,7 +4,7 @@ const {
     deleteProduct, uploadProductImages, getProductHistory
 } = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
-const { getAllSales, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
+const { getAllSales, getSalesInLast96Hours, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
 
 const { protect } = require("../middleware/authMiddleware");
 
@@ -59,6 +59,7 @@ router.get("/categories/:id", getCategory);
 
 // Sale
 router.get("/sales/getAllSales", getAllSales);
+router.get("/sales/getInLast96Hours", getSalesInLast96Hours);
 router.get("/:id/sales", getProductSales);
 router.get("/sales/:saleId", getSale);
 router.post("/:id/sales/add", protect, addSale);

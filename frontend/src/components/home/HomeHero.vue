@@ -42,7 +42,7 @@
                             <img :src="getAssetUrl('img/music-min.png')" alt="">
                         </router-link>
                         <div class="item mid d-flex flex-column justify-content-center align-items-center">
-                            <h1> 621817 </h1>
+                            <h1> {{ soldProductsCount }} </h1>
                             <p> Products sold </p>
                             <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo">
                         </div>
@@ -96,7 +96,7 @@ import { Icon } from '@iconify/vue';
 export default {
     name: 'HomeHero',
 
-    inject: ['axios', 'emitter'],
+    inject: ['axios', 'emitter', 'productApi'],
     emits: [],
 
     props: {
@@ -111,6 +111,7 @@ export default {
     data() {
         return {
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
+            soldProductsCount: 0
         }
     },
 
@@ -120,6 +121,14 @@ export default {
 
             }
         ),
+
+        async getSoldProductsCount() {
+            const resp = await this.productApi.getAllSales();
+            const sales = resp.data;
+            if (sales && sales.length) {
+                this.soldProductsCount = sales.reduce((acc, sale) => acc + sale.count, 0);
+            }
+        }
     },
     
     computed: {
@@ -136,7 +145,7 @@ export default {
     },
 
     created() {
-
+        this.getSoldProductsCount();
     },
 
     mounted() {
@@ -286,6 +295,10 @@ export default {
     -webkit-text-fill-color: transparent;
     z-index: 1;
     text-shadow: initial;
+}
+
+.hero-grid .item.mid p {
+    text-transform: uppercase;
 }
 
 .hero-grid .black { background: linear-gradient(288deg, rgba(240, 237, 234, 0.05) 0%, rgba(240, 237, 234, 0.15) 100%); }
