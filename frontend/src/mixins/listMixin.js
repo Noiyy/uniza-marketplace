@@ -1,13 +1,24 @@
 export const listMixin = {
     methods: {
-        filterByValue (array, value) {
-            const regex = new RegExp(value.replace(/([!@#$%^&*()+=\[\]\\',./{}":<>?~_-])/g, "\\$1"));
-            return array.filter(obj =>
-                Object.values(obj).some(val =>
-                    (typeof val === 'string' || typeof val === 'number') &&
-                    (regex.test(val.toString().toLowerCase()))
-                )
-            );
+        filterByValue(array, value) {
+            const regex = new RegExp(value.replace(/([!@#$%^&*()+=\[\]\\',./{}":<>?~_-])/g, "\\$1"), 'i');
+          
+            function search(obj) {
+              for (const val of Object.values(obj)) {
+                if (typeof val === 'string' || typeof val === 'number') {
+                  if (regex.test(val.toString())) {
+                    return true;
+                  }
+                } else if (val && typeof val === 'object') {
+                  if (search(val)) {
+                    return true;
+                  }
+                }
+              }
+              return false;
+            }
+          
+            return array.filter(obj => search(obj));
         },
 
         sortByDate (sortedItems, selectedSortFilter) {
@@ -84,6 +95,16 @@ export const listMixin = {
             return sortedReports;
         },
 
+        sortSales(filteredSales, selectedSortFilter) {
+            let sortedSales = JSON.parse(JSON.stringify(filteredSales));
+
+            if (selectedSortFilter == "latest" || selectedSortFilter == "oldest") {
+                this.sortByDate(sortedSales, selectedSortFilter);
+            }
+
+            return sortedSales;
+        },
+
         /* ITEM FILTERS */
         filterProducts(products, searchQuery, selectedSearchCategory, selectedPriceRange, selectedLocation, type) {
             let filteredProducts = JSON.parse(JSON.stringify(products));
@@ -151,6 +172,20 @@ export const listMixin = {
                 filteredReports = this.filterByValue(filteredReports, searchQuery.toLowerCase());
 
             return filteredReports;
+        },
+
+        filterSales(sales, searchQuery, type) {
+            let filteredSales = JSON.parse(JSON.stringify(sales));
+
+            if (type) {
+                if (type == "confirmed") filteredSales = filteredSales.filter(rp => rp.confirmed);
+                else if (type == "unconfirmed") filteredSales = filteredSales.filter(rp => !rp.confirmed)
+            }
+
+            if (searchQuery) 
+                filteredSales = this.filterByValue(filteredSales, searchQuery.toLowerCase());
+
+            return filteredSales;
         }
     }
 };

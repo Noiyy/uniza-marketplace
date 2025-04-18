@@ -67,7 +67,7 @@ userSchema.set("toJSON", {
 
 userSchema.methods.banUser = function (reason) {
     this.ban.isBanned = true;
-    this.ban.bannedAt = new Date.now();
+    this.ban.bannedAt = Date.now();
     this.ban.reason = reason;
 }
 

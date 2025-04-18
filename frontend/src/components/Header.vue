@@ -676,15 +676,14 @@ header {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.filters-dropdown-content .option.main-ctg::before {
+/* .filters-dropdown-content .option.main-ctg::before {
     content: "";
     display: inline-flex;
-    /* border-radius: 50%; */
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--secondary);
     width: 8px;
     height: 8px;
     margin-right: 8px;
-}
+} */
 
 .filters-dropdown-content .option.sub-ctg {
     margin-left: 16px;

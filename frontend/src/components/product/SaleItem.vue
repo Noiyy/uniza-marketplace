@@ -1,30 +1,51 @@
 <template>
-    <HistoryItem :history-data="saleData">
-        <template #content>
-            <div class="item-misc d-flex gap-8 align-items-center">
-                <Icon icon="charm:circle-tick" class="tick-icon" :class="saleData.confirmed ? 'confirmed' : ''" />
-                <!-- <div class="type-indicator"></div> -->
-            </div>
-            <div class="item-info d-flex align-items-center gap-16">
-                <router-link :to="saleData.userId ? `/user/${saleData.userId}` : ''" class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                    <div class="user-avatar-cont pos-relative">
-                        <div class="avatar-overlay"></div>
+    <div class="sale-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
+        <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
+            <button class="btn btn-icon" @click="showDeleteSale()">
+                <Icon icon="mdi:trash" class="control-icon" />
+            </button>
 
-                        <img :src="getAssetUrl(`img/userAvatars/${saleData.buyerInfo.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="saleData.buyerInfo && saleData.buyerInfo.avatarPath">
-                        <div class="default-avatar-cont" v-else>
-                            <Icon :icon="saleData.buyerInfo ? 'akar-icons:person' : 'line-md:question'" class="default-avatar-icon" />
-                        </div>
-                    </div>
-                    <div class="user-name text-center">
-                        {{ saleData.buyerInfo ? saleData.buyerInfo.username : '-' }}
-                    </div>
-                </router-link>
-                <div class="sold-info">
-                    Sold <span>{{ saleData.count }}x</span>
+            <button class="btn btn-icon" @click="showEditSale()">
+                <Icon icon="mdi:pencil" class="control-icon" />
+            </button>
+        </div>
+
+        <HistoryItem :history-data="saleData" :class="'list-item flex-1'">
+            <template #content>
+                <div class="item-misc d-flex gap-8 align-items-center">
+                    <Icon icon="charm:circle-tick" class="tick-icon" :class="saleData.confirmed ? 'confirmed' : ''" />
+                    <!-- <div class="type-indicator"></div> -->
                 </div>
-            </div>
-        </template>
-    </HistoryItem>
+                <div class="item-info d-flex align-items-center gap-16">
+                    <router-link :to="saleData.userId ? `/user/${saleData.userId}` : ''" class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                        <div class="user-avatar-cont pos-relative">
+                            <div class="avatar-overlay"></div>
+    
+                            <img :src="getAssetUrl(`img/userAvatars/${saleData.buyerInfo.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="saleData.buyerInfo && saleData.buyerInfo.avatarPath">
+                            <div class="default-avatar-cont" v-else>
+                                <Icon :icon="saleData.buyerInfo ? 'akar-icons:person' : 'line-md:question'" class="default-avatar-icon" />
+                            </div>
+                        </div>
+                        <div class="user-name text-center">
+                            {{ saleData.buyerInfo ? saleData.buyerInfo.username : '-' }}
+                        </div>
+                    </router-link>
+                    <div class="sold-info">
+                        Bought <span>{{ saleData.count }}x</span>
+                    </div>
+
+                    <div class="product-info gradient-text" v-if="isInAdmin">
+                        <router-link :to="`/product/${saleData.productId}`" > {{ saleData.product ? saleData.product.title : "?" }} </router-link>
+                    </div>
+                </div>
+            </template>
+        </HistoryItem>
+
+        <div class="item-id-info" v-if="isInAdmin">
+            {{ saleData._id }}
+        </div>
+    </div>
+
 </template>
 
 <script>
@@ -43,9 +64,9 @@ export default {
             default: null
         },
 
-        productData: {
-            type: Object,
-            default: null
+        isInAdmin: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -61,7 +82,19 @@ export default {
     },
 
     methods: {
+        showDeleteSale() {
+            this.emitter.emit("show-delete-modal", {
+                type: "sale",
+                data: this.saleData
+            });
+        },
 
+        showEditSale() {
+            this.emitter.emit("show-edit-modal", {
+                type: "sale",
+                data: this.saleData
+            });
+        }
     },
     
     computed: {
@@ -157,5 +190,13 @@ export default {
 
 .sold-info span {
     font-weight: bold;
+}
+
+.product-info {
+    font-weight: bold;
+    transition: filter 0.15s ease-in-out;
+}
+.product-info:hover {
+    filter: brightness(0.7);
 }
 </style>

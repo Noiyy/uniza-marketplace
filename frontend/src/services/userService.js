@@ -32,6 +32,9 @@ class UserService extends DefaultService {
             withCredentials: true
         });
     }
+    async banUser(userId, reason) {
+        return await this.apiClient.post(`/user/ban/${userId}`, { reason }, { withCredentials: true });
+    }
 
     /* AUTH ROUTES */
     async registerUser(userData) {

@@ -59,7 +59,7 @@
                     <div class="d-flex flex-column gap-16">
                         <router-link to="/admin" v-if="user && user.isAdmin" class="d-flex gap-8 align-items-center admin-panel-link highlightActive"> 
                             ADMIN PANEL
-                            <div class="notification"> ! </div>
+                            <div class="notification" v-if="unconfirmedReports.length"> ! </div>
                             <!-- <Icon icon="material-symbols:person" class="admin-icon" /> -->
                         </router-link>
 
@@ -84,7 +84,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'SidebarMenu',
 
-    inject: ['userApi', 'emitter'],
+    inject: ['userApi', 'emitter', 'feedbackApi'],
     emits: [],
 
     props: {
@@ -99,6 +99,8 @@ export default {
         return {
             user: null,
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
+
+            unconfirmedReports: []
         }
     },
 
@@ -126,7 +128,12 @@ export default {
                 this.$toast.error("LogoutFailed");
             }
             this.emitter.emit("hide-loader");
-        }
+        },
+
+        async getAllReports() {
+            const resp = await this.feedbackApi.getAllReports();
+            this.unconfirmedReports = resp.data.filter(rp => !rp.viewed);
+        },
     },
     
     computed: {
@@ -172,6 +179,13 @@ export default {
             btn.style.display = btn.style.display == "initial" ? "none" : 'initial';
             // btn.style.display == "initial" ? btn.style.display = "none" : btn.style.display = "initial";
         });
+
+        if (this.user && this.user.isAdmin) {
+            this.getAllReports();
+            this.emitter.on("confirmed-report", () => {
+                this.getAllReports();
+            });
+        }
     },
 
     unmounted() {

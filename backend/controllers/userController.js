@@ -103,10 +103,10 @@ exports.banUser = async (req, res) => {
         return res.status(401).json({error: 'Auth user not authorized'});
     
     const user = await User.findById({_id: id});
-    user.ban(reason);
+    user.banUser(reason);
     await user.save();
     
-    res.status(200).json({message: 'User banned for: ' + reason});
+    res.status(200).json({success: true, bannedUserId: id});
 }
 
 exports.deleteUser = async (req, res) => {

@@ -1,7 +1,7 @@
 <template>
     <div class="user-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
         <div class="list-item-controls d-flex flex-column gap-8">
-            <button class="btn btn-icon" @click="showDeleteUser()">
+            <button class="btn btn-icon" @click="showDeleteUser()" :disabled="userData.isAdmin">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
@@ -10,35 +10,48 @@
             </button>
         </div>
 
-        <router-link :to="`/user/${userData._id}`" class="user-item list-item d-flex flex-1">
-            <div class="user-main d-flex gap-8">
+        <router-link :to="`/user/${userData._id}`" class="user-item list-item d-flex flex-1 pos-relative">
+            <div class="ban-overlay d-flex flex-column justify-content-center align-items-center gap-8" v-if="userIsBanned">
+                <div class="ban-title gradient-text"> 
+                    BANNED 
+                    <span> {{ isoToDateString(userData.ban.bannedAt) }} - {{ isoToDayTime(userData.ban.bannedAt) }} </span>
+                 </div>
+                <div class="ban-reason d-flex gap-8"> 
+                    <Icon icon="material-symbols:info-outline" class="info-icon" /> 
+                    <span> {{ userData.ban.reason }} </span>   
+                </div>
+            </div>
 
-                <div class="user-avatar-wrapper pos-relative">
-                    <div class="admin-badge-small" v-if="userData.isAdmin"> Admin </div>
-
-                    <div class="user-avatar-cont pos-relative">
-                        <img :src="getAssetUrl(`img/userAvatars/${userData.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="userData.avatarPath">
-                        <div class="default-avatar-cont" v-else>
-                            <Icon icon="akar-icons:person" class="default-avatar-icon" />
+            <div class="user-main d-flex flex-column gap-8">
+                <div class="d-flex gap-8">
+                    <div class="user-avatar-wrapper pos-relative">
+                        <div class="admin-badge-small" v-if="userData.isAdmin"> Admin </div>
+    
+                        <div class="user-avatar-cont pos-relative">
+                            <img :src="getAssetUrl(`img/userAvatars/${userData.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="userData.avatarPath">
+                            <div class="default-avatar-cont" v-else>
+                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                            </div>
                         </div>
                     </div>
-                    <div class="user-name text-center">
-                        {{ userData.username }}
+                    <div class="user-ratings d-flex flex-column gap-8">
+                        <div class="rating-values d-flex align-items-center gap-8">
+                            <Icon icon="material-symbols:star" class="star-icon" v-if="ratingAvg >= 1" />
+                            <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingAvg > 0" />
+                            <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
+                            <span class="rating-avg"> {{ ratingAvg ? ratingAvg : '0.0' }} </span>
+    
+                            <span> (<span class="count">{{ userData.ownRatings.length }}</span> ratings) </span>
+                        </div>
+                        
+                        <span class="rated-others">
+                            Rated <span class="count"> {{ userData.ratedOthersCount }} </span> others
+                        </span>
                     </div>
                 </div>
-                <div class="user-ratings d-flex flex-column justify-content-center gap-8">
-                    <div class="rating-values d-flex align-items-center gap-8">
-                        <Icon icon="material-symbols:star" class="star-icon" v-if="ratingAvg >= 1" />
-                        <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingAvg > 0" />
-                        <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
-                        <span class="rating-avg"> {{ ratingAvg }} </span>
 
-                        <span> (<span class="count">{{ userData.ownRatings.length }}</span> ratings) </span>
-                    </div>
-                    
-                    <span class="rated-others">
-                        Rated <span class="count"> {{ userData.ratedOthersCount }} </span> others
-                    </span>
+                <div class="user-name">
+                    {{ userData.username }}
                 </div>
             </div>
             <div class="user-info flex-1 d-flex justify-content-between gap-16">
@@ -49,9 +62,9 @@
                     </div>
                     <div class="divider"></div>
                     <div class="info-content d-flex flex-column">
-                        <div> <span class="gradient-text"> 172 </span> on sale </div>
-                        <div> <span class="gradient-text"> 172 </span> sold </div>
-                        <div> <span class="gradient-text"> 172 </span> bought </div>
+                        <div> <span class="gradient-text"> {{ userData.ownProducts.filter(prd => prd.status == "onSale").length }} </span> on sale </div>
+                        <div> <span class="gradient-text"> {{ userData.sales.reduce((acc, sale) => acc + sale.count, 0) }} </span> sold </div>
+                        <div> <span class="gradient-text"> {{ userData.boughtProducts }} </span> bought </div>
                     </div>
                 </div>
 
@@ -62,8 +75,8 @@
                     </div>
                     <div class="divider"></div>
                     <div class="info-content d-flex flex-column">
-                        <div> <span class="gradient-text"> 2 </span> own </div>
-                        <div> <span class="gradient-text"> 7 </span> others </div>
+                        <div> <span class="gradient-text"> {{ userData.ownReports.length }} </span> own </div>
+                        <div> <span class="gradient-text"> {{ userData.othersReports.length }} </span> others </div>
                     </div>
                 </div>
 
@@ -81,7 +94,7 @@
         </router-link>
 
         <div class="user-ban-cont">
-            <button class="btn secondary" @click="banUser()"> ban </button>
+            <button class="btn secondary" @click="showBanUser()" :disabled="userData.isAdmin || userIsBanned"> ban </button>
         </div>
 
         <div class="item-id-info">
@@ -98,7 +111,7 @@ export default {
     name: 'UserItem',
 
     inject: ['emitter'],
-    emits: [],
+    emits: ["show-ban-modal"],
 
     props: {
         userData: {
@@ -124,8 +137,8 @@ export default {
             }
         ),
 
-        banUser() {
-
+        showBanUser() {
+            this.$emit("show-ban-modal", this.userData);
         },
 
         showDeleteUser() {
@@ -136,7 +149,10 @@ export default {
         },
 
         editUser() {
-
+            this.emitter.emit("show-edit-modal", {
+                type: "user",
+                data: this.userData
+            });
         }
     },
     
@@ -146,6 +162,10 @@ export default {
 
             }
         ),
+
+        userIsBanned() {
+            return this.userData.ban && this.userData.ban.isBanned;
+        }
     },
 
     created() {
@@ -209,9 +229,9 @@ export default {
 }
 
 .user-name {
-    margin-top: 4px;
     font-weight: bold;
     line-height: 100%;
+    margin-left: 4px;
 }
 
 .user-ratings span {
@@ -231,6 +251,9 @@ export default {
     background-color: #25201D;
     color: var(--primary);
     padding: 2px 24px;
+}
+.user-ban-cont .btn:disabled {
+    color: rgba(255, 154, 158, 0.5);
 }
 
 .user-info .info-cont {
@@ -267,5 +290,35 @@ export default {
     transform: translateX(-50%);
     z-index: 1;
     font-size: 10px;
+}
+
+.ban-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.66);
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    border-radius: 16px;
+    gap: 4px;
+}
+
+.ban-overlay .ban-title {
+    font-weight: bold;
+}
+
+.ban-overlay .ban-title span {
+    padding: 0 12px;
+    background: var(--white-15a);
+    border-radius: 8px;
+    color: var(--white);
+    background-clip: initial;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+}
+
+.ban-overlay .ban-reason {
+    color: var(--secondary);
 }
 </style>

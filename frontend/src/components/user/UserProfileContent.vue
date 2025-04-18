@@ -29,6 +29,9 @@
                                         <div class="admin-badge" v-if="user.isAdmin">
                                             ADMIN
                                         </div>
+                                        <div class="admin-badge banned-badge" v-if="user.ban && user.ban.isBanned">
+                                            BANNED
+                                        </div>
                                     </div>
     
                                     <div class="joined-on d-flex gap-32 align-items-center">
@@ -585,6 +588,10 @@ export default {
     justify-content: center;
     align-items: center;
     color: var(--black);
+}
+
+.banned-badge {
+    background-color: var(--red);
 }
 
 .joined-on span {

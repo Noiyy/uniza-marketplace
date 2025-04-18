@@ -5,9 +5,15 @@ const ProductHistory = require("../models/productHistoryModel");
 const mongoose = require("mongoose");
 
 exports.getAllSales = async (req, res) => {
-    const sales = await Sale.find({}).sort({soldAt: -1});
-    
-    res.status(200).json(sales);
+    const sales = await Sale.find({}).sort({soldAt: -1}).lean();
+
+    const users = await User.find({}).lean();
+    let salesWithBuyers = sales.map((sale) => ({
+        ...sale,
+        buyerInfo: sale.userId ? users.find(usr => String(usr._id) === String(sale.userId)) : null
+    }));
+
+    res.status(200).json(salesWithBuyers);
 };
 
 exports.getSalesInLast96Hours = async (req, res) => {

@@ -84,6 +84,26 @@
                                 </ItemContentList>
                             </div>
 
+                            <div id="sales" class="admin-section">
+                                <ItemContentList
+                                    :list-title="'Sales'"
+                                    :item-filters="salesFilters"
+                                    :search-query="salesSearchQuery"
+                                    :selected-sort-filter="salesSortFilter"
+                                    :sorter-custom-filters="salesNavFilters"
+                                    :list-all-items-count="allSales ? allSales.length : 0"
+                                    :filterClickCallback="filterSalesHandler"
+                                    :sorterOptionCallback="sortSalesHandler"
+                                    @update:searchQuery="salesSearchHandler"
+                                >
+                                    <template #content>
+                                        <SalesList
+                                            :sales="sortedSales"
+                                        ></SalesList>
+                                    </template>
+                                </ItemContentList>
+                            </div>
+
                             <!-- <div id="support" class="admin-section">
                                 <ItemContentList
                                     :list-title="'Support'"
@@ -258,7 +278,7 @@
                         <textarea v-model="itemToEdit.data.description" type="text" class="styled" :placeholder="'Description'"></textarea>
                     </div>
 
-                    <div class="btns-wrapper d-flex gap-8 justify-content-end">
+                    <div class="btns-wrapper d-flex gap-24 justify-content-end">
                         <button class="btn primary  " @click="confirmedEditHandler()"> Edit </button>
                         <button class="btn secondary" @click="closeEditModal()"> Cancel </button>
                     </div>
@@ -289,6 +309,7 @@ import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
 import UsersList from '../user/UsersList.vue';
 import ReportsList from './ReportsList.vue';
+import SalesList from './SalesList.vue';
 
 import Multiselect from 'vue-multiselect';
 import "vue-multiselect/dist/vue-multiselect.min.css";
@@ -314,6 +335,7 @@ export default {
         RatingsList,
         UsersList,
         ReportsList,
+        SalesList,
         Modal,
         ConfirmModal,
         Multiselect,
@@ -336,6 +358,10 @@ export default {
                     name: "Ratings",
                     href: "ratings"
                 },
+                {
+                    name: "Sales",
+                    href: "sales"
+                },
                 // {
                 //     name: "Support",
                 //     href: "support",
@@ -352,6 +378,7 @@ export default {
             allRatings: [],
             allSupportTickets: [],
             allReports: [],
+            allSales: [],
 
             filteredProducts: [],
             sortedProducts: [],
@@ -402,6 +429,18 @@ export default {
             reportsSortFilter: "latest",
             reportsSearchQuery: "",
             reportsNavFilters: [
+                { name: "latest" },
+                { name: "oldest" },
+            ],
+
+            filteredSales: [],
+            sortedSales: [],
+
+            salesFilters: [],
+            salesTypeFilter: "all",
+            salesSortFilter: "latest",
+            salesSearchQuery: "",
+            salesNavFilters: [
                 { name: "latest" },
                 { name: "oldest" },
             ],
@@ -465,12 +504,14 @@ export default {
             else if (itemType == "report") resp = await this.feedbackApi.deleteReport(this.itemToDelete.data._id);
             else if (itemType == "user") resp = await this.userApi.deleteUser(this.itemToDelete.data._id);
             else if (itemType == "rating") resp = await this.feedbackApi.deleteRating(this.itemToDelete.data._id);
+            else if (itemType == "sale") reps = await this.productApi.deleteSale(this.itemToDelete.data._id);
 
             if (resp.data.success) {
                 if (itemType == "product") await this.getProducts();
                 if (itemType == "user") await this.getUsers();
                 if (itemType == "rating") await this.getRatings();
                 if (itemType == "report") await this.getReports();
+                if (itemType == "sale") await this.getSales();
                 
                 this.$toast.success("ItemDeleteSuccess");
             }
@@ -570,6 +611,11 @@ export default {
             this.sortedReports = this.sortReports(this.filteredReports, this.reportsSortFilter);
         },
 
+        getSalesData() {
+            this.filteredSales = this.filterSales(this.allSales, this.salesSearchQuery, this.salesTypeFilter);
+            this.sortedSales = this.sortSales(this.filteredSales, this.salesSortFilter);
+        },
+
         /* FILTER HANDLERS */
         filterProductsHandler(fltr) {
             this.productsTypeFilter = fltr.name;
@@ -604,6 +650,15 @@ export default {
             this.getReportsData();
         },
 
+        filterSalesHandler(fltr) {
+            this.salesTypeFilter = fltr.name;
+            this.salesFilters.forEach(ft => ft.active = false);
+            const selFilter = this.salesFilters.find(ft => ft.name == this.salesTypeFilter);
+            if (selFilter) selFilter.active = true;
+
+            this.getSalesData();
+        },
+
         /* SORT HANDLERS */
         sortProductsHandler(fltr) {
             this.productsSortFilter = fltr.name;
@@ -625,6 +680,11 @@ export default {
             this.getReportsData();
         },
 
+        sortSalesHandler(fltr) {
+            this.salesSortFilter = fltr.name;
+            this.getSalesData();
+        },
+
         /* SEARCH HANDLERS */
         ratingsSearchHandler(newValue) {
             this.ratingsSearchQuery = newValue;
@@ -644,6 +704,11 @@ export default {
         reportsSearchHandler(newValue) {
             this.reportsSearchQuery = newValue;
             this.getReportsData();
+        },
+
+        salesSearchHandler(newValue) {
+            this.salesSearchQuery = newValue;
+            this.getSalesData();
         },
 
         /* SETUP FILTERS */
@@ -675,6 +740,14 @@ export default {
             ];
         },
 
+        setupSaleFilters() {
+            this.salesFilters = [
+                { name: "all", count: this.allSales.length, active: true },
+                { name: "confirmed", count: this.allSales.filter(sl => sl.confirmed).length },
+                { name: "unconfirmed", count: this.allSales.filter(sl => !sl.confirmed).length },
+            ];
+        },
+
         async getProducts() {
             await this.getAllProducts();
             this.setupProductFilters();
@@ -702,6 +775,12 @@ export default {
             this.getReportsData();
         },
 
+        async getSales() {
+            await this.getAllSales();
+            this.setupSaleFilters();
+            this.getSalesData();
+        },
+
         /* ####################### */
         /* RESTY */
         /* ####################### */
@@ -720,8 +799,14 @@ export default {
 
         async getAllUsers() {
             const resp = await this.userApi.getAllUsers();
-            this.allUsers = resp.data;
-            console.log("users", resp);
+            this.allUsers = resp.data.map(usr => ({
+                ...usr,
+                ownReports: this.allReports.filter(rp => rp.toUserId == usr._id),
+                othersReports: this.allReports.filter(rp => rp.fromUserId == usr._id),
+                ownProducts: this.allProducts.filter(prd => prd.sellerId == usr._id),
+                sales: this.allSales.filter(sl => sl.product.sellerId == usr._id)
+            }));
+            console.log("users", JSON.parse(JSON.stringify(this.allUsers)));
         },
 
         async getAllSupportTickets() {
@@ -735,6 +820,15 @@ export default {
             this.allReports = resp.data;
             console.log("reports", resp);
         },
+
+        async getAllSales() {
+            const resp = await this.productApi.getAllSales();
+            this.allSales = resp.data.map(sl => ({
+                ...sl,
+                product: this.allProducts.find(prd => prd._id == sl.productId)
+            }));
+            console.log("sales", JSON.parse(JSON.stringify(this.allSales)));
+        }
     },
     
     computed: {
@@ -750,9 +844,7 @@ export default {
     },
 
     created() {
-        this.emitter.on("confirmed-report", (id) => {
-            this.getReports();
-        });
+
     },
 
     async mounted() {
@@ -761,11 +853,16 @@ export default {
         this.stickyNavbarHandler();
 
         await this.getProducts();
-        await this.getUsers();
         await this.getRatings();
         await this.getReports();
+        await this.getSales();
+        await this.getUsers();
 
         this.emitter.emit("hide-loader");
+
+        this.emitter.on("confirmed-report", (id) => {
+            this.getReports();
+        });
 
         this.emitter.on("show-delete-modal", (data) => {
             console.log("xd?", data);
@@ -786,6 +883,9 @@ export default {
             } else if (itemType == "rating") {
                 this.itemToDeleteInfo = `rating`;
                 this.itemToDeleteName = `${itemData.title} (${itemData._id})`;
+            } else if (itemType == "sale") {
+                this.itemToDeleteInfo = `sale`;
+                this.itemToDeleteName = `(${itemData._id})`;
             }
 
             this.deleteModalIsShown = true;
@@ -820,11 +920,15 @@ export default {
 
             this.editModalIsShown = true;
         });
+
+        this.emitter.on("user-ban-success", () => this.getUsers());
     },
 
     unmounted() {
         this.emitter.off("show-delete-modal");
         this.emitter.off("show-edit-modal");
+        this.emitter.off("confirmed-report");
+        this.emitter.off("user-ban-success");
     }
 }
 </script>
@@ -922,5 +1026,9 @@ export default {
 .description-cont textarea {
     min-height: 100px;
     max-height: 25vh;
+}
+
+.item-content-list {
+    min-height: 500px;
 }
 </style>

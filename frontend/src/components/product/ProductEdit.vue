@@ -211,7 +211,6 @@
                 <template v-for="(sale, index) in productSales" :key="index">
                     <SaleItem
                         :sale-data="sale"
-                        :product-data="product"
                     ></SaleItem>
                 </template>
 
