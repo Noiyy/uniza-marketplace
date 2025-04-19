@@ -29,6 +29,7 @@
                                 <div class="user-name text-center">
                                     {{ props.option.username }}
                                     <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                    <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                 </div>
                             </div>
                         </template>
@@ -43,6 +44,7 @@
                                 <div class="user-name text-center">
                                     {{ props.option.username }} 
                                     <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                    <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                 </div>
                             </div>
                         </template>

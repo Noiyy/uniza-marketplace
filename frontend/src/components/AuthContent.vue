@@ -143,7 +143,11 @@ export default {
                     }
                 } catch (error) {
                     console.error(error);
-                    this.$toast.error("InvalidCredentials");
+                
+                    if (error.response.data.banned) {
+                        this.$toast.error(`BannedUserInfo: ${error.response.data.banReason}`)
+                    } else
+                        this.$toast.error("InvalidCredentials");
                 }
 
                 this.emitter.emit("hide-loader");

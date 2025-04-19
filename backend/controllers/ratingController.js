@@ -86,7 +86,7 @@ exports.updateRating = async (req, res) => {
     if (!user.isAdmin)  
         return res.status(401).json({error: 'User not authorized'});
 
-     const rating = await Rating.findOneAndUpdate(
+    const rating = await Rating.findOneAndUpdate(
         { _id: id },
         { title, description, productId: ratedProduct ? ratedProduct._id : null, toUserId: ratedUser._id },
         { new: true, runValidators: true }

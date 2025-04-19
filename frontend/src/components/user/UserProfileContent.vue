@@ -309,6 +309,8 @@ export default {
 
             } catch (err) {
                 console.error(err);
+                this.userProducts = [];
+                this.loadedProducts = true;
             }
         },
 

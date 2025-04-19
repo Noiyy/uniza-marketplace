@@ -77,7 +77,6 @@ exports.addSale = async (req, res) => {
 
         const post = { productId, userId, count };
         if (!userId) post.confirmed = true;
-        console.log("sale post", post);
 
         const sale = new Sale(post);
         await sale.save();
@@ -90,7 +89,7 @@ exports.addSale = async (req, res) => {
         const historyEntry = new ProductHistory({
             productId: productId,
             historyType: 'sale',
-            oldValue: productAvalLeft > 0 ? productAvalLeft : 0,
+            oldValue: productAvalLeft > 0 ? productAvalLeft : 0, // počet nových dostupných
             newValue: count,
             byUserId: user.id
         });
@@ -107,6 +106,65 @@ exports.addSale = async (req, res) => {
     }
 }
 
+exports.updateSale = async (req, res) => {
+    const { id } = req.params;
+    const { 
+        userId,
+        count,
+        confirmed
+    } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No sale found for id ' + id});
+    
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    const saleCheck = await Sale.findById(id);
+    if (!saleCheck) return res.status(404).json({error: 'No sale found for id ' + id});
+
+    const productCheck = await Product.findById(saleCheck.productId);
+    if (!productCheck) return res.status(404).json({error: 'No product found for id ' + saleCheck.productId});
+
+    const buyerUser = userId ? await User.findById(userId) : null;
+
+    // Only admin is allowed to
+    if (!user.isAdmin)  
+        return res.status(401).json({error: 'User not authorized'});
+
+    const prevCount = saleCheck.count;
+
+    const sale = await Sale.findOneAndUpdate(
+        { _id: id },
+        { userId, count, confirmed },
+        { new: true, runValidators: true }
+    );
+
+    let countDiff = prevCount - count;
+    productCheck.count.available += countDiff;
+    productCheck.count.sold -= countDiff;
+    await productCheck.save();
+
+    const historyEntry = await ProductHistory.findOneAndUpdate(
+        { saleId: id },
+        { 
+            byUserId: userId, 
+            oldValue: productCheck.count.available > 0 ? productCheck.count.available : 0,
+            newValue: count
+        },
+        { new: true, runValidators: true }
+    );
+    
+    if (buyerUser) {
+        buyerUser.boughtProducts -= countDiff;
+        await buyerUser.save();
+    }
+    
+    res.status(200).json({success: true, newData: null}); // newData: sale
+};
+
 exports.confirmSale = async (req, res) => {
     const { id, saleId } = req.params;
     
@@ -117,11 +175,40 @@ exports.confirmSale = async (req, res) => {
 }
 
 exports.deleteSale = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No sale found for id ' + id});
+
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    // Only admin is allowed to
+    if (!user.isAdmin) 
+        return res.status(401).json({error: 'Auth user not authorized'});
+
+    const saleCheck = await Sale.findById(id);
+    if (!saleCheck) return res.status(404).json({error: 'No sale found for id ' + id});
+
+    const productCheck = await Product.findById(saleCheck.productId);
+    if (!productCheck) return res.status(404).json({error: 'No product found for id ' + saleCheck.productId});
+
+    const buyerUser = saleCheck.userId ? await User.findById(saleCheck.userId) : null;
+
+    let productAvalLeft = productCheck.count.available + saleCheck.count;
+    productCheck.count.available = productAvalLeft;
+    productCheck.count.sold -= saleCheck.count;
+    productCheck.save();
+
+    await ProductHistory.findOneAndDelete({ saleId: id });
+
+    if (buyerUser) {
+        buyerUser.boughtProducts -= saleCheck.count;
+        await buyerUser.save();
+    }
     
-    const sale = await Sale.findOneAndDelete({_id: id});
-    if(!sale) return res.status(404).json({error: 'No sale found for id ' + id});
-   
-    res.status(200).json({message: 'Sale deleted.'});
+    await Sale.findOneAndDelete({_id: id});
+    res.status(200).json({ success: true, deletedId: id });
 }

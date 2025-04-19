@@ -4,7 +4,10 @@ const {
     deleteProduct, uploadProductImages, getProductHistory
 } = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
-const { getAllSales, getSalesInLast96Hours, getProductSales, getSale, addSale, confirmSale, deleteSale } = require("../controllers/saleController");
+const { 
+    getAllSales, getSalesInLast96Hours, getProductSales, getSale, addSale, confirmSale,
+    deleteSale, updateSale
+} = require("../controllers/saleController");
 
 const { protect, protectAdmin } = require("../middleware/authMiddleware");
 
@@ -63,6 +66,7 @@ router.get("/sales/getInLast96Hours", getSalesInLast96Hours);
 router.get("/:id/sales", getProductSales);
 router.get("/sales/:saleId", getSale);
 router.post("/:id/sales/add", protect, addSale);
+router.post("/sales/:id/edit", protectAdmin, updateSale);
 router.post("/:id/sales/:saleId/confirm", confirmSale);
 router.delete('/sales/delete/:id', protect, deleteSale);
 

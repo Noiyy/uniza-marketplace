@@ -70,6 +70,9 @@ class ProductService extends DefaultService {
     async addSale(productId, saleData) {
         return await this.apiClient.post(`/${productId}/sales/add`, saleData, { withCredentials: true });
     }
+    async updateSale(saleId, saleData) {
+        return await this.apiClient.post(`/sales/${saleId}/edit`, saleData, { withCredentials: true });
+    }
     async confirmSale(productId, saleId) {
         return await this.apiClient.post(`/${productId}/sales/${saleId}/confirm`);
     }

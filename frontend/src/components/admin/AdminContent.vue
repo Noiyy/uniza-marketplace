@@ -162,121 +162,189 @@
         <template #body>
             <div class="edit-modal-body" v-if="itemToEdit">
                 <div class="edit-content d-flex flex-column gap-32">
-                    <div class="input-cont d-flex flex-column gap-8">
-                        <div class="input-tag"> Rating title </div>
-                        <input v-model="itemToEdit.data.title" type="text" class="styled" :placeholder="'Title'">
-                    </div>
 
-                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Rated by </div>
-                            <Multiselect
-                                disabled
-                                v-model="itemToEdit.data.ratedByUser"
-                                :options="allUsers"
-                                :allow-empty="true"
-                                :multiple="false"
-                                :show-labels="false"
-                                :track-by="'_id'"
-                                @search-change="onUserSearchChange" 
-                                :internal-search="false"
-                                >
-                                <template #option="props">
-                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                        <div class="user-avatar-cont pos-relative">
-                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                            <div class="default-avatar-cont" v-else>
-                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                    <template v-if="itemToEdit.type == 'sale'">
+                        <div class="input-row d-flex gap-32 align-items-center justify-content-between">
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> Buyer </div>
+                                <Multiselect
+                                    v-model="itemToEdit.data.buyer"
+                                    :options="allUsers.filter(usr => usr._id != itemToEdit.data.product.sellerId)"
+                                    :allow-empty="true"
+                                    :multiple="false"
+                                    :show-labels="false"
+                                    :track-by="'_id'"
+                                    @search-change="onUserSearchChange" 
+                                    :internal-search="false"
+                                    >
+                                    <template #option="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }}
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                             </div>
                                         </div>
-                                        <div class="user-name text-center">
-                                            {{ props.option.username }}
-                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template #singleLabel="props">
-                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                        <div class="user-avatar-cont pos-relative">
-                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                            <div class="default-avatar-cont" v-else>
-                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                    </template>
+                                    <template #singleLabel="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }} 
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                             </div>
                                         </div>
-                                        <div class="user-name text-center">
-                                            {{ props.option.username }} 
-                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </Multiselect>
+                                    </template>
+                                </Multiselect>
+                            </div>
+
+                            <div class="input-cont d-flex flex-column gap-8">
+                                <div class="input-tag"> Count </div>
+                                <input v-model="itemToEdit.data.count" type="number" min="1" max="9999" class="styled" :placeholder="'Count'">
+                            </div>
                         </div>
 
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Rated user </div>
-                            <Multiselect
-                                v-model="itemToEdit.data.ratedUser"
-                                :options="allUsers.filter(usr => usr._id != itemToEdit.data.ratedByUser._id)"
-                                :allow-empty="true"
-                                :multiple="false"
-                                :show-labels="false"
-                                :track-by="'_id'"
-                                @search-change="onUserSearchChange" 
-                                :internal-search="false"
-                                >
-                                <template #option="props">
-                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                        <div class="user-avatar-cont pos-relative">
-                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                            <div class="default-avatar-cont" v-else>
-                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                        <div>
+                            <Checkbox
+                                :text="'Is sale confirmed'"
+                                v-model:is-checked="itemToEdit.data.confirmed"
+                            ></Checkbox>
+                        </div>
+                    </template>
+
+                    <template v-if="itemToEdit.type == 'rating'">
+                        <div class="input-cont d-flex flex-column gap-8">
+                            <div class="input-tag"> Rating title </div>
+                            <input v-model="itemToEdit.data.title" type="text" class="styled" :placeholder="'Title'">
+                        </div>
+    
+                        <div class="input-row d-flex gap-24 align-items-center justify-content-between">
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> Rated by </div>
+                                <Multiselect
+                                    disabled
+                                    v-model="itemToEdit.data.ratedByUser"
+                                    :options="allUsers"
+                                    :allow-empty="true"
+                                    :multiple="false"
+                                    :show-labels="false"
+                                    :track-by="'_id'"
+                                    @search-change="onUserSearchChange" 
+                                    :internal-search="false"
+                                    >
+                                    <template #option="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }}
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                             </div>
                                         </div>
-                                        <div class="user-name text-center">
-                                            {{ props.option.username }}
-                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template #singleLabel="props">
-                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                        <div class="user-avatar-cont pos-relative">
-                                            <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                            <div class="default-avatar-cont" v-else>
-                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                    </template>
+                                    <template #singleLabel="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }} 
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
                                             </div>
                                         </div>
-                                        <div class="user-name text-center">
-                                            {{ props.option.username }} 
-                                            <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                    </template>
+                                </Multiselect>
+                            </div>
+    
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> Rated user </div>
+                                <Multiselect
+                                    v-model="itemToEdit.data.ratedUser"
+                                    :options="allUsers.filter(usr => usr._id != itemToEdit.data.ratedByUser._id)"
+                                    :allow-empty="true"
+                                    :multiple="false"
+                                    :show-labels="false"
+                                    :track-by="'_id'"
+                                    @search-change="onUserSearchChange" 
+                                    :internal-search="false"
+                                    >
+                                    <template #option="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }}
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </template>
-                            </Multiselect>
+                                    </template>
+                                    <template #singleLabel="props">
+                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                            <div class="user-avatar-cont pos-relative">
+                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
+                                                <div class="default-avatar-cont" v-else>
+                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                                </div>
+                                            </div>
+                                            <div class="user-name text-center">
+                                                {{ props.option.username }} 
+                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
+                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </Multiselect>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                        <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
-
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Rated product </div>
-                            <Multiselect
-                                v-model="itemToEdit.data.ratedProduct"
-                                :options="itemToEdit.data.ratedUser ? allProducts.filter(prd => prd.sellerId == itemToEdit.data.ratedUser._id) : []"
-                                :track-by="'_id'"
-                                :allow-empty="true"
-                                :label="'title'"
-                                :multiple="false"
-                                :show-labels="false"
-                            ></Multiselect>
+    
+                        <div class="input-row d-flex gap-24 align-items-center justify-content-between">
+                            <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
+    
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> Rated product </div>
+                                <Multiselect
+                                    v-model="itemToEdit.data.ratedProduct"
+                                    :options="itemToEdit.data.ratedUser ? allProducts.filter(prd => prd.sellerId == itemToEdit.data.ratedUser._id) : []"
+                                    :track-by="'_id'"
+                                    :allow-empty="true"
+                                    :label="'title'"
+                                    :multiple="false"
+                                    :show-labels="false"
+                                ></Multiselect>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="input-cont description-cont d-flex flex-column gap-8">
-                        <div class="input-tag"> Description </div>
-                        <textarea v-model="itemToEdit.data.description" type="text" class="styled" :placeholder="'Description'"></textarea>
-                    </div>
+    
+                        <div class="input-cont description-cont d-flex flex-column gap-8">
+                            <div class="input-tag"> Description </div>
+                            <textarea v-model="itemToEdit.data.description" type="text" class="styled" :placeholder="'Description'"></textarea>
+                        </div>
+                    </template>
 
                     <div class="btns-wrapper d-flex gap-24 justify-content-end">
                         <button class="btn primary  " @click="confirmedEditHandler()"> Edit </button>
@@ -304,6 +372,7 @@ import Footer from '../Footer.vue';
 import ItemContentList from '../ItemContentList.vue';
 import Modal from '../Modal.vue';
 import ConfirmModal from '../ConfirmModal.vue';
+import Checkbox from '../Checkbox.vue';
 
 import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
@@ -339,7 +408,8 @@ export default {
         Modal,
         ConfirmModal,
         Multiselect,
-        Icon
+        Icon,
+        Checkbox
     },
 
     data() {
@@ -476,10 +546,12 @@ export default {
 
             if (itemType == "rating") resp = await this.feedbackApi.updateRating(this.itemToEdit.data._id, this.itemToEdit.data);
             else if (itemType == "user") resp = await this.userApi.updateUser(this.itemToEdit.data._id, this.itemToEdit.data);
+            else if (itemType == "sale") resp = await this.productApi.updateSale(this.itemToEdit.data._id, this.itemToEdit.data);
 
             if (resp.data.success) {
                 if (itemType == "user") await this.getUsers();
                 if (itemType == "rating") await this.getRatings();
+                if (itemType == "sale") await this.getSales();
                 
                 this.$toast.success("ItemEditSuccess");
             }
@@ -504,7 +576,7 @@ export default {
             else if (itemType == "report") resp = await this.feedbackApi.deleteReport(this.itemToDelete.data._id);
             else if (itemType == "user") resp = await this.userApi.deleteUser(this.itemToDelete.data._id);
             else if (itemType == "rating") resp = await this.feedbackApi.deleteRating(this.itemToDelete.data._id);
-            else if (itemType == "sale") reps = await this.productApi.deleteSale(this.itemToDelete.data._id);
+            else if (itemType == "sale") resp = await this.productApi.deleteSale(this.itemToDelete.data._id);
 
             if (resp.data.success) {
                 if (itemType == "product") await this.getProducts();
@@ -893,31 +965,32 @@ export default {
 
         this.emitter.on("show-edit-modal", (data) => {
             const itemType = data.type;
-            const itemData = ({
-                ...data.data,
-                ratedByUser: this.allUsers.find(usr => usr._id == data.data.fromUserId),
-                ratedUser: this.allUsers.find(usr => usr._id == data.data.toUserId),
-                ratedProduct: data.data.productId ? this.allProducts.find(prd => prd._id == data.data.productId) : null
-            });
-            const dataEdit = ({ type: itemType, data: itemData});
-            console.log("wat", dataEdit);
+            let itemData = data.data;
 
-            this.itemToEdit = dataEdit;
-
-            if (itemType == "product") {
-                this.itemToEditInfo = `product`;
-                this.itemToEditName = `${itemData.title} (${itemData._id})`;
-            } else if (itemType == "report") {
-                this.itemToEditInfo = `report`;
-                this.itemToEditName = `(${itemData._id})`;
-            } else if (itemType == "user") {
+            if (itemType == "user") {
                 this.itemToEditInfo = `user`;
                 this.itemToEditName = `${itemData.username} (${itemData._id})`;
             } else if (itemType == "rating") {
                 this.itemToEditInfo = `rating`;
                 this.itemToEditName = `${itemData.title} (${itemData._id})`;
+                itemData = ({
+                    ...itemData,
+                    ratedByUser: this.allUsers.find(usr => usr._id == data.data.fromUserId),
+                    ratedUser: this.allUsers.find(usr => usr._id == data.data.toUserId),
+                    ratedProduct: data.data.productId ? this.allProducts.find(prd => prd._id == data.data.productId) : null
+                });
+            } else if (itemType == "sale") {
+                this.itemToEditInfo = "sale";
+                this.itemToEditName = `(${itemData._id})`;
+                itemData = ({
+                    ...itemData,
+                    buyer: this.allUsers.find(usr => usr._id == data.data.userId)
+                });
             }
+            const dataEdit = ({ type: itemType, data: itemData});
+            console.log("wat", dataEdit);
 
+            this.itemToEdit = dataEdit;
             this.editModalIsShown = true;
         });
 

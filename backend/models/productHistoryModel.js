@@ -25,6 +25,9 @@ const historySchema = new mongoose.Schema({
     },
     byUserId: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'User' 
+    },
+    saleId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'Sale' 
     }
 });  
 

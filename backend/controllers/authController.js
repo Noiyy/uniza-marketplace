@@ -28,6 +28,11 @@ exports.login = async (req, res) => {
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+
+        if (user.ban && user.ban.isBanned) {
+            return res.status(401).json({ success: false, banned: true, banReason: user.ban.reason});
+        }
+
         const token = jwt.sign(
             { 
                 id: user._id, 

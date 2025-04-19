@@ -521,4 +521,7 @@ width */
   color: var(--black);
   padding: 0 8px;
 }
+.banned-badge {
+  background-color: var(--red);
+}
 </style>
