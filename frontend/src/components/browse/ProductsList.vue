@@ -5,7 +5,9 @@
                 :prod-data="prod"
                 :view-type="activeViewType"
                 :is-in-admin="isInAdmin"
+                :is-in-favorites="isInFavorites"
                 :seller-data="sellerData"
+                @remove-bookmark="removeBookmark"
             ></ProductItem>
         </template>
     </div>
@@ -17,14 +19,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 import ProductItem from './ProductItem.vue';
 import { Icon } from '@iconify/vue';
 
 export default {
     name: 'ProductsList',
 
-    inject: ['axios', 'emitter'],
-    emits: [],
+    inject: ['emitter', 'userApi'],
+    emits: ["removed-bookmark"],
 
     props: {
         products: {
@@ -47,6 +50,11 @@ export default {
             default: false
         },
 
+        isInFavorites: {
+            type: Boolean,
+            default: false
+        },
+
         sellerData: {
             type: Object,
             default: null
@@ -64,7 +72,37 @@ export default {
         }
     },
 
+    methods: {
+        async removeBookmark(prodData) {
+            console.log("remove b", prodData);
+            if (this.getLoggedUser) {
+                this.emitter.emit("show-loader");
+
+                const resp = await this.userApi.bookmarkProduct(this.getLoggedUser._id, prodData._id);
+                console.log("gh", resp);
+                if (resp.data.removed) {
+                    if (resp.data.success) {
+                        this.$toast.success("BookmarkRemoveSuccess");
+                        this.emitter.emit("update-user-data");
+                        this.$emit("removed-bookmark", prodData._id);
+                    } else {
+                        this.$toast.error("BookmarkRemoveFailed");
+                    }
+                } else
+                    this.$toast.error("BookmarkRemoveFailed");
+    
+                this.emitter.emit("hide-loader");
+            } 
+        },
+    },
+
     computed: {
+        ...mapGetters(
+            {
+                getLoggedUser: "user/getUser"
+            }
+        ),
+
         wrapperClasses() {
             let classes = "";
             classes += this.activeViewType && this.activeViewType == 'list' ? 'list ' : 'grid ';

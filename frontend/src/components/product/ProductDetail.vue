@@ -53,7 +53,9 @@
                     </span>
 
                     <Icon v-if="productHasImages" icon="gridicons:fullscreen" class="main-img-icon fullscreen" @click="imgLightboxVisible = true" />
-                    <Icon v-if="!isPreview && getLoggedUser" icon="material-symbols:bookmark-outline" class="main-img-icon bookmark" @click="bookmarkProduct()" />
+                    <Icon v-if="!isPreview && getLoggedUser" 
+                        :icon="productIsBookmarked ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'" 
+                        class="main-img-icon bookmark" @click="bookmarkProduct()" />
 
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
@@ -297,8 +299,34 @@ export default {
             else this.shownMainImgIndex = 0;
         },
 
-        bookmarkProduct() {
+        async bookmarkProduct() {
+            if (this.getLoggedUser) {
+                if (this.productIsBookmarked) {
+                    console.log("remove bookmark");
+                }
 
+                this.emitter.emit("show-loader");
+                console.log("bookmark");
+                const resp = await this.userApi.bookmarkProduct(this.getLoggedUser._id, this.product._id);
+                console.log("gh", resp);
+                if (resp.data.removed) {
+                    if (resp.data.success) {
+                        this.$toast.success("BookmarkRemoveSuccess");
+                        this.emitter.emit("update-user-data");
+                    } else {
+                        this.$toast.error("BookmarkRemoveFailed");
+                    }
+                } else {
+                    if (resp.data.success) {
+                        this.$toast.success("BookmarkAddSuccess");
+                        this.emitter.emit("update-user-data");
+                    } else {
+                        this.$toast.error("BookmarkAddFailed");
+                    }
+                }
+    
+                this.emitter.emit("hide-loader");
+            } 
         },
 
         async deleteProduct() {
@@ -351,6 +379,10 @@ export default {
                 getLoggedUser: "user/getUser"
             }
         ),
+
+        productIsBookmarked() {
+            return this.getLoggedUser && this.getLoggedUser.bookmarkedProducts.includes(this.product._id);
+        },
 
         patternBgStyle() {
             return `

@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema({
         bannedAt: { type: Date },
         reason: { type: String }
     },
+    bookmarkedProducts: {
+        type: [ mongoose.Schema.Types.ObjectId ],
+        ref: 'Product',
+        required: true,
+        default: []
+    }
 });
 
 userSchema.pre('save', async function(next) {

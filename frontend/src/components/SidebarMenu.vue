@@ -36,9 +36,9 @@
                         <router-link to="/browse" class="highlightActive" > Browse </router-link>
 
                         <template v-if="user">
-                            <router-link to="/favourites" class="highlightActive" > Favourites </router-link>
+                            <router-link to="/favoriteProducts/" class="highlightActive" > Favourites </router-link>
                             <!-- <router-link to="/browse" > Auction </router-link> -->
-                            <router-link to="/myProducts" class="highlightActive" > My products </router-link>
+                            <router-link :to="{ path: `/user/${user._id}`, hash: '#products' }" class="highlightActive" > My products </router-link>
                             <router-link to="/product/add"  class="add-product-link">
                                 <Icon icon="ic:baseline-plus" class="plus-icon" />
                             </router-link>

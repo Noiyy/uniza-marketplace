@@ -63,6 +63,12 @@ export default function (emitter, isDev, axiosInstance) {
             component: () => import ('../../views/faq/FAQView.vue'),
         },
         {
+            path: '/favoriteProducts',
+            name: 'ProductFavorites',
+            component: () => import ('../../views/product/ProductFavoritesView.vue'),
+            meta: { requiresAuth: true }
+        },
+        {
             path: '/product/:id/edit',
             name: 'ProductEdit',
             component: () => import ('../../views/product/ProductEditView.vue'),

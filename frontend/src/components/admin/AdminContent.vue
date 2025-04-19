@@ -10,7 +10,6 @@
                         <div class="admin-heading-cont d-flex flex-column gap-8">
                             <h1> Admin panel </h1>
                             <div class="line-divider"></div>
-
                         </div>
 
                         <nav class="admin-navbar nav-btns-wrapper d-flex">

@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
     getAllUsers, getUser, updateUser, updateUserSettings, deleteUser,getLoggedUser,
-    uploadAvatar, banUser
+    uploadAvatar, banUser, bookmarkProduct
 } = require("../controllers/userController");
 const router = express.Router();
 
@@ -18,6 +18,7 @@ router.get("/getLoggedUser", protect, getLoggedUser);
 router.get("/:id", getUser);
 router.patch('/update/:id', protect, updateUser);
 router.post("/ban/:id", protectAdmin, banUser);
+router.post("/:id/bookmark/", protect, bookmarkProduct);
 router.put("/updateSettings/:id", protect, updateUserSettings)
 router.delete('/delete/:id', protect, deleteUser);
 

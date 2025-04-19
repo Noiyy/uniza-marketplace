@@ -35,6 +35,9 @@ class UserService extends DefaultService {
     async banUser(userId, reason) {
         return await this.apiClient.post(`/user/ban/${userId}`, { reason }, { withCredentials: true });
     }
+    async bookmarkProduct(userId, productId) {
+        return await this.apiClient.post(`/user/${userId}/bookmark`, { productId }, { withCredentials: true });
+    }
 
     /* AUTH ROUTES */
     async registerUser(userData) {

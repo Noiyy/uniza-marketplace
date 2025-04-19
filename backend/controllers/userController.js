@@ -85,9 +85,45 @@ exports.updateUserSettings = async (req, res) => {
     res.status(200).json({ success: true, userId: id });
 }
 
+exports.bookmarkProduct = async (req, res) => {
+    const { id } = req.params;
+    const { 
+        productId
+    } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + id});
+
+    const userCheck = await User.findById(req.user.id);
+    if (!userCheck) 
+        return res.status(401).json({error: 'Auth user not found'});
+
+    // Only owner or admin is allowed to
+    if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
+        return res.status(401).json({error: 'Auth user not authorized'});
+
+    let editedBookmarked = [];
+    let removed = false;
+    // Is already bookmarked, remove it
+    if (userCheck.bookmarkedProducts.includes(productId)) {
+        removed = true;
+        editedBookmarked = userCheck.bookmarkedProducts.filter(prod => prod != productId);
+    }
+    // Not bookmarked yet, add it 
+    else {
+        editedBookmarked = [...userCheck.bookmarkedProducts, productId];
+    }
+
+    const user = await User.findOneAndUpdate(
+        { _id: id},
+        { bookmarkedProducts: editedBookmarked },
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ success: true, userId: id, removed });
+};
+
 exports.changeUserPassword = async (req, res) => {
 
-}
+};
 
 exports.banUser = async (req, res) => {
     const { id } = req.params;

@@ -505,6 +505,10 @@ export default {
     },
 
     mounted() {
+        setTimeout(() => {
+            if (this.$route.hash) this.viewProducts();
+        }, 200);
+
         this.filteredAddresses = this.getAllPSC;
     },
 

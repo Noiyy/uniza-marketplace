@@ -1,13 +1,17 @@
 <template>
     <div class="product-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
-        <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
-            <button class="btn btn-icon" @click="showDeleteProduct()">
+        <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin || isInFavorites">
+            <button class="btn btn-icon" @click="showDeleteProduct()" v-if="isInAdmin">
                 <Icon icon="mdi:trash" class="control-icon" />
             </button>
 
-            <router-link role="button" class="btn btn-icon" :to="`product/${prodData._id}/edit`">
-                <Icon icon="mdi:pencil" class="control-icon" />
+            <router-link role="button" class="btn btn-icon" :to="`product/${prodData._id}/edit`" v-if="isInAdmin">
+                <Icon icon="mdi:pencil" class="control-icon" /> 
             </router-link>
+
+            <button class="btn btn-icon" @click="$emit('remove-bookmark', prodData)" v-if="isInFavorites">
+                <Icon icon="material-symbols:bookmark" class="control-icon" />
+            </button>
         </div>
 
         <router-link :to="`/product/${prodData._id}`" class="product-item list-item d-flex flex-1 list" v-if="viewType == 'list'"> <!-- :class="viewType == 'grid' ? 'grid' : ''" -->
@@ -101,7 +105,7 @@ export default {
     name: 'ProductItem',
 
     inject: ['emitter'],
-    emits: [],
+    emits: ['remove-bookmark'],
 
     props: {
         prodData: {
@@ -115,6 +119,11 @@ export default {
         },
 
         isInAdmin: {
+            type: Boolean,
+            default: false
+        },
+
+        isInFavorites: {
             type: Boolean,
             default: false
         },

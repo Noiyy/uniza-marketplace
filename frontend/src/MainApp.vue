@@ -80,6 +80,15 @@ export default {
       if (!scrollToTopBtn.classList.contains("active")) return;
       window.scrollTo({ top: 0, left: 0, behavior: "smooth"});
     },
+
+    
+    async updateLoggedUser() {
+      const resp = await this.userApi.getUserById(this.getUser._id);
+      let user = resp.data;
+      if (user) {
+        this.setUser(user);
+      }
+    }
   },
 
   created() {
@@ -122,12 +131,14 @@ export default {
       this.setAllPSC(pscResp.data);
     }
     this.emitter.emit("hide-loader");
+
+    this.emitter.on("update-user-data", () => this.updateLoggedUser());
   },
 
   computed: {
     ...mapGetters(
       {
-        getUser: 'user/getUser'
+        getUser: 'user/getUser',
       }
     )
   },
