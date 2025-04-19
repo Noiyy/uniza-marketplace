@@ -1,7 +1,7 @@
 <template>
-    <label class="checkbox-cont">
+    <label class="checkbox-cont" :class="disabled ? 'disabled' : ''">
         {{ text }}
-        <input type="checkbox" v-model="localIsChecked" @change="changedCheckbox($event)">
+        <input type="checkbox" v-model="localIsChecked" @change="changedCheckbox($event)" :disabled="disabled">
         <span class="checkmark"></span>
     </label>
 </template>
@@ -24,6 +24,11 @@ export default {
             type: Boolean,
             default: false
         },
+
+        disabled: {
+          type: Boolean,
+          default: false
+        }
     },
 
     components: {
@@ -111,5 +116,14 @@ export default {
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+
+.checkbox-cont.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkbox-cont.disabled:hover input ~ .checkmark {
+  background-color: initial;
 }
 </style>

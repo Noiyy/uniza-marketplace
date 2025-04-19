@@ -162,6 +162,44 @@
             <div class="edit-modal-body" v-if="itemToEdit">
                 <div class="edit-content d-flex flex-column gap-32">
 
+                    <template v-if="itemToEdit.type == 'user'">
+                        <div>
+                            Other settings are available directly in 
+                            <router-link :to="`/user/${itemToEdit.data._id}`"> 
+                                user profile
+                                <Icon icon="prime:arrow-up-right" class="arrow-icon" /> 
+                             </router-link>
+                        </div>
+
+                        <div class="input-row d-flex gap-32 align-items-center justify-content-between">
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> Username </div>
+                                <input v-model="itemToEdit.data.username" type="text" class="styled" :placeholder="'Username'">
+                            </div>
+
+                            <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                <div class="input-tag"> email </div>
+                                <input v-model="itemToEdit.data.email" type="email" class="styled" :placeholder="'Email'" disabled>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="input-cont d-flex gap-16     flex-1">
+                                <Checkbox
+                                    :text="'Delete user avatar'"
+                                    :disabled="itemToEdit.data.avatarPath ? false : true"
+                                    v-model:is-checked="itemToEdit.data.deleteAvatar"
+                                ></Checkbox>
+
+                                <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                    <div class="user-avatar-cont bigger pos-relative">
+                                        <img :src="getAssetUrl(`img/userAvatars/${itemToEdit.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="itemToEdit.data.avatarPath">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
                     <template v-if="itemToEdit.type == 'sale'">
                         <div class="input-row d-flex gap-32 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
@@ -1066,6 +1104,14 @@ export default {
     max-height: 24px;
     border-radius: 50%;
 }
+
+.modal-el .user-avatar-cont.bigger, .default-avatar-cont.bigger {
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+}
+
 .modal-el .user-avatar {
     width: 100%;
     height: 100%;

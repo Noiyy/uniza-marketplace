@@ -57,7 +57,7 @@ exports.getUserProducts = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
 
     const products = await Product.find({sellerId: userId}).sort({createdAt: -1});
-    if (!products || !products.length) return res.status(404).json({error: 'No products found for user with id ' + userId});
+    if (!products) return res.status(404).json({error: 'Failed to get products for user with id ' + userId});
 
     res.status(200).json(products);
 }

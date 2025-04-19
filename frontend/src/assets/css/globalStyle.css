@@ -225,16 +225,18 @@ input.styled.secondary:focus-visible, textarea.styled.secondary:focus-visible {
     border: 2px solid var(--primary);
 }
 
-input:disabled, textarea:disabled {
-    cursor: not-allowed;
-}
-
 .form-row, .input-cont {
     position: relative;
 }
 
 .input-cont input, .input-cont textarea {
     font-weight: bold;
+}
+
+
+input:disabled, textarea:disabled {
+    cursor: not-allowed;
+    color: rgba(240, 237, 234, 0.5) !important;
 }
 
 .form-row .input-tag, .input-cont .input-tag, .product-description-edit .input-tag {

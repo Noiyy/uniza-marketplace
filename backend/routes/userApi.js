@@ -16,7 +16,7 @@ const { protect, protectAdmin } = require("../middleware/authMiddleware");
 router.get("/getAllUsers", getAllUsers);
 router.get("/getLoggedUser", protect, getLoggedUser);
 router.get("/:id", getUser);
-router.patch('/update/:id', protect, updateUser);
+router.post('/update/:id', protect, updateUser);
 router.post("/ban/:id", protectAdmin, banUser);
 router.post("/:id/bookmark/", protect, bookmarkProduct);
 router.put("/updateSettings/:id", protect, updateUserSettings)

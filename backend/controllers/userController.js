@@ -37,9 +37,8 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { 
         username,
-        email,
-        phone,
-        avatarPath
+        avatarPath,
+        deleteAvatar
     } = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: 'No user found for id ' + id});
 
@@ -47,17 +46,27 @@ exports.updateUser = async (req, res) => {
     if (!userCheck) 
         return res.status(401).json({error: 'Auth user not found'});
 
-    // Only owner or admin is allowed to
-    if (userCheck.id.toString() !== id && !userCheck.isAdmin) 
+    // Only admin is allowed to
+    if (!userCheck.isAdmin) 
         return res.status(401).json({error: 'Auth user not authorized'});
+
+    let removedOldAvatar = false;
+
+    if (deleteAvatar) {
+        const oldFilePath = path.join(__dirname, '../../frontend/src/assets/img/userAvatars/', avatarPath);
+        if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+            removedOldAvatar = true;
+        }
+    }
  
     const user = await User.findOneAndUpdate(
         { _id: id},
-        { username, email, phone, avatarPath },
-        { new: true, runValidators: true }
+        { username, avatarPath: removedOldAvatar ? "" : avatarPath },
+        { new: true, runValidators: true }  
     );
  
-    res.status(200).json(user);
+    res.status(200).json({ success: true, id, removedOldAvatar });
 }
 
 exports.updateUserSettings = async (req, res) => {
