@@ -68,6 +68,11 @@
                 <div class="hidden-overlay"></div>
             </div>
         </div>
+
+        <RatingModal
+            :rated-user="user"
+            v-model:is-shown="ratingModalIsShown"
+        ></RatingModal>
     </div>
 </template>
 
@@ -75,6 +80,8 @@
 import RatingsList from './RatingsList.vue';
 import ProductsList from '../browse/ProductsList.vue';
 import ItemContentList from '../ItemContentList.vue';
+import RatingModal from './RatingModal.vue';
+
 import { Icon } from '@iconify/vue';
 
 import { mapGetters, mapActions } from 'vuex';
@@ -106,6 +113,7 @@ export default {
         ItemContentList,
         ProductsList,
         RatingsList,
+        RatingModal,
         Icon
     },
 
@@ -138,6 +146,8 @@ export default {
 
             loadedProducts: false,
             loadedRatings: false,
+
+            ratingModalIsShown: false
         }
     },
 
@@ -213,7 +223,8 @@ export default {
         },
 
         rateUser() {
-            console.log("rate user");
+            this.ratingModalIsShown = true;
+            console.log("rate user", this.ratingModalIsShown);
         },
 
         reportUser() {

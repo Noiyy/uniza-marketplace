@@ -27,7 +27,8 @@
     "vue-socials": "^2.0.5",
     "vue-spinner": "^1.0.4",
     "vue-tel-input": "^9.3.0",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-star-ratings": "^3.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

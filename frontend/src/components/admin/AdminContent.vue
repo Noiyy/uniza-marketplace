@@ -162,6 +162,7 @@
             <div class="edit-modal-body" v-if="itemToEdit">
                 <div class="edit-content d-flex flex-column gap-32">
 
+                    <!-- user -->
                     <template v-if="itemToEdit.type == 'user'">
                         <div>
                             Other settings are available directly in 
@@ -200,6 +201,7 @@
                         </div>
                     </template>
 
+                    <!-- sale -->
                     <template v-if="itemToEdit.type == 'sale'">
                         <div class="input-row d-flex gap-32 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
@@ -261,127 +263,13 @@
                         </div>
                     </template>
 
-                    <template v-if="itemToEdit.type == 'rating'">
-                        <div class="input-cont d-flex flex-column gap-8">
-                            <div class="input-tag"> Rating title </div>
-                            <input v-model="itemToEdit.data.title" type="text" class="styled" :placeholder="'Title'">
-                        </div>
-    
-                        <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Rated by </div>
-                                <Multiselect
-                                    disabled
-                                    v-model="itemToEdit.data.ratedByUser"
-                                    :options="allUsers"
-                                    :allow-empty="true"
-                                    :multiple="false"
-                                    :show-labels="false"
-                                    :track-by="'_id'"
-                                    @search-change="onUserSearchChange" 
-                                    :internal-search="false"
-                                    >
-                                    <template #option="props">
-                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                            <div class="user-avatar-cont pos-relative">
-                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                                <div class="default-avatar-cont" v-else>
-                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                                </div>
-                                            </div>
-                                            <div class="user-name text-center">
-                                                {{ props.option.username }}
-                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template #singleLabel="props">
-                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                            <div class="user-avatar-cont pos-relative">
-                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                                <div class="default-avatar-cont" v-else>
-                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                                </div>
-                                            </div>
-                                            <div class="user-name text-center">
-                                                {{ props.option.username }} 
-                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </Multiselect>
-                            </div>
-    
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Rated user </div>
-                                <Multiselect
-                                    v-model="itemToEdit.data.ratedUser"
-                                    :options="allUsers.filter(usr => usr._id != itemToEdit.data.ratedByUser._id)"
-                                    :allow-empty="true"
-                                    :multiple="false"
-                                    :show-labels="false"
-                                    :track-by="'_id'"
-                                    @search-change="onUserSearchChange" 
-                                    :internal-search="false"
-                                    >
-                                    <template #option="props">
-                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                            <div class="user-avatar-cont pos-relative">
-                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                                <div class="default-avatar-cont" v-else>
-                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                                </div>
-                                            </div>
-                                            <div class="user-name text-center">
-                                                {{ props.option.username }}
-                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template #singleLabel="props">
-                                        <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                            <div class="user-avatar-cont pos-relative">
-                                                <img :src="getAssetUrl(`img/userAvatars/${props.option.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="props.option.avatarPath">
-                                                <div class="default-avatar-cont" v-else>
-                                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                                </div>
-                                            </div>
-                                            <div class="user-name text-center">
-                                                {{ props.option.username }} 
-                                                <span class="admin-badge-small" v-if="props.option.isAdmin"> Admin </span>
-                                                <span class="admin-badge-small banned-badge" v-if="props.option.ban && props.option.ban.isBanned"> Banned </span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </Multiselect>
-                            </div>
-                        </div>
-    
-                        <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                            <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
-    
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Rated product </div>
-                                <Multiselect
-                                    v-model="itemToEdit.data.ratedProduct"
-                                    :options="itemToEdit.data.ratedUser ? allProducts.filter(prd => prd.sellerId == itemToEdit.data.ratedUser._id) : []"
-                                    :track-by="'_id'"
-                                    :allow-empty="true"
-                                    :label="'title'"
-                                    :multiple="false"
-                                    :show-labels="false"
-                                ></Multiselect>
-                            </div>
-                        </div>
-    
-                        <div class="input-cont description-cont d-flex flex-column gap-8">
-                            <div class="input-tag"> Description </div>
-                            <textarea v-model="itemToEdit.data.description" type="text" class="styled" :placeholder="'Description'"></textarea>
-                        </div>
-                    </template>
+                    <!-- rating -->
+                    <RatingModalContent v-if="itemToEdit.type == 'rating'"
+                        :is-edit="true"
+                        :all-users="allUsers"
+                        :all-products="allProducts"
+                        v-model:item-to-edit-data="itemToEdit.data"
+                    ></RatingModalContent>
 
                     <div class="btns-wrapper d-flex gap-24 justify-content-end">
                         <button class="btn primary  " @click="confirmedEditHandler()"> Edit </button>
@@ -410,6 +298,7 @@ import ItemContentList from '../ItemContentList.vue';
 import Modal from '../Modal.vue';
 import ConfirmModal from '../ConfirmModal.vue';
 import Checkbox from '../Checkbox.vue';
+import RatingModalContent from '../user/RatingModalContent.vue';
 
 import ProductsList from '../browse/ProductsList.vue';
 import RatingsList from '../user/RatingsList.vue';
@@ -446,7 +335,8 @@ export default {
         ConfirmModal,
         Multiselect,
         Icon,
-        Checkbox
+        Checkbox,
+        RatingModalContent
     },
 
     data() {

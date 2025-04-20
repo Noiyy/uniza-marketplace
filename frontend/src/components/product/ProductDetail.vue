@@ -155,10 +155,10 @@
             <div class="options-wrapper d-flex gap-32">
                 <div class="pattern" :style="patternBgStyle"></div>
 
-                <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
+                <!-- <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
                     <Icon icon="lsicon:tree-filled" class="opt-icon" />
                     <span class="montserrat"> View similar </span>
-                </div>
+                </div> -->
 
                 <div class="option pos-relative">
                     <div class="d-flex gap-8 align-items-center share-btn"  @click="shareIsOpen = !shareIsOpen">
@@ -178,9 +178,14 @@
                     <span class="montserrat"> Print </span>
                 </div>
 
+                <div class="option d-flex gap-8 align-items-center" @click="doRateUser()">
+                    <Icon icon="mingcute:user-star-fill" class="opt-icon" />
+                    <span class="montserrat"> Rate user </span>
+                </div>
+
                 <div class="option d-flex gap-8 align-items-center" @click="doReport()">
                     <Icon icon="mdi:alert" class="opt-icon" />
-                    <span class="montserrat"> Report </span>
+                    <span class="montserrat"> Report product </span>
                 </div>
             </div>
         </div>
@@ -350,6 +355,10 @@ export default {
         doPrint() { window.print(); },
 
         doReport() {
+
+        },
+
+        doRateUser() {
 
         },
 
