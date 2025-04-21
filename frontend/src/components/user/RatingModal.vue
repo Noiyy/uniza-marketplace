@@ -22,13 +22,14 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 import Modal from '../Modal.vue';
 import RatingModalContent from './RatingModalContent.vue';
 
 export default {
     name: 'RatingModal',
 
-    inject: ['emitter'],
+    inject: ['emitter', 'feedbackApi', 'userApi', 'productApi'],
     emits: ['close', 'update:isShown'],
 
     props: {
@@ -38,6 +39,11 @@ export default {
         },
 
         ratedUser: {
+            type: Object,
+            default: null
+        },
+
+        ratedProduct: {
             type: Object,
             default: null
         }
@@ -58,8 +64,9 @@ export default {
             ratingData: {
                 title: "",
                 description: "",
-                ratedUser: this.ratedUser,
-                ratedProduct: null,
+                ratedUser: this.ratedUser ? this.ratedUser : null,
+                ratedByUser: this.getLoggedUser,
+                ratedProduct: this.ratedProduct ? this.ratedProduct : null,
                 ratingStars: null
             },
         }
@@ -90,16 +97,47 @@ export default {
         },
 
         async rateUser() {
+            if (!this.ratingData.title) {
+                this.$toast.error("MissingRatingTitle");
+                return;
+            }
 
+            this.emitter.emit("show-loader");
+
+            const post = {
+                title: this.ratingData.title,
+                description: this.ratingData.description,
+                ratingValue: this.ratingData.ratingStars,
+                productId: this.ratingData.ratedProduct ? this.ratingData.ratedProduct._id : null,
+                fromUserId: this.getLoggedUser._id,
+                toUserId: this.ratingData.ratedUser._id
+            };
+
+            const resp = await this.feedbackApi.addRating(post);
+            console.log("more", resp);
+            if (resp.data.success) {
+                this.$toast.success("RatedUserSuccess");
+                this.emitter.emit("added-rating");
+                this.closeModal();
+            } else {
+                this.$toast.error("RatedUserFailed");
+            }
+
+            this.emitter.emit("hide-loader");
         }
     },
     
     computed: {
-
+        ...mapGetters(
+            {
+                getLoggedUser: "user/getUser"
+            }
+        )
     },
 
     created() {
-
+        this.getAllProducts();
+        this.getAllUsers();
     },
 
     mounted() {

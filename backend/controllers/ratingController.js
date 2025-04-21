@@ -56,7 +56,7 @@ exports.addRating = async (req, res) => {
 
         const rating = new Rating(post);
         await rating.save();
-        res.status(201).json({ message: 'Rating added successfully', id: rating._id });
+        res.status(201).json({ success: true, id: rating._id });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

@@ -53,8 +53,12 @@
 
                 <template #heading-right-other>
                     <div class="small-btns-wrapper d-flex gap-16">
-                        <button class="btn secondary transBg" @click="reportUser()"> ReportUser </button>
-                        <button class="btn primary" @click="rateUser()"> RateUser </button>
+                        <button class="btn secondary transBg" @click="reportUser()" :disabled="isDisabledForLogged"> 
+                            ReportUser 
+                        </button>
+                        <button class="btn primary" @click="rateUser()" :disabled="isDisabledForLogged"> 
+                            RateUser
+                        </button>
                     </div>
                 </template>
             </ItemContentList>
@@ -223,11 +227,13 @@ export default {
         },
 
         rateUser() {
+            if (!this.getLoggedUser) return;
             this.ratingModalIsShown = true;
             console.log("rate user", this.ratingModalIsShown);
         },
 
         reportUser() {
+            if (!this.getLoggedUser) return;
             console.log("report user");
         }
     },
@@ -235,9 +241,13 @@ export default {
     computed: {
         ...mapGetters(
             {
-
+                getLoggedUser: "user/getUser"
             }
         ),
+
+        isDisabledForLogged() {
+            return !this.getLoggedUser || this.getLoggedUser._id == this.user._id;
+        }
     },
 
     created() {
@@ -252,11 +262,17 @@ export default {
     mounted() {
         this.emitter.on("show-hidden-user-products", () => this.shownProducts = true);
         this.emitter.on("show-hidden-user-ratings", () => this.shownRatings = true);
+
+        this.emitter.on("added-rating2", () => {
+            this.setupRatingFilters();
+            this.getRatingsData();
+        });
     },
 
     unmounted() {
         this.emitter.off("show-hidden-user-products");
         this.emitter.off("show-hidden-user-ratings");
+        this.emitter.off("added-rating2");
     }
 }
 </script>

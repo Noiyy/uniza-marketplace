@@ -52,11 +52,16 @@
                 </Multiselect>
             </div>
 
-            <div class="input-cont d-flex flex-column gap-8 flex-1" v-else>
+            <div class="input-cont rating-cont d-flex flex-column gap-8 flex-1" v-else>
                 <div class="input-cont d-flex flex-column gap-8">
-                    <Vue3StarRatings
-                        v-model="localItemToEditData.ratingStars"
-                    ></Vue3StarRatings>
+                    <div class="input-tag"> Select rating </div>
+
+                    <div class="d-flex align-items-end gap-8">
+                        <Vue3StarRatings
+                            v-model="localItemToEditData.ratingStars"
+                        ></Vue3StarRatings>
+                        <span> {{ localItemToEditData.ratingStars }} </span>
+                    </div>
                 </div>
             </div>
     
@@ -67,7 +72,7 @@
                 <Multiselect
                     :disabled="isEdit ? false : true"
                     v-model="localItemToEditData.ratedUser"
-                    :options="allUsers.filter(usr => usr._id != localItemToEditData.ratedByUser._id)"
+                    :options="localItemToEditData.ratedByUser ? allUsers.filter(usr => usr._id != localItemToEditData.ratedByUser._id) : allUsers"
                     :allow-empty="true"
                     :multiple="false"
                     :show-labels="false"
@@ -202,6 +207,7 @@ export default {
     watch: {
         localItemToEditData: {
             handler(newValue, oldValue) {
+                this.localItemToEditData.ratingStars = Math.round(this.localItemToEditData.ratingStars * 2) / 2;
                 this.$emit("update:item-to-edit-data", this.localItemToEditData);
             },
             deep: true
@@ -235,5 +241,16 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.rating-cont .input-tag {
+    left: 0;
+    padding: 4px 0; 
+}
+</style>
+
+<style>
+.rating-cont .vue3-star-ratings {
+    margin-top: 8px;
 }
 </style>

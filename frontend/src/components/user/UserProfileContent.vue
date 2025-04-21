@@ -48,7 +48,8 @@
 
                                     <div class="d-flex gap-24">
                                         <div class="contact-info d-flex gap-8">
-                                            <button class="btn btn-icon" @click="openChatWithUser()" v-if="getLoggedUser">
+                                            <button class="btn btn-icon" @click="openChatWithUser()" v-if="getLoggedUser"
+                                                :disabled="!getLoggedUser || getLoggedUser._id == user._id" style="border: none">
                                                 <Icon icon="humbleicons:chat" class="chat-icon" />
                                             </button>
                                             <button class="btn primary smaller" @click="copyTelNumber()" v-if="user.phone"> 
@@ -127,6 +128,7 @@
             </div>
         </section>
 
+        <!-- settings modal -->
         <Modal v-if="canEdit"
             v-model:is-shown="settingsModalIsShown"
             :header-text="modalHeading"
@@ -460,11 +462,12 @@ export default {
             }
         },
 
-        async getUserData() {
+        async getUserData(addedRating) {
             this.emitter.emit("show-loader");
             await this.getUser();
             await this.getUserProducts();
             await this.getUserRatings();
+            if (addedRating) this.emitter.emit("added-rating2");
 
             this.emitter.emit("hide-loader");
         }
@@ -510,6 +513,7 @@ export default {
         }, 200);
 
         this.filteredAddresses = this.getAllPSC;
+        this.emitter.on("added-rating", () => this.getUserData(true));
     },
 
     watch: {

@@ -203,10 +203,10 @@ export default {
 
 .fromUser-avatar-cont, .default-avatar-cont {
     flex-shrink: 0;
-    width: 88px;
-    height: 88px;
-    max-width: 88px;
-    max-height: 88px;
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
     border-radius: 50%;
 }
 .user-avatar {

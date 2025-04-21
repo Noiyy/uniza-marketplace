@@ -120,9 +120,9 @@
                 <div class="product-seller-info d-flex gap-32">
                     <div class="seller-btns d-flex gap-16 align-items-end">
                         <button class="btn secondary smaller" :disabled="isPreview" @click="openChatWithSeller()" v-if="getLoggedUser"> MESSAGE </button>
-                        <button class="btn primary smaller" :disabled="isPreview" @click="copyTelNumber()" v-if="userPhone"> 
+                        <button class="btn primary smaller" :disabled="isPreview" @click="copyTelNumber()" v-if="user && user.phone"> 
                             <Icon icon="ic:baseline-phone" class="phone-icon" />
-                            {{ userPhone }}
+                            {{ user.phone }}
                         </button>
                     </div>
                     <router-link :to="`/user/${product.sellerId}`" class="seller d-flex flex-column gap-8 text-end">
@@ -136,7 +136,7 @@
                                 <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
                             </div>
                             <div class="user-avatar-cont pos-relative">
-                                <img :src="getAssetUrl(`img/userAvatars/${userAvatarPath}`)" class="user-avatar" alt="User avatar" v-if="userAvatarPath">
+                                <img :src="getAssetUrl(`img/userAvatars/${user.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user && user.avatarPath">
                                 <div class="default-avatar-cont" v-else>
                                     <Icon icon="akar-icons:person" class="default-avatar-icon" />
                                 </div>
@@ -178,7 +178,7 @@
                     <span class="montserrat"> Print </span>
                 </div>
 
-                <div class="option d-flex gap-8 align-items-center" @click="doRateUser()">
+                <div class="option d-flex gap-8 align-items-center" @click="showRatingModal()">
                     <Icon icon="mingcute:user-star-fill" class="opt-icon" />
                     <span class="montserrat"> Rate user </span>
                 </div>
@@ -189,10 +189,17 @@
                 </div>
             </div>
         </div>
+
+        <RatingModal
+            :rated-user="user"
+            :rated-product="product"
+            v-model:is-shown="ratingModalIsShown"
+        ></RatingModal>
     </div>
 </template>
 
 <script>
+import RatingModal from '../user/RatingModal.vue';
 import ShareButtons from './ShareButtons.vue';
 import VueEasyLightbox from 'vue-easy-lightbox';
 
@@ -234,6 +241,7 @@ export default {
     },
 
     components: {
+        RatingModal,
         ShareButtons,
         VueEasyLightbox,
         Icon
@@ -247,11 +255,10 @@ export default {
             patternImgSrc: this.getAssetUrl("img/noise_texture.png"),
 
             shareIsOpen: false,
-                        
-            userAddress: null,
-            userAvatarPath: null,
+            ratingModalIsShown: false,
+                    
+            user: null,
             userRatingAvg: null,
-            userPhone: null,
 
             loadedData: false
         }
@@ -267,9 +274,7 @@ export default {
         async getUser() {
             try {
                 const resp = await this.userApi.getUserById(this.product.sellerId);
-                this.userAddress = resp.data.address;
-                this.userAvatarPath = resp.data.avatarPath;
-                this.userPhone = resp.data.phone;
+                this.user = resp.data;
             } catch (err) {
                 console.error(err);
                 // this.$router.push("/404");
@@ -358,8 +363,8 @@ export default {
 
         },
 
-        doRateUser() {
-
+        showRatingModal() {
+            this.ratingModalIsShown = true;
         },
 
         viewSimilarProducts() {
@@ -371,9 +376,9 @@ export default {
         },
 
         copyTelNumber() {
-            navigator.clipboard.writeText(this.userPhone)
+            navigator.clipboard.writeText(this.user.phone)
                 .then(() => {
-                    this.$toast.info(`PhoneCopySuccess: ${this.userPhone}`)
+                    this.$toast.info(`PhoneCopySuccess: ${this.user.phone}`)
                 })
                 .catch(err => {
                     this.$toast.error("PhoneCopyFailed");
@@ -410,7 +415,7 @@ export default {
                         customAddress.dorm :
                         `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
                 } else if (this.product.address.asProfile) {
-                    let address = this.userAddress;
+                    let address = this.user ? this.user.address : null;
                     if (address) {
                         return address.dorm ?
                             address.dorm :
