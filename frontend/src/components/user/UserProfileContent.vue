@@ -49,7 +49,8 @@
                                     <div class="d-flex gap-24">
                                         <div class="contact-info d-flex gap-8">
                                             <button class="btn btn-icon" @click="openChatWithUser()" v-if="getLoggedUser"
-                                                :disabled="!getLoggedUser || getLoggedUser._id == user._id" style="border: none">
+                                                :disabled="!getLoggedUser || getLoggedUser._id == user._id || user.ban && user.ban.isBanned"
+                                                style="border: none">
                                                 <Icon icon="humbleicons:chat" class="chat-icon" />
                                             </button>
                                             <button class="btn primary smaller" @click="copyTelNumber()" v-if="user.phone"> 

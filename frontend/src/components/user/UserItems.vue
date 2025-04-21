@@ -53,10 +53,10 @@
 
                 <template #heading-right-other>
                     <div class="small-btns-wrapper d-flex gap-16">
-                        <button class="btn secondary transBg" @click="reportUser()" :disabled="isDisabledForLogged"> 
+                        <button class="btn secondary transBg" @click="reportUser()" :disabled="isDisabledForLogged || user.ban && user.ban.isBanned"> 
                             ReportUser 
                         </button>
-                        <button class="btn primary" @click="rateUser()" :disabled="isDisabledForLogged"> 
+                        <button class="btn primary" @click="rateUser()" :disabled="isDisabledForLogged || user.ban && user.ban.isBanned"> 
                             RateUser
                         </button>
                     </div>
@@ -73,10 +73,15 @@
             </div>
         </div>
 
-        <RatingModal
+        <RatingModal v-if="getLoggedUser"
             :rated-user="user"
             v-model:is-shown="ratingModalIsShown"
         ></RatingModal>
+
+        <ReportModal v-if="getLoggedUser"
+            :user="user"
+            v-model:is-shown="reportModalIsShown"
+        ></ReportModal>
     </div>
 </template>
 
@@ -85,6 +90,7 @@ import RatingsList from './RatingsList.vue';
 import ProductsList from '../browse/ProductsList.vue';
 import ItemContentList from '../ItemContentList.vue';
 import RatingModal from './RatingModal.vue';
+import ReportModal from '../admin/ReportModal.vue';
 
 import { Icon } from '@iconify/vue';
 
@@ -118,6 +124,7 @@ export default {
         ProductsList,
         RatingsList,
         RatingModal,
+        ReportModal,
         Icon
     },
 
@@ -151,7 +158,8 @@ export default {
             loadedProducts: false,
             loadedRatings: false,
 
-            ratingModalIsShown: false
+            ratingModalIsShown: false,
+            reportModalIsShown: false
         }
     },
 
@@ -227,13 +235,14 @@ export default {
         },
 
         rateUser() {
-            if (!this.getLoggedUser) return;
+            if (!this.getLoggedUser || this.user.ban && this.user.ban.isBanned) return;
             this.ratingModalIsShown = true;
             console.log("rate user", this.ratingModalIsShown);
         },
 
         reportUser() {
-            if (!this.getLoggedUser) return;
+            if (!this.getLoggedUser || this.user.ban && this.user.ban.isBanned) return;
+            this.reportModalIsShown = true;
             console.log("report user");
         }
     },

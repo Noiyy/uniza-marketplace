@@ -27,13 +27,20 @@ exports.addReport = async (req, res) => {
     } = req.body;
 
     try {
-        const post = { fromUserId, description };
-        if (toUserId) post.toUserId = toUserId;
+        if (!req.user || !req.user.id)
+            return res.status(404).json({error: 'User not logged in'});
+    
+        const user = await User.findById(req.user.id);
+        if (!user) 
+            return res.status(401).json({error: 'User not found'});
+
+        const post = { fromUserId, description, toUserId };
         if (toProductId) post.toProductId = toProductId;
 
         const report = new Report(post);
         await report.save();
-        res.status(201).json({ message: 'Report added successfully', id: report._id });
+
+        res.status(201).json({ success: true, id: report._id });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

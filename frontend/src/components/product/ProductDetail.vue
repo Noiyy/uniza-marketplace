@@ -178,27 +178,37 @@
                     <span class="montserrat"> Print </span>
                 </div>
 
-                <div class="option d-flex gap-8 align-items-center" @click="showRatingModal()">
+                <div class="option d-flex gap-8 align-items-center" @click="showRatingModal()"
+                    :class="getLoggedUser ? '' : 'disabled'">
                     <Icon icon="mingcute:user-star-fill" class="opt-icon" />
                     <span class="montserrat"> Rate user </span>
                 </div>
 
-                <div class="option d-flex gap-8 align-items-center" @click="doReport()">
+                <div class="option d-flex gap-8 align-items-center" @click="doReport()"
+                    :class="getLoggedUser ? '' : 'disabled'">
                     <Icon icon="mdi:alert" class="opt-icon" />
                     <span class="montserrat"> Report product </span>
                 </div>
             </div>
         </div>
 
-        <RatingModal
+        <RatingModal v-if="getLoggedUser"
             :rated-user="user"
             :rated-product="product"
             v-model:is-shown="ratingModalIsShown"
         ></RatingModal>
+
+        <ReportModal v-if="getLoggedUser"
+            :user="user"
+            :product="product"
+            v-model:is-shown="reportModalIsShown"
+            :report-user="false"
+        ></ReportModal>
     </div>
 </template>
 
 <script>
+import ReportModal from '../admin/ReportModal.vue';
 import RatingModal from '../user/RatingModal.vue';
 import ShareButtons from './ShareButtons.vue';
 import VueEasyLightbox from 'vue-easy-lightbox';
@@ -241,6 +251,7 @@ export default {
     },
 
     components: {
+        ReportModal,
         RatingModal,
         ShareButtons,
         VueEasyLightbox,
@@ -256,6 +267,7 @@ export default {
 
             shareIsOpen: false,
             ratingModalIsShown: false,
+            reportModalIsShown: false,
                     
             user: null,
             userRatingAvg: null,
@@ -360,10 +372,12 @@ export default {
         doPrint() { window.print(); },
 
         doReport() {
-
+            if (!this.getLoggedUser) return;
+            this.reportModalIsShown = true;
         },
 
         showRatingModal() {
+            if (!this.getLoggedUser) return;
             this.ratingModalIsShown = true;
         },
 
@@ -647,6 +661,9 @@ export default {
 .product-misc-options .option {
     cursor: pointer;
 }
+.product-misc-options .option.disabled {
+    opacity: 0.5;
+}
 
 .product-misc-options .option span {
     font-weight: bold;
@@ -677,6 +694,10 @@ export default {
 }
 .product-misc-options .options-wrapper .option:hover {
     color: rgba(255, 255, 255, 0.66);
+}
+.product-misc-options .options-wrapper .option.disabled:hover {
+    color: var(--white);
+    cursor: not-allowed;
 }
 
 .product-misc-options .pattern {
