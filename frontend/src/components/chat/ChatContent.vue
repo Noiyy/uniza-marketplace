@@ -72,6 +72,8 @@ import ChatSystem from './ChatSystem.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
+import io from 'socket.io-client';
+
 export default {
     name: 'ChatContent',
 
@@ -91,7 +93,9 @@ export default {
 
     data() {
         return {
-            shownComponent: "ChatNormal"
+            shownComponent: "ChatNormal",
+            socket: null,
+            messages: []
         }
     },
 
@@ -115,6 +119,14 @@ export default {
         changedComponent() {
             this.emitter.emit("loaded-chat-component", this.shownComponent);
         },
+
+        sendMessage() {
+            this.socket.emit('direct-message', {
+                senderId: currentUserId,
+                recipientId: targetUserId,
+                content: messageText
+            });
+        }
     },
     
     computed: {
@@ -130,7 +142,11 @@ export default {
     },
 
     mounted() {
-
+        this.socket = io('http://localhost:5173');
+        this.socket.on('new-message', (message) => {
+            console.log("aha", message);
+            this.messages.push(message);
+        });
     }
 }
 </script>

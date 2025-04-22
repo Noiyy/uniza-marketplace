@@ -11,6 +11,9 @@ const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
 const cors = require('cors');
 const history = require('connect-history-api-fallback');
+const http = require("http");
+const { Server } = require('socket.io');
+const socketIoHandler = require("./util/socketIoHandler");
 
 const historyFallbackOptions = {
     rewrites: [
@@ -23,6 +26,9 @@ const historyFallbackOptions = {
 
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
 const app = express();
+
+const msgServer = http.createServer(app);
+const io = new Server(msgServer);
 
 const distPath = path.resolve(__dirname, "../frontend/dist");
 
@@ -55,18 +61,22 @@ if (isDev) {
     app.use(cors(corsOptions));
 }
 
+socketIoHandler(io);
+
 // routes
 const authRoutes = require('./routes/authApi');
 const userRoutes = require("./routes/userApi");
 const productRoutes = require("./routes/productApi");
 const feedbackRoutes = require("./routes/feedbackApi");
 const miscRoutes = require("./routes/miscApi");
+const messageRoutes = require("./routes/messageApi");
  
 app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/misc/", miscRoutes);
+app.use("/api/message/", messageRoutes);
 
 app.use(express.static(path.join(distPath)));
 app.use(history(historyFallbackOptions));
