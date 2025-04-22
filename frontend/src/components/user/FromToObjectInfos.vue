@@ -26,7 +26,7 @@
             </router-link>
         </div>
 
-        <div class="date-created-at d-flex justify-content-center align-items-center gap-8">
+        <div class="date-created-at d-flex justify-content-center align-items-center gap-8" v-if="createdAt">
             <Icon icon="lets-icons:date-fill" class="date-icon" />
             {{ createdAt ? isoToDateString(createdAt) : "hm" }}
         </div>
@@ -59,7 +59,7 @@ export default {
         createdAt: {
             type: String,
             default: null
-        }
+        },
     },
 
     components: {

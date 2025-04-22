@@ -12,19 +12,19 @@
 
         <div class="rating-item list-item flex-1 d-flex gap-16" :class="isInAdmin ? 'smaller' : ''">
             <div class="main d-flex gap-24">
-                <div v-if="isInAdmin">
+                <div> <!--  v-if="isInAdmin" -->
                     <FromToObjectInfos
                         :from-obj="ratingData.fromUser"
                         :to-obj="ratingData.toUser"
                         :created-at="ratingData.createdAt"
                     ></FromToObjectInfos>
                 </div>
-                <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative" v-else>
+                <!-- <router-link :to="`/user/${ratingData.fromUserId}`" class="fromUser-avatar-cont pos-relative" v-else>
                     <img v-if="ratingData.fromUser && ratingData.fromUser.avatarPath" :src="getAssetUrl(`img/userAvatars/${ratingData.fromUser.avatarPath}`)" class="user-avatar" alt="User avatar" >
                     <div class="default-avatar-cont" v-else>
                         <Icon icon="akar-icons:person" class="default-avatar-icon" />
                     </div>
-                </router-link>
+                </router-link> -->
                 <div class="rating-content d-flex flex-column">
                     <div class="rating-heading d-flex gap-24">
                         <div class="rating-values d-flex gap-8 align-items-center">
@@ -218,7 +218,7 @@ export default {
 }
 
 .default-avatar-cont {
-    font-size: 48px;
+    font-size: 32px;
     background: var(--white-5a);
     border-radius: 50%;
     display: flex;

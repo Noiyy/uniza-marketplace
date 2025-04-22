@@ -9,7 +9,7 @@
     <Icon icon="mdi:arrow-up" class="scroll-btn-img" />
   </div>
 
-  <router-link to="/chat" class="chat-bubble" v-if="getUser">
+  <router-link to="/chat" class="chat-bubble" v-if="getUser && !isInChat">
     <div class="notification-count d-flex justify-content-center align-items-center"> 2 </div>
     <Icon icon="humbleicons:chat" class="chat-bubble-icon" />
   </router-link>
@@ -140,7 +140,11 @@ export default {
       {
         getUser: 'user/getUser',
       }
-    )
+    ),
+
+    isInChat() {
+      return this.$route.name == "Chat";
+    }
   },
 
   unmounted() {
