@@ -73,7 +73,7 @@ import ChatSystem from './ChatSystem.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 // import io from 'socket.io-client';
-import { state, socket } from "../../socket";
+import { state as socketState, socket } from "../../socket";
 
 export default {
     name: 'ChatContent',
@@ -130,8 +130,8 @@ export default {
             });
         },
 
-        async getMessagesBetweenUsers(senderId, recipientId) {
-            const resp = await this.messageApi.getMessagesBetweenUsers(senderId, recipientId);
+        async getMsgsBetweenUsers(senderId, recipientId) {
+            const resp = await this.messageApi.getMsgsBetweenUsers(senderId, recipientId);
             console.log("spravy?", resp);
         }
 
@@ -144,7 +144,7 @@ export default {
             }
         ),
 
-        socketIsConnected() { return state.connected; }
+        socketIsConnected() { return socketState.connected; }
     },
 
     created() {
@@ -157,11 +157,11 @@ export default {
             this.messages.push(message);
         });
 
-        this.getMessagesBetweenUsers(this.getLoggedUser._id, "68021f67f3b8990982552a0a");
+        this.getMsgsBetweenUsers(this.getLoggedUser._id, "68021f67f3b8990982552a0a");
         // setTimeout(() => {
         //     this.sendMessage("68021f67f3b8990982552a0a", "ahoj vikiiiii");
         // }, 1000);
-    }
+    },
 }
 </script>
 

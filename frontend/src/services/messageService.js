@@ -5,8 +5,20 @@ class MessageService extends DefaultService {
         super(isDev, apiRoute);
     }
 
-    async getMessagesBetweenUsers(senderId, recipientId) {
+    async getMsgsBetweenUsers(senderId, recipientId) {
         return await this.apiClient.get(`/get/${senderId}/${recipientId}`, { withCredentials: true });
+    }
+
+    async getUnreadMsgsFromUser(senderId, recipientId) {
+        return await this.apiClient.get(`/getUnread/${senderId}/${recipientId}`, { withCredentials: true });
+    }
+
+    async getLatestMsgFromUser(senderId, recipientId) {
+        return await this.apiClient.post(`/get/${senderId}/${recipientId}`, { isLatest: true }, { withCredentials: true });
+    }
+
+    async getOnlineUsers() {
+        return await this.apiClient.get("/getOnlineUsers", { withCredentials: true });
     }
 }
 

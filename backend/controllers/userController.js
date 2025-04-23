@@ -207,3 +207,47 @@ exports.uploadAvatar = async (req, res) => {
 
     res.json({ message: 'File uploaded successfully', file: newFile });
 };
+
+exports.addUserToChat = async (req, res) => {
+    const { loggedUserId, userId } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(loggedUserId)) return res.status(404).json({error: 'No logged user found for id ' + loggedUserId});
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
+
+    const userCheck = await User.findById(req.user.id);
+    if (!userCheck) 
+        return res.status(401).json({error: 'Auth user not found'});
+
+    // Only logged user is allowed to
+    if (userCheck.id.toString() !== loggedUserId) 
+        return res.status(401).json({error: 'Auth user not authorized'});
+
+    const user = await User.findOneAndUpdate(
+        { _id: loggedUserId},
+        { openedChats: [...userCheck.openedChats, userId]},
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ success: true, addedUserId: userId });
+};
+
+exports.removeUserFromChat = async (req, res) => {
+    const { loggedUserId, userId } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(loggedUserId)) return res.status(404).json({error: 'No logged user found for id ' + loggedUserId});
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
+
+    const userCheck = await User.findById(req.user.id);
+    if (!userCheck) 
+        return res.status(401).json({error: 'Auth user not found'});
+
+    // Only logged user is allowed to
+    if (userCheck.id.toString() !== loggedUserId) 
+        return res.status(401).json({error: 'Auth user not authorized'});
+
+    const user = await User.findOneAndUpdate(
+        { _id: loggedUserId},
+        { openedChats: userCheck.openedChats.filter(prod => prod != userId)},
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ success: true, removedUserId: userId });
+};

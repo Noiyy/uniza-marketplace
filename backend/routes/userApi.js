@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
     getAllUsers, getUser, updateUser, updateUserSettings, deleteUser,getLoggedUser,
-    uploadAvatar, banUser, bookmarkProduct
+    uploadAvatar, banUser, bookmarkProduct, addUserToChat, removeUserFromChat
 } = require("../controllers/userController");
 const router = express.Router();
 
@@ -16,9 +16,13 @@ const { protect, protectAdmin } = require("../middleware/authMiddleware");
 router.get("/getAllUsers", getAllUsers);
 router.get("/getLoggedUser", protect, getLoggedUser);
 router.get("/:id", getUser);
+
 router.post('/update/:id', protect, updateUser);
 router.post("/ban/:id", protectAdmin, banUser);
 router.post("/:id/bookmark/", protect, bookmarkProduct);
+router.post("/chat/add", protect, addUserToChat);
+router.post("/chat/remove", protect, removeUserFromChat);
+
 router.put("/updateSettings/:id", protect, updateUserSettings)
 router.delete('/delete/:id', protect, deleteUser);
 

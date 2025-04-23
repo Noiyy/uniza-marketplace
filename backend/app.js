@@ -66,7 +66,8 @@ const io = new Server(server, {
         credentials: true
     }
 });
-socketIoHandler(io);
+if (isDev) io.disconnectSockets(true);
+socketIoHandler(io, app);
 
 // routes
 const authRoutes = require('./routes/authApi');

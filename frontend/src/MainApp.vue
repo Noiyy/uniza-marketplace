@@ -22,6 +22,8 @@ import Loader from './components/Loader.vue';
 import { Icon } from '@iconify/vue';
 import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 
+import { socket, state } from './socket';
+
 export default {
   name: "MainApp",
 
@@ -133,6 +135,17 @@ export default {
     this.emitter.emit("hide-loader");
 
     this.emitter.on("update-user-data", () => this.updateLoggedUser());
+
+    // If user is already loaded and socket connects after mount
+    socket.on("connect", () => {
+      if (this.getUser) {
+        socket.emit("userConnected", this.getUser._id);
+      }
+    });
+    // If socket is already connected and user loads after mount
+    if (this.getUser && socket.connected) {
+      socket.emit("userConnected", this.getUser._id);
+    }
   },
 
   computed: {
@@ -151,6 +164,14 @@ export default {
     this.emitter.off('show-loader', this.showLoader);
     this.emitter.off('hide-loader', this.hideLoader);
   },
+
+  watch: {
+    getUser(user) {
+      if (user && socket.connected) {
+        socket.emit("userConnected", user._id);
+      }
+    }
+  }
 }
 </script>
 

@@ -38,6 +38,12 @@ class UserService extends DefaultService {
     async bookmarkProduct(userId, productId) {
         return await this.apiClient.post(`/user/${userId}/bookmark`, { productId }, { withCredentials: true });
     }
+    async addUserToChat(loggedUserId, userId) {
+        return await this.apiClient.post(`/user/chat/add`, { loggedUserId, userId }, { withCredentials: true });
+    }
+    async removeUserFromChat(loggedUserId, userId) {
+        return await this.apiClient.post(`/user/chat/remove}`, { loggedUserId, userId }, { withCredentials: true });
+    }
 
     /* AUTH ROUTES */
     async registerUser(userData) {

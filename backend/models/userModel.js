@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
         ref: 'Product',
         required: true,
         default: []
+    },
+    openedChats: {
+        type: [ mongoose.Schema.Types.ObjectId ],
+        ref: 'User',
+        required: true,
+        default: []
     }
 });
 
