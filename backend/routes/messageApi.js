@@ -6,6 +6,6 @@ const router = express.Router();
 
 const { protect, protectAdmin } = require("../middleware/authMiddleware");
 
-router.get('/messages/:senderId/:recipientId', protect, getMessagesBetweenUsers);
+router.get('/get/:senderId/:recipientId', protect, getMessagesBetweenUsers);
 
 module.exports = router;

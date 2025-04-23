@@ -23,6 +23,7 @@ import UserService from './services/userService';
 import FeedbackService from './services/feedbackService';
 import ProductService from './services/productService';
 import MiscService from './services/miscService';
+import MessageService from './services/messageService';
 
 const head = createHead();
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
@@ -64,6 +65,7 @@ app.provide("userApi", new UserService(isDev, "api"));
 app.provide("feedbackApi", new FeedbackService(isDev, "api/feedback"));
 app.provide("productApi", new ProductService(isDev, "api/product"));
 app.provide("miscApi", new MiscService(isDev, "api/misc"));
+app.provide("messageApi", new MessageService(isDev, "api/messages"));
 app.provide("emitter", emitter);
 
 const toastInstance = useToast();

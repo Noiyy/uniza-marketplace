@@ -27,9 +27,6 @@ const historyFallbackOptions = {
 const isDev = process.env.NODE_ENV && process.env.NODE_ENV.trim() === "development";
 const app = express();
 
-const msgServer = http.createServer(app);
-const io = new Server(msgServer);
-
 const distPath = path.resolve(__dirname, "../frontend/dist");
 
 // middleware
@@ -61,6 +58,14 @@ if (isDev) {
     app.use(cors(corsOptions));
 }
 
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: isDev ? "http://localhost:5173" : "https://unizamarketplace.noiyy.eu",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 socketIoHandler(io);
 
 // routes
@@ -75,8 +80,8 @@ app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/feedback", feedbackRoutes);
-app.use("/api/misc/", miscRoutes);
-app.use("/api/message/", messageRoutes);
+app.use("/api/misc", miscRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.use(express.static(path.join(distPath)));
 app.use(history(historyFallbackOptions));
@@ -96,7 +101,7 @@ app.use((req, res, next) => {
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
     console.log('connected to database')
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
         console.log('listening for requests on port', process.env.PORT);
     })
 })

@@ -72,12 +72,13 @@ import ChatSystem from './ChatSystem.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
+import { state, socket } from "../../socket";
 
 export default {
     name: 'ChatContent',
 
-    inject: ['emitter'],
+    inject: ['emitter', 'messageApi'],
     emits: [],
 
     props: {
@@ -94,7 +95,6 @@ export default {
     data() {
         return {
             shownComponent: "ChatNormal",
-            socket: null,
             messages: []
         }
     },
@@ -120,21 +120,31 @@ export default {
             this.emitter.emit("loaded-chat-component", this.shownComponent);
         },
 
-        sendMessage() {
-            this.socket.emit('direct-message', {
-                senderId: currentUserId,
+        sendMessage(targetUserId, messageText) {
+            console.log("hmmm");
+
+            socket.emit('direct-message', {
+                senderId: this.getLoggedUser._id,
                 recipientId: targetUserId,
                 content: messageText
             });
+        },
+
+        async getMessagesBetweenUsers(senderId, recipientId) {
+            const resp = await this.messageApi.getMessagesBetweenUsers(senderId, recipientId);
+            console.log("spravy?", resp);
         }
+
     },
     
     computed: {
         ...mapGetters(
             {
-
+                getLoggedUser: "user/getUser"
             }
         ),
+
+        socketIsConnected() { return state.connected; }
     },
 
     created() {
@@ -142,11 +152,15 @@ export default {
     },
 
     mounted() {
-        this.socket = io('http://localhost:5173');
-        this.socket.on('new-message', (message) => {
+        socket.on('direct-message', (message) => {
             console.log("aha", message);
             this.messages.push(message);
         });
+
+        this.getMessagesBetweenUsers(this.getLoggedUser._id, "68021f67f3b8990982552a0a");
+        // setTimeout(() => {
+        //     this.sendMessage("68021f67f3b8990982552a0a", "ahoj vikiiiii");
+        // }, 1000);
     }
 }
 </script>
