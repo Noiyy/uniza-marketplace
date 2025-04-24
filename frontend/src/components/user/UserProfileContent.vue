@@ -282,7 +282,7 @@ export default {
     methods: {
         ...mapActions(
             {
-
+                storeAddUserToChat: "user/addUserToChat",
             }
         ),
 
@@ -388,8 +388,23 @@ export default {
             this.settingsModalIsShown = false;
         },
 
-        openChatWithUser() {
+        async openChatWithUser() {
+            if (!this.getLoggedUser) return;
+            // pridaj userId k loggedUser openedChats ak tam ešte nie je a prejdi na chat s aktívnym chat oknom usera
+            if (!this.getLoggedUser.openedChats.includes(this.user._id)) {
+                const resp = await this.userApi.addUserToChat(this.getLoggedUser._id, this.user._id);
+                if (resp.data.success) {
+                    this.storeAddUserToChat(resp.data.addedUserId);
+                } else {
+                    this.$toast.error("FailedToOpenChatWithUser");
+                    return;
+                }
+            }
 
+            this.$router.push({
+                name: "Chat",
+                query: { openUserId: this.user._id }
+            })
         },
 
         copyTelNumber() {

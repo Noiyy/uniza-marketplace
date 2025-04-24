@@ -20,14 +20,14 @@
                                             :class="shownComponent === 'ChatSystem' ? 'active' : ''"
                                         > 
                                             System
-                                            <!-- <div class="new-indicator"></div> -->
+                                            <div class="new-indicator" v-if="systemHasUnread"></div>
                                         </button>
                                         <button class="btn nav-btn pos-relative" 
                                             @click="showChat()"
                                             :class="shownComponent === 'ChatNormal' ? 'active' : ''"
                                         > 
                                             Messages
-                                            <div class="new-indicator"></div>
+                                            <div class="new-indicator" v-if="chatHasUnread"></div>
                                         </button>
                                     </div>
                                 </div>
@@ -49,6 +49,7 @@
                                 <KeepAlive>
                                     <component :is="shownComponent"
                                         v-if="shownComponent === 'ChatNormal'"
+                                        @hasUnread="(flag) => chatHasUnread = flag"
                                      
                                     ></component>
                                 </KeepAlive>
@@ -72,7 +73,6 @@ import ChatSystem from './ChatSystem.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
-// import io from 'socket.io-client';
 import { state as socketState, socket } from "../../socket";
 
 export default {
@@ -95,7 +95,8 @@ export default {
     data() {
         return {
             shownComponent: "ChatNormal",
-            messages: []
+            chatHasUnread: false,
+            systemHasUnread: false,
         }
     },
 
@@ -119,22 +120,6 @@ export default {
         changedComponent() {
             this.emitter.emit("loaded-chat-component", this.shownComponent);
         },
-
-        sendMessage(targetUserId, messageText) {
-            console.log("hmmm");
-
-            socket.emit('direct-message', {
-                senderId: this.getLoggedUser._id,
-                recipientId: targetUserId,
-                content: messageText
-            });
-        },
-
-        async getMsgsBetweenUsers(senderId, recipientId) {
-            const resp = await this.messageApi.getMsgsBetweenUsers(senderId, recipientId);
-            console.log("spravy?", resp);
-        }
-
     },
     
     computed: {
@@ -143,8 +128,6 @@ export default {
                 getLoggedUser: "user/getUser"
             }
         ),
-
-        socketIsConnected() { return socketState.connected; }
     },
 
     created() {
@@ -152,15 +135,7 @@ export default {
     },
 
     mounted() {
-        socket.on('direct-message', (message) => {
-            console.log("aha", message);
-            this.messages.push(message);
-        });
 
-        this.getMsgsBetweenUsers(this.getLoggedUser._id, "68021f67f3b8990982552a0a");
-        // setTimeout(() => {
-        //     this.sendMessage("68021f67f3b8990982552a0a", "ahoj vikiiiii");
-        // }, 1000);
     },
 }
 </script>

@@ -6,7 +6,11 @@ const { protect } = require("../middleware/authMiddleware");
 const onlineUsers = new Set();
 
 module.exports = function(io, app) {
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
+
+    const sockets = await io.of("/").allSockets(); // Returns a Set of socket IDs
+    console.log("hm",sockets); // Set { 'socketid1', 'socketid2', ... }
+
     socket.on('direct-message', async (data) => {
       console.log("hmmm new?", data);
 
@@ -25,7 +29,9 @@ module.exports = function(io, app) {
       if (onlineUsers.has(userId)) return;
 
       onlineUsers.add(userId);
-      console.log("online user", userId);
+      console.log("User connected:", userId, "sId:", socket.id);
+      console.log(onlineUsers);
+
       socket.join(userId);
       socket.data.userId = userId;
 
@@ -34,14 +40,29 @@ module.exports = function(io, app) {
     });
 
     socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
+      console.log(socket.data);
+      console.log('User disconnected:', socket.data?.userId , "sId:", socket.id);
       if (socket.data?.userId) {
         const userId = socket.data.userId;
         onlineUsers.delete(userId);
+        console.log(onlineUsers);
 
         io.emit('userOffline', userId);
       }
     });
+
+    socket.on('kick-user', async (userIdToKick) => {
+      const sockets = await io.in(userIdToKick).fetchSockets();
+      sockets.forEach(s => {
+        s.disconnect(true);
+        io.emit('userOffline', userIdToKick);
+      });
+    });
+
+    socket.on("updateOnlineUsers", () => {
+      socket.emit("onlineUsers", Array.from(onlineUsers));
+    });
+
   });
 
   app.get("/api/messages/getOnlineUsers", protect, async (req, res) => {

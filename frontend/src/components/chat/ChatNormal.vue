@@ -15,7 +15,7 @@
                     </div>
         
                     <div class="nav-chats d-flex flex-column gap-8">
-                        <div class="chat-item d-flex gap-16 align-items-center" v-for="(user, index) in openedChatUsers" :key="index"
+                        <div class="chat-item d-flex gap-16 align-items-center pos-relative" v-for="(user, index) in openedChatUsers" :key="index"
                             :class="user.openedWindow ? 'active' : '' "
                             @click="openChat(user)">
                             <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
@@ -42,6 +42,10 @@
     
                                 <div class="unread-indicator" v-if="user.unreadCount"> {{ user.unreadCount }} </div>
                             </div>
+
+                            <div class="chat-item-remove" @click.prevent.stop="removeUserFromChat(user)">
+                                <Icon icon="mdi:remove" class="remove-icon" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,47 +53,43 @@
         </div>
 
         <!-- Okno so správami -->
-        <div class="chat-window d-flex flex-column gap-24">
-            <div class="chat-window-heading d-flex flex-column gap-8">
-                <template v-if="activeUser">
-                    <div class="heading-cont d-flex justify-content-between align-items-center gap-24">
-                        <div class="d-flex gap-8 align-items-center">
-                            <router-link :to="`/user/${activeUser.data._id}`" class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                <div class="user-avatar-cont pos-relative">
-                                    <div class="avatar-overlay"></div>
-    
-                                    <img :src="getAssetUrl(`img/userAvatars/${activeUser.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="activeUser.data.avatarPath">
-                                    <div class="default-avatar-cont" v-else>
-                                        <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                    </div>
-                                </div>
-                            </router-link>
-    
-                            <h1 class="username gradient-text">
-                                {{ activeUser.data.username }}
-                            </h1>
-                        </div>
-    
-                        <div class="d-flex gap-8 align-items-center online-cont" :class="activeUser.isOnline ? 'online' : ''">
-                            {{ activeUser.isOnline ? 'Online' : 'Offline' }}
-                            <div class="online-indicator" ></div>
-                        </div>
-                    </div>
-    
-                    <div class="line-divider"></div>
-                </template>
+        <div class="chat-window d-flex flex-column">
+            <div class="chat-window-heading d-flex flex-column gap-8" v-if="activeUser">
+                <div class="heading-cont d-flex justify-content-between align-items-center gap-24">
+                    <div class="d-flex gap-8 align-items-center">
+                        <router-link :to="`/user/${activeUser.data._id}`" class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                            <div class="user-avatar-cont pos-relative">
+                                <div class="avatar-overlay"></div>
 
-                <div class="no-selected-chat text-center" v-else>
-                    Select a chat to send messages
+                                <img :src="getAssetUrl(`img/userAvatars/${activeUser.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="activeUser.data.avatarPath">
+                                <div class="default-avatar-cont" v-else>
+                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                </div>
+                            </div>
+                        </router-link>
+
+                        <h1 class="username gradient-text">
+                            {{ activeUser.data.username }}
+                        </h1>
+                    </div>
+
+                    <div class="d-flex gap-8 align-items-center online-cont" :class="activeUser.isOnline ? 'online' : ''">
+                        {{ activeUser.isOnline ? 'Online' : 'Offline' }}
+                        <div class="online-indicator" ></div>
+                    </div>
                 </div>
+
+                <div class="line-divider"></div>
             </div>
 
             <div class="chat-window-content flex-1 d-flex flex-column">
-                <div class="chat-messages flex-1 pos-relative d-flex flex-column align-items-start gap-8">
+                <div class="chat-messages pos-relative d-flex flex-column align-items-start gap-8">
                     <template v-if="activeUser">
                         <template v-for="(msg, index) in activeMessages[activeUser.data._id]" :key="index">
                             <div class="chat-bubble-msg" 
                                 :class="msg.sender == getLoggedUser._id ? 'self' : ''">
+
+                                <div class="new-msg-marker" v-if="msg.sender != getLoggedUser._id && !msg.seenAt"></div>
                                 <div class="time-track"> {{ isoToDayTime(msg.timestamp) }} </div>
                                 {{ msg.content }}
                             </div>
@@ -101,19 +101,23 @@
                             <Icon icon="game-icons:capybara" class="no-messages-icon" />
                         </div>
                     </template>
+
+                    <div class="no-selected-chat d-flex align-items-center justify-content-center text-center" v-else>
+                        Select a chat to send & view messages
+                    </div>
                 </div>
 
-                <div class="chat-input-wrapper d-flex justify-content-between gap-24">
+                <form class="chat-input-wrapper d-flex justify-content-between gap-24" @submit.prevent="null">
                     <div class="chat-input-cont flex-1">
                         <input type="text" v-model="msgToSend" :disabled="!activeUser ? true : false">
                         
                         <div class="line-divider"></div>
                     </div>
 
-                    <div class="send-icon-cont" @click="sendMessage()" :class="!activeUser ? 'disabled' : ''">
+                    <button type="submit" class="send-icon-cont" @click.prevent="sendMessage()" :class="!activeUser ? 'disabled' : ''">
                         <Icon icon="mingcute:send-fill" class="send-icon" />
-                    </div>
-                </div>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -189,13 +193,13 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import { mapGetters, mapActions } from 'vuex';
 import Modal from '../Modal.vue';
 
-import { socket } from '../../socket';
+import { socket, state as socketState } from '../../socket';
 
 export default {
     name: 'ChatNormal',
 
     inject: ['emitter', 'userApi', 'messageApi'],
-    emits: [],
+    emits: ['has-unread'],
 
     props: {
 
@@ -221,7 +225,10 @@ export default {
 
             activeMessages: {},
             activeUser: null,
-            msgToSend: ""
+            msgToSend: "",
+
+            openedToUserOnStart: false,
+            seenAtInterval: null
         }
     },
 
@@ -247,25 +254,41 @@ export default {
                 this.$toast.error("InvalidSelectedUserToAddChat");
                 return;
             }
-
             this.emitter.emit("show-loader");
 
             const resp = await this.userApi.addUserToChat(this.getLoggedUser._id, this.userToAdd._id);
             console.log("did?", resp);
             if (resp.data.success) {
                 this.storeAddUserToChat(resp.data.addedUserId);
+                console.log("hm", this.getLoggedUser);
+                this.getAvailableUsersToAdd();
+                this.setupChatUsersData(resp.data.addedUserId);
                 this.closeAddUserModal();
             }
 
             this.emitter.emit("hide-loader");
         },
 
-        async removeUserFromChat() {
+        async removeUserFromChat(user) {
+            if (!user) return;
+            this.emitter.emit("show-loader");
 
+            const resp = await this.userApi.removeUserFromChat(this.getLoggedUser._id, user.data._id);
+            console.log("did?", resp);
+            if (resp.data.success) {
+                this.storeRemoveUserFromChat(resp.data.removedUserId);
+                console.log("hm", this.getLoggedUser);
+                this.getAvailableUsersToAdd();
+                this.openedChatUsers = this.openedChatUsers.filter(usr => usr.data._id != resp.data.removedUserId);
+            }
+
+            this.emitter.emit("hide-loader");
         },
 
         async openChat(user) {
             if (user.openedWindow) return;
+
+            if (this.seenAtInterval) clearInterval(this.seenAtInterval);
 
             this.openedChatUsers.forEach(usr => usr.openedWindow = false);
             user.openedWindow = true;
@@ -275,6 +298,47 @@ export default {
             this.activeUser = user;
             this.msgToSend = "";
             // console.log("active messages", this.activeMessages);
+
+            const msgsToSetRead = this.activeMessages[user.data._id].filter(msg => msg.recipient == this.getLoggedUser._id && !msg.seenAt);
+            console.log("to read", msgsToSetRead);
+
+            // nastav správy ako videné po 5s
+            this.setMessagesAsRead(msgsToSetRead);
+
+            // scroll uplne dole keď su viacere spravy
+            this.$nextTick(() => {
+                const chatMsgEl = document.querySelector(".chat-messages");
+                chatMsgEl.scrollTop = chatMsgEl.scrollHeight;
+            });
+        },
+
+        async setMessagesAsRead(msgs) {
+            this.seenAtInterval = setTimeout(async () => {
+                this.seenAtInterval = null;
+
+                if (msgs && msgs.length) {
+                    const resp = await this.messageApi.markMsgsAsSeen(msgs, this.getLoggedUser._id);
+                    console.log("did mark?", resp);
+                    if (resp.data.success) {
+                        const updatedMsgs = resp.data.updatedMsgs;
+                        let senderId;
+
+                        msgs.forEach(msg => {
+                            senderId = msg.sender;
+                            const match = updatedMsgs.find(msgg => msgg._id === msg._id);
+                            if (match) {
+                                msg.seenAt = match.seenAt;
+                            }
+                        })
+
+                        const chatToUpdate = this.openedChatUsers.find(usr => usr.data._id == senderId);
+                        chatToUpdate.unreadCount = 0;
+
+                        console.log("updated msgs?", msgs);
+                        console.log(this.activeMessages[this.activeUser.data._id]);
+                    }
+                }
+            }, 5000);
         },
 
         onUserSearchChange() {
@@ -290,23 +354,39 @@ export default {
             console.log("aval to add", this.availableUsersToAdd);
         },
 
-        async setupChatUsersData() {
+        async setupChatUsersData(addedUserId) {
             const onlineResp = await this.messageApi.getOnlineUsers();
             this.onlineUsers = onlineResp.data;
+            // this.onlineUsers = [...socketState.onlineUsers];
             console.log("online?", this.onlineUsers);
 
             const users = this.getLoggedUser.openedChats.map(usrId => this.allUsers.find(usr => usr._id == usrId));
-            this.openedChatUsers = users.map(usr => ({
-                data: usr,
-                openedWindow: false,
-                unreadCount: 2,
-                isOnline: this.onlineUsers.includes(usr._id),
-                latestMsg: { content: "serus", sender: "self" }
-            }));
+            if (!addedUserId) {
+                this.openedChatUsers = users.map(usr => ({
+                    data: usr,
+                    openedWindow: false,
+                    unreadCount: 0,
+                    isOnline: this.onlineUsers.includes(usr._id),
+                    latestMsg: { content: "‎", sender: "self" }
+                }));
+            } else {
+                const usr = users.find(usr => usr._id == addedUserId);
+                this.openedChatUsers.push({
+                    data: usr,
+                    openedWindow: false,
+                    unreadCount: 0,
+                    isOnline: this.onlineUsers.includes(usr._id),
+                    latestMsg: { content: "‎", sender: "self" }
+                });
+            }
 
+            let anyHasUnread = false;
             this.openedChatUsers.forEach(async (usr) => {
+                if (addedUserId) usr.isOnline = this.onlineUsers.includes(usr._id);
+
                 const resp = await this.messageApi.getUnreadMsgsFromUser(this.getLoggedUser._id, usr.data._id);
-                usr.unreadCount = resp.data.length; 
+                usr.unreadCount = resp.data.length;
+                if (usr.unreadCount) anyHasUnread = true;
 
                 const latestMsg = await this.messageApi.getLatestMsgFromUser(this.getLoggedUser._id, usr.data._id);
                 usr.latestMsg = { 
@@ -314,7 +394,13 @@ export default {
                     sender: latestMsg.data.sender == usr.data._id ? "self" : "other"
                 };
 
+                if (this.userToOpen && !this.openedToUserOnStart && usr.data._id == this.userToOpen) {
+                    this.openedToUserOnStart = true;
+                    this.openChat(usr);
+                }
             });
+
+            this.$emit("has-unread", anyHasUnread)
             console.log("opened chats", this.openedChatUsers);
         },
 
@@ -327,6 +413,10 @@ export default {
                 senderId: this.getLoggedUser._id,
                 recipientId: this.activeUser.data._id,
                 content: this.msgToSend
+            });
+
+            this.$nextTick(() => {
+                this.msgToSend = "";
             });
         }
     },
@@ -341,15 +431,29 @@ export default {
         patternBgStyle() {
             return `
                 background: url(${this.patternImgSrc}) 0% 0% / 165% 150% repeat`;
+        },
+
+        userToOpen() {
+            return this.$route.query.openUserId;
         }
     },
 
     created() {
         socket.on("new-message", (message) => {
             console.log("hello");
-            if ([message.sender, message.recipient].includes(this.activeUser.data._id)) {
-                this.activeMessages[this.activeUser.data._id].push(message);
+            if (this.activeUser) {
+                if ([message.sender, message.recipient].includes(this.activeUser.data._id)) {
+                    this.activeMessages[this.activeUser.data._id].push(message);
+                }
             }
+        });
+
+        this.emitter.on("update-onlineUsers", async () => {
+            const onlineResp = await this.messageApi.getOnlineUsers();
+            this.onlineUsers = onlineResp.data;
+            this.openedChatUsers.forEach(usr => {
+                usr.isOnline = this.onlineUsers.includes(usr.data._id);
+            });
         });
     },
 
@@ -360,6 +464,10 @@ export default {
         this.setupChatUsersData();
 
         this.emitter.emit("hide-loader");
+    },
+
+    unmounted() {
+        if (this.seenAtInterval) clearInterval(this.seenAtInterval);
     }
 }
 </script>
@@ -401,6 +509,7 @@ export default {
 
 .chat {
     min-height: 60vh;
+    max-height: 60vh;
     border-radius: 8px;
 }
 
@@ -555,11 +664,34 @@ export default {
     border: 2px solid var(--white-5a);
 }
 
+.chat-item .chat-item-remove {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    opacity: 0;
+    background-color: var(--white-15a);
+    border-radius: 50%;
+    padding: 2px;
+    transition: opacity 0.1s ease-in;
+}
+
+.chat-item:hover .chat-item-remove {
+    opacity: 0.35;
+}
+
+.chat-item .chat-item-remove:hover {
+    opacity: 0.66;
+}
+
 .add-user-body .input-cont {
     margin-top: 32px;
 }
 
 
+.chat-window {
+    max-height: 100%;
+    overflow: hidden;
+}
 
 .chat-window .user-avatar-wrapper:hover .avatar-overlay {
     opacity: 1;
@@ -592,11 +724,19 @@ export default {
     border-radius: 50%;
     background-color: var(--white);
     cursor: pointer;
+    border: none;
+    transition: filter 0.15s ease-in;
+}
+.chat-window .send-icon-cont:hover {
+    filter: brightness(0.75)
 }
 
 .chat-window .send-icon-cont.disabled {
     opacity: 0.33;
     cursor: not-allowed;
+}
+.chat-window .send-icon-cont.disabled:hover {
+    filter: initial;
 }
 
 .chat-window .send-icon {
@@ -663,6 +803,7 @@ export default {
 
 .chat-window .online-cont.online .online-indicator {
     background-color: var(--green);
+    border-color: var(--green);
 }
 
 .chat-window .chat-bubble-msg {
@@ -699,10 +840,33 @@ export default {
     color: var(--white);
 }
 
+.chat-window .chat-bubble-msg .new-msg-marker {
+    width: 4px;
+    height: 4px;
+    background-color: var(--red);
+    border-radius: 50%;
+    left: 0;
+    top: 0px;
+    position: absolute;
+}
+
 .chat-window .no-selected-chat {
-    margin-top: 32px;
     font-size: 14px;
     font-weight: 200;
     opacity: 0.75;
+    width: 100%;
+    height: 100%;
+}
+
+.chat-window .chat-window-content {
+    overflow: hidden;
+}
+
+.chat-window .chat-messages {
+    overflow: auto;
+    min-width: 0;
+    flex-grow: 1;
+    height: 100%;
+    padding: 24px 0 8px 0;
 }
 </style>

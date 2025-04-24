@@ -42,7 +42,7 @@ class UserService extends DefaultService {
         return await this.apiClient.post(`/user/chat/add`, { loggedUserId, userId }, { withCredentials: true });
     }
     async removeUserFromChat(loggedUserId, userId) {
-        return await this.apiClient.post(`/user/chat/remove}`, { loggedUserId, userId }, { withCredentials: true });
+        return await this.apiClient.post(`/user/chat/remove`, { loggedUserId, userId }, { withCredentials: true });
     }
 
     /* AUTH ROUTES */

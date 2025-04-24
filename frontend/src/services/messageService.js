@@ -13,12 +13,20 @@ class MessageService extends DefaultService {
         return await this.apiClient.get(`/getUnread/${senderId}/${recipientId}`, { withCredentials: true });
     }
 
+    async getUserUnreadMsgsCount(userId) {
+        return await this.apiClient.get(`/getUnreadCount/${userId}`, { withCredentials: true });
+    }
+    
+    async getOnlineUsers() {
+        return await this.apiClient.get("/getOnlineUsers", { withCredentials: true });
+    }
+    
     async getLatestMsgFromUser(senderId, recipientId) {
         return await this.apiClient.post(`/get/${senderId}/${recipientId}`, { isLatest: true }, { withCredentials: true });
     }
 
-    async getOnlineUsers() {
-        return await this.apiClient.get("/getOnlineUsers", { withCredentials: true });
+    async markMsgsAsSeen(messages, recipientId) {
+        return await this.apiClient.post("/markAsSeen", { messages, recipientId }, { withCredentials: true });
     }
 }
 

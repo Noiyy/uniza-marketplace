@@ -4,7 +4,8 @@ export default {
     state() {
         return {
             user: null,
-            checked: false
+            checked: false,
+            unreadCount: 0
         }
     },
 
@@ -15,6 +16,10 @@ export default {
 
         getChecked(state) {
             return state.checked;
+        },
+
+        getUnreadCount(state) {
+            return state.unreadCount;
         }
     },
 
@@ -34,6 +39,10 @@ export default {
         removeUserFromChat({commit}, userId) {
             commit("removeUserFromChat", userId);
         },
+
+        setUnreadCount({commit}, count) {
+            commit("setUnreadCount", count);
+        }
     },
 
     mutations: {
@@ -51,6 +60,10 @@ export default {
 
         removeUserFromChat(state, data) {
             state.user.openedChats = state.user.openedChats.filter(usr => usr != data);
+        },
+
+        setUnreadCount(state, data) {
+            state.unreadCount = data;
         }
     }
 }

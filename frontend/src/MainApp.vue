@@ -10,7 +10,9 @@
   </div>
 
   <router-link to="/chat" class="chat-bubble" v-if="getUser && !isInChat">
-    <div class="notification-count d-flex justify-content-center align-items-center"> 2 </div>
+    <div class="notification-count d-flex justify-content-center align-items-center" v-if="unreadCount"> 
+      {{ unreadCount }}
+    </div>
     <Icon icon="humbleicons:chat" class="chat-bubble-icon" />
   </router-link>
 </template>
@@ -22,12 +24,12 @@ import Loader from './components/Loader.vue';
 import { Icon } from '@iconify/vue';
 import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 
-import { socket, state } from './socket';
+import { socket, state as socketState } from './socket';
 
 export default {
   name: "MainApp",
 
-  inject: ['emitter', 'userApi', 'productApi', 'miscApi'],
+  inject: ['emitter', 'userApi', 'productApi', 'miscApi', 'messageApi'],
 
   components: {
     Icon,
@@ -41,6 +43,7 @@ export default {
       appName: this.APP_NAME,
 
       rootElement: document.documentElement,
+      unreadCount: 0,
     }
   },
 
@@ -51,7 +54,8 @@ export default {
         setCategories: "product/setAllCategories",
         setAllPSC: "misc/setAllPSC",
 
-        setUser: 'user/setUser'
+        setUser: 'user/setUser',
+        storeSetUnreadCount: "user/setUnreadCount"
       }
     ),
 
@@ -90,6 +94,15 @@ export default {
       if (user) {
         this.setUser(user);
       }
+    },
+
+    async getUserUnreadMsgsCount() {
+      if (!this.getUser) return;
+      const resp = await this.messageApi.getUserUnreadMsgsCount(this.getUser._id);
+      const unreadMsgs = resp.data;
+      this.unreadCount = unreadMsgs;
+
+      this.storeSetUnreadCount(this.unreadCount);
     }
   },
 
@@ -132,7 +145,6 @@ export default {
       console.log("all psc", pscResp.data);
       this.setAllPSC(pscResp.data);
     }
-    this.emitter.emit("hide-loader");
 
     this.emitter.on("update-user-data", () => this.updateLoggedUser());
 
@@ -146,6 +158,11 @@ export default {
     if (this.getUser && socket.connected) {
       socket.emit("userConnected", this.getUser._id);
     }
+
+    socket.on("onlineUsers", () => { this.emitter.emit("update-onlineUsers") });
+
+    await this.getUserUnreadMsgsCount();
+    this.emitter.emit("hide-loader");
   },
 
   computed: {
@@ -266,8 +283,10 @@ width */
 }
 
 .content-wrapper > section {
-  min-height: 100vh;
-  min-height: 100svh;
+  /* min-height: 100vh;
+  min-height: 100svh; */
+  min-height: 80vh;
+  min-height: 80svh;
 }
 
 .Vue-Toastification__toast.Vue-Toastification__toast--success {

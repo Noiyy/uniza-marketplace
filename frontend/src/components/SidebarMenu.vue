@@ -44,7 +44,7 @@
                             </router-link>
                             <router-link to="/chat"  class="d-flex gap-8 align-items-center chat-link highlightActive"> 
                                 Chat
-                                <div class="notification-count"> 2 </div>
+                                <div class="notification-count" v-if="getUnreadMsgsCount"> {{ getUnreadMsgsCount }} </div>
                             </router-link>
                         </template>
                     </div>
@@ -80,6 +80,8 @@
 import { Icon } from '@iconify/vue';
 
 import { mapGetters, mapActions } from 'vuex';
+
+import { forceDisconnect, socket } from '../socket';
 
 export default {
     name: 'SidebarMenu',
@@ -121,6 +123,8 @@ export default {
                 this.setCheckedForUser(false);
                 this.user = null;
 
+                forceDisconnect();
+
                 this.emitter.emit('close-sidebarMenu')
                 this.$toast.success("LogoutSuccess");
                 this.$router.push({name: "Home"});
@@ -139,7 +143,8 @@ export default {
     computed: {
         ...mapGetters(
             {
-                getUser: 'user/getUser'
+                getUser: 'user/getUser',
+                getUnreadMsgsCount: "user/getUnreadCount"
             }
         ),
 
