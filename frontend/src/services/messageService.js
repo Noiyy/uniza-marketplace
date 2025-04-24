@@ -20,6 +20,10 @@ class MessageService extends DefaultService {
     async getOnlineUsers() {
         return await this.apiClient.get("/getOnlineUsers", { withCredentials: true });
     }
+
+    async getMsgsFromNewRecipients(recipientId) {
+        return await this.apiClient.get(`/getFromNewRec/${recipientId}`, { withCredentials: true });
+    }
     
     async getLatestMsgFromUser(senderId, recipientId) {
         return await this.apiClient.post(`/get/${senderId}/${recipientId}`, { isLatest: true }, { withCredentials: true });

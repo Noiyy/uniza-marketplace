@@ -262,7 +262,7 @@ width */
 }
 /* Track */
 .scrollbar::-webkit-scrollbar-track {
-  background: var(--black);
+  background: var(--white-10a);
 }
 /* Handle */
 .scrollbar::-webkit-scrollbar-thumb {

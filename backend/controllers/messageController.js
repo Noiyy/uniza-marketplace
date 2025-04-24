@@ -96,7 +96,9 @@ exports.getMsgsFromNewRecipients = async (req, res) => {
 		return res.status(401).json({error: 'Auth user not authorized'});
 
 	const messages = await Message.find({
-		recipient: recipientId
+		recipient: recipientId,
+		seenAt: { $exists: false },
+		sender: { $nin: user.openedChats }
 	}).sort({ timestamp: -1 }).limit(50);
 
 	res.json(messages.reverse());

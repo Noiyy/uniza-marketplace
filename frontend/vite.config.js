@@ -11,6 +11,10 @@ export default defineConfig({
     }
   },
 
+  esbuild: {
+    pure: process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production' ? ['console.log'] : [],
+  },
+
   // server: {
   //   hmr: false
   // }
