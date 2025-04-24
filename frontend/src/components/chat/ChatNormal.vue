@@ -7,7 +7,7 @@
                 <div class="chat-nav-content d-flex flex-column pos-relative">
                     <div class="nav-heading d-flex align-items-center gap-16">
                         <div class="search-bar flex-1 pos-relative">
-                            <input type="text" />
+                            <input type="text" v-model="userSearchQuery" @input="onChatUsersSearchChange()" />
                             <Icon icon="material-symbols:search" class="search-icon" />
                         </div>
         
@@ -28,8 +28,8 @@
                         </a>
 
                         <div class="requests-content collapse" :id="'requestsContent'">
-                            <template v-if="invitationUsers && invitationUsers.length">
-                                <div class="chat-item inv-item d-flex gap-16 align-items-center pos-relative" v-for="(user, index) in invitationUsers" :key="index"
+                            <template v-if="filteredInvitationUsers && filteredInvitationUsers.length">
+                                <div class="chat-item inv-item d-flex gap-16 align-items-center pos-relative" v-for="(user, index) in filteredInvitationUsers" :key="index"
                                     @click="openChat(user, true)">
                                     <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
                                         <div class="user-avatar-cont pos-relative">
@@ -71,37 +71,44 @@
                         </div>
 
                         <div class="nav-chats d-flex flex-column gap-8 scrollbar">
-                            <div class="chat-item d-flex gap-16 align-items-center pos-relative" v-for="(user, index) in openedChatUsers" :key="index"
-                                :class="user.openedWindow ? 'active' : '' "
-                                @click="openChat(user)">
-                                <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                                    <div class="user-avatar-cont pos-relative">
-                                        <span class="admin-badge-small user-badge" v-if="user.data.isAdmin"> A </span>
-                                        <span class="admin-badge-small banned-badge user-badge" v-if="user.data.ban && user.data.ban.isBanned"> B </span>
-                                        <div class="online-indicator" :class="user.isOnline ? 'online' : ''"></div>
-    
-                                        <img :src="getAssetUrl(`img/userAvatars/${user.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user.data.avatarPath">
-                                        <div class="default-avatar-cont" v-else>
-                                            <Icon icon="akar-icons:person" class="default-avatar-icon" />
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <div class="chat-item-main d-flex gap-8 align-items-center justify-content-between flex-1">
-                                    <div class="chat-info d-flex flex-column gap-8">
-                                        <div class="user-name gradient-text"> {{ user.data.username }} </div>
-                                        <div class="latest-msg"> 
-                                            <span v-if="user.latestMsg.content && user.latestMsg.sender != 'self'"> You: </span>
-                                            {{ user.latestMsg ? user.latestMsg.content : "" }}
+                            <template v-if="filteredOpenedChatUsers && filteredOpenedChatUsers.length">
+                                <div class="chat-item d-flex gap-16 align-items-center pos-relative" v-for="(user, index) in filteredOpenedChatUsers" :key="index"
+                                    :class="user.openedWindow ? 'active' : '' "
+                                    @click="openChat(user)">
+                                    <div class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                        <div class="user-avatar-cont pos-relative">
+                                            <span class="admin-badge-small user-badge" v-if="user.data.isAdmin"> A </span>
+                                            <span class="admin-badge-small banned-badge user-badge" v-if="user.data.ban && user.data.ban.isBanned"> B </span>
+                                            <div class="online-indicator" :class="user.isOnline ? 'online' : ''"></div>
+        
+                                            <img :src="getAssetUrl(`img/userAvatars/${user.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user.data.avatarPath">
+                                            <div class="default-avatar-cont" v-else>
+                                                <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                            </div>
                                         </div>
                                     </div>
         
-                                    <div class="unread-indicator" v-if="user.unreadCount"> {{ user.unreadCount }} </div>
+                                    <div class="chat-item-main d-flex gap-8 align-items-center justify-content-between flex-1">
+                                        <div class="chat-info d-flex flex-column gap-8">
+                                            <div class="user-name gradient-text"> {{ user.data.username }} </div>
+                                            <div class="latest-msg"> 
+                                                <span v-if="user.latestMsg.content && user.latestMsg.sender != 'self'"> You: </span>
+                                                {{ user.latestMsg ? user.latestMsg.content : "" }}
+                                            </div>
+                                        </div>
+            
+                                        <div class="unread-indicator" v-if="user.unreadCount"> {{ user.unreadCount }} </div>
+                                    </div>
+        
+                                    <div class="chat-item-remove" @click.prevent.stop="removeUserFromChat(user)">
+                                        <Icon icon="mdi:remove" class="remove-icon" />
+                                    </div>
                                 </div>
-    
-                                <div class="chat-item-remove" @click.prevent.stop="removeUserFromChat(user)">
-                                    <Icon icon="mdi:remove" class="remove-icon" />
-                                </div>
+                            </template>
+
+                            <div class="no-requests-info text-center" v-else>
+                                ... so empty :(
+                                <Icon icon="game-icons:capybara" class="no-messages-icon" />
                             </div>
                         </div>
                     </div>
@@ -195,12 +202,12 @@
                         <div class="input-tag"> User </div>
                         <Multiselect
                             v-model="userToAdd"
-                            :options="availableUsersToAdd"
+                            :options="filteredAvailableUsersToAdd"
                             :allow-empty="true"
                             :multiple="false"
                             :show-labels="false"
                             :track-by="'_id'"
-                            @search-change="onUserSearchChange" 
+                            @search-change="onAddUserSearchChange" 
                             :internal-search="false"
                             >
                             <template #option="props">
@@ -281,10 +288,15 @@ export default {
             userToAdd: null,
             allUsers: [],
             availableUsersToAdd: [],
+            filteredAvailableUsersToAdd: [],
 
             onlineUsers: [],
+            userSearchQuery: "",
+
             openedChatUsers: [],
             invitationUsers: [],
+            filteredOpenedChatUsers: [],
+            filteredInvitationUsers: [],
 
             activeMessages: {},
             activeUser: null,
@@ -348,6 +360,7 @@ export default {
                 console.log("hm", this.getLoggedUser);
                 this.getAvailableUsersToAdd();
                 this.openedChatUsers = this.openedChatUsers.filter(usr => usr.data._id != resp.data.removedUserId);
+                this.filteredOpenedChatUsers = this.openedChatUsers;
             }
 
             this.emitter.emit("hide-loader");
@@ -415,8 +428,13 @@ export default {
             }, 5000);
         },
 
-        onUserSearchChange() {
+        onAddUserSearchChange(searchQuery) {
+            this.filteredAvailableUsersToAdd = this.filterByValue(this.availableUsersToAdd, searchQuery);
+        },
 
+        onChatUsersSearchChange() {
+            this.filteredOpenedChatUsers = this.filterByValue(this.openedChatUsers, this.userSearchQuery);
+            this.filteredInvitationUsers = this.filterByValue(this.invitationUsers, this.userSearchQuery);
         },
 
         async getAvailableUsersToAdd() {
@@ -425,7 +443,8 @@ export default {
 
             let allOtherUsers = resp.data.filter(usr => usr._id != this.getLoggedUser._id && !usr.ban);
             this.availableUsersToAdd = allOtherUsers.filter(usr => !this.getLoggedUser.openedChats.includes(usr._id));
-            console.log("aval to add", this.availableUsersToAdd);
+            this.filteredAvailableUsersToAdd = this.availableUsersToAdd;
+            console.log("aval to add", this.filteredAvailableUsersToAdd);
         },
 
         async setupChatUsersData(addedUserId) {
@@ -480,6 +499,7 @@ export default {
 
             // sort by latest msg
             this.sortNavUsers(this.openedChatUsers);
+            this.filteredOpenedChatUsers = this.openedChatUsers;
 
             this.$emit("has-unread", anyHasUnread)
             console.log("opened chats", this.openedChatUsers);
@@ -524,6 +544,7 @@ export default {
             }));
 
             this.sortNavUsers(this.invitationUsers);
+            this.filteredInvitationUsers = this.invitationUsers;
 
             console.log("inv users?", this.invitationUsers);
         },
@@ -815,6 +836,10 @@ export default {
     opacity: 0.75;
 }
 
+.nav-chats-content .no-requests-info {
+    padding: 8px 4px;
+}
+
 .nav-chats {
     margin-top: 16px;
     overflow-y: auto;
@@ -908,6 +933,10 @@ export default {
     margin-top: 32px;
 }
 
+.nav-chats .no-requests-info .no-messages-icon {
+    font-size: 64px;
+}
+
 
 .chat-window {
     max-height: 100%;
@@ -991,7 +1020,7 @@ export default {
     opacity: 0.5;
 }
 
-.chat-window .no-messages .no-messages-icon {
+.no-messages-icon {
     color: var(--white-5a);
     font-size: 128px;
     position: absolute;
