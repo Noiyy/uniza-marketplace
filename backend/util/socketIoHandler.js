@@ -1,5 +1,8 @@
+const express = require('express');
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
+
+const router = express.Router();
 
 const { protect } = require("../middleware/authMiddleware");
 
@@ -65,12 +68,19 @@ module.exports = function(io, app) {
 
   });
 
-  app.get("/api/messages/getOnlineUsers", protect, async (req, res) => {
-    const userCheck = await User.findById(req.user.id);
-    if (!userCheck)
-      return res.status(401).json({error: 'Auth user not found'});
-
-    res.json([...onlineUsers]);
+  router.get("/api/messages/getOnlineUsers", protect, async (req, res) => {
+    try {
+      const userCheck = await User.findById(req.user.id);
+      if (!userCheck)
+        return res.status(401).json({error: 'Auth user not found'});
+  
+      res.json([...onlineUsers]);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({error: err});
+    }
   });
+
+  app.use("", router);
 };
   

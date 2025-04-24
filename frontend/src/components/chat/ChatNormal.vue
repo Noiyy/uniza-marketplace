@@ -300,10 +300,9 @@ export default {
             // console.log("active messages", this.activeMessages);
 
             const msgsToSetRead = this.activeMessages[user.data._id].filter(msg => msg.recipient == this.getLoggedUser._id && !msg.seenAt);
-            console.log("to read", msgsToSetRead);
 
             // nastav správy ako videné po 5s
-            this.setMessagesAsRead(msgsToSetRead);
+            if (msgsToSetRead && msgsToSetRead.length) this.setMessagesAsRead(msgsToSetRead);
 
             // scroll uplne dole keď su viacere spravy
             this.$nextTick(() => {
@@ -315,6 +314,7 @@ export default {
         async setMessagesAsRead(msgs) {
             this.seenAtInterval = setTimeout(async () => {
                 this.seenAtInterval = null;
+                console.log("dp", msgs);
 
                 if (msgs && msgs.length) {
                     const resp = await this.messageApi.markMsgsAsSeen(msgs, this.getLoggedUser._id);
@@ -444,6 +444,13 @@ export default {
             if (this.activeUser) {
                 if ([message.sender, message.recipient].includes(this.activeUser.data._id)) {
                     this.activeMessages[this.activeUser.data._id].push(message);
+                    // scroll to bottom
+                    this.$nextTick(() => {
+                        const chatMsgEl = document.querySelector(".chat-messages");
+                        chatMsgEl.scrollTop = chatMsgEl.scrollHeight;
+                    });
+
+                    this.setMessagesAsRead([this.activeMessages[this.activeUser.data._id].find(msg => msg._id == message._id)]);
                 }
             }
         });
@@ -867,6 +874,6 @@ export default {
     min-width: 0;
     flex-grow: 1;
     height: 100%;
-    padding: 24px 0 8px 0;
+    padding: 32px 0 8px 0;
 }
 </style>
