@@ -20,7 +20,10 @@
                             @click="requestsAreShown = !requestsAreShown" :class="requestsAreShown ? 'collapseShown' : ''"
                             data-bs-toggle="collapse" :href="`#requestsContent`" aria-expanded="false" :aria-controls="'requestsContent'">
                             <div class="req-heading d-flex justify-content-between align-items-center">
-                                <h6> Requests </h6>
+                                <h6> 
+                                    <span class="req-unread-indicator" v-if="hasUnreadReqMsgs"></span>
+                                    Requests 
+                                </h6>
     
                                 <Icon icon="mdi:chevron-down" class="chevron-icon" />
                             </div>
@@ -35,10 +38,7 @@
                                         <div class="user-avatar-cont pos-relative">
                                             <span class="admin-badge-small user-badge" v-if="user.data.isAdmin"> A </span>
                                             <span class="admin-badge-small banned-badge user-badge" v-if="user.data.ban && user.data.ban.isBanned"> B </span>
-    
-                                            <div class="inv-item-add d-flex justify-content-center align-items-center" @click.prevent.stop="accepUserInvitation(user)">
-                                                <Icon icon="ic:baseline-plus" class="plus-icon" />
-                                            </div>
+                                            <div class="online-indicator" :class="user.isOnline ? 'online' : ''"></div>
     
                                             <img :src="getAssetUrl(`img/userAvatars/${user.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="user.data.avatarPath">
                                             <div class="default-avatar-cont" v-else>
@@ -55,7 +55,9 @@
                                             </div>
                                         </div>
             
-                                        <div class="unread-indicator" v-if="user.allMsgs && user.allMsgs.length"> {{ user.allMsgs.length }} </div>
+                                        <div class="unread-indicator" v-if="user.allMsgs && user.allMsgs.length"> 
+                                            {{ user.allMsgs.length < 10 ? user.allMsgs.length : "+9" }}
+                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -97,7 +99,7 @@
                                             </div>
                                         </div>
             
-                                        <div class="unread-indicator" v-if="user.unreadCount"> {{ user.unreadCount }} </div>
+                                        <div class="unread-indicator" v-if="user.unreadCount"> {{ user.unreadCount < 10 ? user.unreadCount : "+9" }} </div>
                                     </div>
         
                                     <div class="chat-item-remove" @click.prevent.stop="removeUserFromChat(user)">
@@ -304,7 +306,9 @@ export default {
 
             requestsAreShown: false,
             openedToUserOnStart: false,
-            seenAtInterval: null
+            hasUnreadNormalMsgs: false,
+            hasUnreadReqMsgs: false,
+            seenAtInterval: null,
         }
     },
 
@@ -340,9 +344,8 @@ export default {
                 this.getAvailableUsersToAdd();
                 this.setupChatUsersData(resp.data.addedUserId);
 
-                if (fromRequest) {
-                    await this.getMsgsFromNewRecipients();
-                } else 
+                await this.getMsgsFromNewRecipients();
+                if (!fromRequest)
                     this.closeAddUserModal();
             }
 
@@ -419,7 +422,8 @@ export default {
                         })
 
                         const chatToUpdate = this.openedChatUsers.find(usr => usr.data._id == senderId);
-                        chatToUpdate.unreadCount = 0;
+                        if (chatToUpdate)
+                            chatToUpdate.unreadCount = 0;
 
                         console.log("updated msgs?", msgs);
                         console.log(this.activeMessages[this.activeUser.data._id]);
@@ -501,7 +505,8 @@ export default {
             this.sortNavUsers(this.openedChatUsers);
             this.filteredOpenedChatUsers = this.openedChatUsers;
 
-            this.$emit("has-unread", anyHasUnread)
+            this.hasUnreadNormalMsgs = anyHasUnread;
+            // this.$emit("has-unread", anyHasUnread);
             console.log("opened chats", this.openedChatUsers);
         },
 
@@ -520,33 +525,41 @@ export default {
         },
 
         async getMsgsFromNewRecipients() {
-            const resp = await this.messageApi.getMsgsFromNewRecipients(this.getLoggedUser._id);
-            console.log("from new?", resp);
-            let msgs = resp.data;
-
-            const uniqueSenders = msgs.filter((msg, index, self) =>
-                index === self.findIndex(o => o.sender === msg.sender)
-            ).map(msg => msg.sender);
-
-            const users = uniqueSenders.map(usrId => this.allUsers.find(usr => usr._id == usrId));
-            this.invitationUsers = users.map(usr => ({
-                data: usr,
-                isRequest: true,
-                accepted: false,
-                isOnline: this.onlineUsers.includes(usr._id),
-                allMsgs: msgs.filter(msg => msg.sender == usr._id),
-                latestMsg: { 
-                    // find latest message from sender
-                    content: msgs.filter(msg => msg.sender == usr._id).reduce((max, msg) => msg.timestamp > max.timestamp ? msg : max).content,
-                    timestamp: msgs.filter(msg => msg.sender == usr._id).reduce((max, msg) => msg.timestamp > max.timestamp ? msg : max).timestamp,
-                    sender: "other"
+            try {
+                const resp = await this.messageApi.getMsgsFromNewRecipients(this.getLoggedUser._id);
+                console.log("from new?", resp);
+                let msgs = resp.data;
+    
+                const uniqueSenders = msgs.filter((msg, index, self) =>
+                    index === self.findIndex(o => o.sender === msg.sender)
+                ).map(msg => msg.sender);
+    
+                const users = uniqueSenders.map(usrId => this.allUsers.find(usr => usr._id == usrId));
+                this.invitationUsers = users.map(usr => ({
+                    data: usr,
+                    isRequest: true,
+                    accepted: false,
+                    isOnline: this.onlineUsers.includes(usr._id),
+                    allMsgs: msgs.filter(msg => msg.sender == usr._id),
+                    latestMsg: { 
+                        // find latest message from sender
+                        content: msgs.filter(msg => msg.sender == usr._id).reduce((max, msg) => msg.timestamp > max.timestamp ? msg : max).content,
+                        timestamp: msgs.filter(msg => msg.sender == usr._id).reduce((max, msg) => msg.timestamp > max.timestamp ? msg : max).timestamp,
+                        sender: "other"
+                    }
+                }));
+    
+                this.sortNavUsers(this.invitationUsers);
+                this.filteredInvitationUsers = this.invitationUsers;
+    
+                this.hasUnreadReqMsgs = this.filteredInvitationUsers && this.filteredInvitationUsers.length ? true : false
+                this.$emit("has-unread", this.hasUnreadNormalMsgs || this.hasUnreadReqMsgs ? true : false);
+                console.log("inv users?", this.invitationUsers);
+            } catch (err) {
+                if (err.status == 401) {
+                    this.$router.push({ name: "401" });
                 }
-            }));
-
-            this.sortNavUsers(this.invitationUsers);
-            this.filteredInvitationUsers = this.invitationUsers;
-
-            console.log("inv users?", this.invitationUsers);
+            }
         },
 
         sendMessage() {
@@ -594,19 +607,37 @@ export default {
 
     created() {
         socket.on("new-message", (message) => {
-            console.log("hello");
-            if (this.activeUser) {
-                if ([message.sender, message.recipient].includes(this.activeUser.data._id)) {
-                    this.activeMessages[this.activeUser.data._id].push(message);
-                    // scroll to bottom
-                    this.$nextTick(() => {
-                        const chatMsgEl = document.querySelector(".chat-messages");
-                        chatMsgEl.scrollTop = chatMsgEl.scrollHeight;
-                    });
+            console.log("hello", message);
 
-                    this.setMessagesAsRead([this.activeMessages[this.activeUser.data._id].find(msg => msg._id == message._id)]);
-                }
+            if (this.activeMessages[message.sender]) this.activeMessages[message.sender].push(message);
+            if (this.activeMessages[message.recipient]) this.activeMessages[message.recipient].push(message);
+            // scroll to bottom
+            this.$nextTick(() => {
+                const chatMsgEl = document.querySelector(".chat-messages");
+                chatMsgEl.scrollTop = chatMsgEl.scrollHeight;
+            });
+
+            // update latest msg
+            const recipientChatUser = this.filteredOpenedChatUsers.find(usr => usr.data._id == message.recipient);
+            if (recipientChatUser) {
+                recipientChatUser.latestMsg = { 
+                    content: message.content,
+                    sender: "other",
+                    timestamp: message.timestamp
+                };
             }
+            const senderChatUser = this.filteredOpenedChatUsers.find(usr => usr.data._id == message.sender);
+            if (senderChatUser) {
+                senderChatUser.latestMsg = { 
+                    content: message.content,
+                    sender: "self",
+                    timestamp: message.timestamp
+                };
+            }
+
+            if (this.activeUser) this.setMessagesAsRead([this.activeMessages[this.activeUser.data._id].find(msg => msg._id == message._id)]);
+
+            this.getMsgsFromNewRecipients();
         });
 
         this.emitter.on("update-onlineUsers", async () => {
@@ -782,8 +813,14 @@ export default {
     opacity: 0.75;
     cursor: pointer;
 }
-.nav-requests .req-heading:hover .chevron-icon {
-    /* transform: scale(1.3); */
+
+.nav-requests .req-heading .req-unread-indicator {
+    display: inline-flex;
+    width: 8px;
+    height: 8px;
+    background-color: var(--red);
+    border-radius: 50%;
+    margin-right: 4px;
 }
 
 .nav-requests .req-heading .chevron-icon {
@@ -810,22 +847,10 @@ export default {
     max-height: 36px;
 }
 
-.nav-requests .inv-item .inv-item-add {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.15s ease-out;
-}
-
-.nav-requests .inv-item:hover .inv-item-add {
-    opacity: 1;
+.nav-requests .inv-item .online-indicator {
+    width: 12px;
+    height: 12px;
+    border: 3px solid var(--black);
 }
 
 .nav-chats-content {

@@ -166,13 +166,50 @@ exports.updateSale = async (req, res) => {
 };
 
 exports.confirmSale = async (req, res) => {
-    const { id, saleId } = req.params;
+    const { saleId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(saleId)) return res.status(404).json({error: 'No sale found for id ' + saleId});
     
-    const sale = await Sale.findById(saleId);
-    sale.confirmSale();
-    await sale.save();
-    res.status(200).json({message: "Sale confirmed." });
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    const saleCheck = await Sale.findById(saleId);
+    if (!saleCheck) return res.status(404).json({error: 'No sale found for id ' + saleId});
+
+    // Only buyer is allowed to
+    if (user._id.toString() != saleCheck.userId.toString())  
+        return res.status(401).json({error: 'User not authorized'});
+
+    saleCheck.confirmSale();
+    await saleCheck.save();
+
+    res.status(200).json({ success: true });
 }
+
+exports.getUserUnconfirmedSales = async (req, res) => {
+    const { userId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(404).json({error: 'No user found for id ' + userId});
+    
+    if (!req.user || !req.user.id)
+        return res.status(404).json({error: 'User not logged in'});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'User not found'});
+
+    if (user._id != userId)
+        return res.status(401).json({error: 'User not authorized'});
+
+    const sales = await Sale.find({
+        userId,
+        confirmed: false
+    }).sort({soldAt: -1}).lean();
+
+    res.status(200).json(sales);
+};
 
 exports.deleteSale = async (req, res) => {
     const { id } = req.params;

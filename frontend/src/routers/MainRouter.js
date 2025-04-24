@@ -51,11 +51,11 @@ export default function (emitter, isDev, axiosInstance) {
             props: { mode: "chat" }
         },
         {
-            path: '/support',
-            name: 'Support',
+            path: '/chat/system',
+            name: 'SystemChat',
             component: () => import ('../../views/chat/ChatView.vue'),
             meta: { requiresAuth: true },
-            props: { mode: "support" }
+            props: { mode: "system" }
         },
         {
             path: '/faq',

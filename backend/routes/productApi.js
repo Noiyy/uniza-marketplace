@@ -6,7 +6,7 @@ const {
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { 
     getAllSales, getSalesInLast96Hours, getProductSales, getSale, addSale, confirmSale,
-    deleteSale, updateSale
+    deleteSale, updateSale, getUserUnconfirmedSales
 } = require("../controllers/saleController");
 
 const { protect, protectAdmin } = require("../middleware/authMiddleware");
@@ -65,9 +65,11 @@ router.get("/sales/getAllSales", getAllSales);
 router.get("/sales/getInLast96Hours", getSalesInLast96Hours);
 router.get("/:id/sales", getProductSales);
 router.get("/sales/:saleId", getSale);
+router.get("/unconfirmedSales/:userId", protect, getUserUnconfirmedSales);
+
 router.post("/:id/sales/add", protect, addSale);
 router.post("/sales/:id/edit", protectAdmin, updateSale);
-router.post("/:id/sales/:saleId/confirm", confirmSale);
+router.post("/sales/:saleId/confirm", protect, confirmSale);
 router.delete('/sales/delete/:id', protect, deleteSale);
 
 module.exports = router;

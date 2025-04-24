@@ -63,7 +63,8 @@
                             <!-- <Icon icon="material-symbols:person" class="admin-icon" /> -->
                         </router-link>
 
-                        <router-link to="/support" class="highlightActive" > Support </router-link>
+                        <!-- <router-link to="/support" class="highlightActive" > Support </router-link> -->
+                        <router-link to="/chat/system" class="highlightActive" > Notifications </router-link>
                         <router-link to="/faq" class="highlightActive" > FAQ </router-link>
                     </div>
                 </div>

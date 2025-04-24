@@ -67,14 +67,17 @@ class ProductService extends DefaultService {
     async getSale(saleId) {
         return await this.apiClient.get(`/sales/${saleId}`);
     }
+    async getUserUnconfirmedSales(userId) {
+        return await this.apiClient.get(`/unconfirmedSales/${userId}`, { withCredentials: true });
+    }
     async addSale(productId, saleData) {
         return await this.apiClient.post(`/${productId}/sales/add`, saleData, { withCredentials: true });
     }
     async updateSale(saleId, saleData) {
         return await this.apiClient.post(`/sales/${saleId}/edit`, saleData, { withCredentials: true });
     }
-    async confirmSale(productId, saleId) {
-        return await this.apiClient.post(`/${productId}/sales/${saleId}/confirm`);
+    async confirmSale(saleId) {
+        return await this.apiClient.post(`/sales/${saleId}/confirm`, {}, { withCredentials: true });
     }
     async deleteSale(saleId) {
         return await this.apiClient.delete(`/sales/delete/${saleId}`, { withCredentials: true });

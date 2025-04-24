@@ -10,7 +10,7 @@
                         <div class="chat-info-heading-cont d-flex flex-column gap-8">
                             <div class="chat-info-heading d-flex justify-content-between gap-24 align-items-center">
                                 <div class="chat-heading-cont d-flex">
-                                    <h1> Chat </h1>
+                                    <h1> {{ shownComponent === 'ChatNormal' ? "Chat" : 'Notifications' }} </h1>
                                 </div>
     
                                 <div class="edit-options d-flex gap-32 align-items-center">
@@ -41,6 +41,7 @@
                                 <KeepAlive>
                                     <component :is="shownComponent"
                                         v-if="shownComponent === 'ChatSystem'"
+                                        @hasUnread="(flag) => systemHasUnread = flag"
                                     ></component>
                                 </KeepAlive>
                             </Transition>
@@ -73,7 +74,7 @@ import ChatSystem from './ChatSystem.vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
-import { state as socketState, socket } from "../../socket";
+// import { state as socketState, socket } from "../../socket";
 
 export default {
     name: 'ChatContent',
@@ -82,7 +83,10 @@ export default {
     emits: [],
 
     props: {
-
+        chatMode: {
+            type: String,
+            default: "chat"
+        }
     },
 
     components: {
@@ -94,7 +98,7 @@ export default {
 
     data() {
         return {
-            shownComponent: "ChatNormal",
+            shownComponent: this.chatMode == "chat" ? "ChatNormal" : "ChatSystem",
             chatHasUnread: false,
             systemHasUnread: false,
         }

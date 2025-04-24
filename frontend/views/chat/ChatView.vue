@@ -1,6 +1,6 @@
 <template>
     <div class="chat">
-      <ChatContent></ChatContent>
+      <ChatContent :chat-mode="mode"></ChatContent>
     </div>
   </template>
   
