@@ -55,7 +55,8 @@ export default {
         setAllPSC: "misc/setAllPSC",
 
         setUser: 'user/setUser',
-        storeSetUnreadCount: "user/setUnreadCount"
+        storeSetUnreadCount: "user/setUnreadCount",
+        storeSetUnreadNotiCount: "user/setUnreadNotiCount",
       }
     ),
 
@@ -99,10 +100,16 @@ export default {
     async getUserUnreadMsgsCount() {
       if (!this.getUser) return;
       const resp = await this.messageApi.getUserUnreadMsgsCount(this.getUser._id);
-      const unreadMsgs = resp.data;
-      this.unreadCount = unreadMsgs;
+      console.log("unread", resp);
 
-      this.storeSetUnreadCount(this.unreadCount);
+      const salesResp = await this.productApi.getUserUnconfirmedSales(this.getUser._id);
+      const sales = salesResp.data;
+
+      const unreadMsgsCount = resp.data;
+      this.unreadCount = unreadMsgsCount + sales.length;
+
+      this.storeSetUnreadCount(unreadMsgsCount);
+      this.storeSetUnreadNotiCount(sales.length);
     }
   },
 

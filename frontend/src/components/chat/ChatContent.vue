@@ -129,7 +129,9 @@ export default {
     computed: {
         ...mapGetters(
             {
-                getLoggedUser: "user/getUser"
+                getLoggedUser: "user/getUser",
+                getUnreadMsgsCount: "user/getUnreadCount",
+                getUnreadNotiCount: "user/getUnreadNotiCount"
             }
         ),
     },
@@ -139,7 +141,8 @@ export default {
     },
 
     mounted() {
-
+        this.chatHasUnread = this.getUnreadMsgsCount ? true : false;
+        this.systemHasUnread = this.getUnreadNotiCount ? true : false;
     },
 }
 </script>

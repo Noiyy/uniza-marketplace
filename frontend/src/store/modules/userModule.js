@@ -5,7 +5,8 @@ export default {
         return {
             user: null,
             checked: false,
-            unreadCount: 0
+            unreadCount: 0,
+            unreadNotiCount: 0
         }
     },
 
@@ -20,6 +21,10 @@ export default {
 
         getUnreadCount(state) {
             return state.unreadCount;
+        },
+
+        getUnreadNotiCount(state) {
+            return state.unreadNotiCount;
         }
     },
 
@@ -42,6 +47,10 @@ export default {
 
         setUnreadCount({commit}, count) {
             commit("setUnreadCount", count);
+        },
+
+        setUnreadNotiCount({commit}, count) {
+            commit("setUnreadNotiCount", count);
         }
     },
 
@@ -64,6 +73,10 @@ export default {
 
         setUnreadCount(state, data) {
             state.unreadCount = data;
+        },
+
+        setUnreadNotiCount(state, data) {
+            state.unreadNotiCount = data;
         }
     }
 }

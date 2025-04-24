@@ -44,7 +44,7 @@
                             </router-link>
                             <router-link to="/chat"  class="d-flex gap-8 align-items-center chat-link highlightActive"> 
                                 Chat
-                                <div class="notification-count" v-if="getUnreadMsgsCount"> {{ getUnreadMsgsCount }} </div>
+                                <div class="notification-count" v-if="getUnreadMsgsCount"> {{ getUnreadMsgsCount < 10 ? getUnreadMsgsCount : "+9" }} </div>
                             </router-link>
                         </template>
                     </div>
@@ -64,7 +64,10 @@
                         </router-link>
 
                         <!-- <router-link to="/support" class="highlightActive" > Support </router-link> -->
-                        <router-link to="/chat/system" class="highlightActive" > Notifications </router-link>
+                        <router-link to="/chat/system" class="highlightActive d-flex gap-8 align-items-center chat-link" > 
+                            Notifications
+                            <div class="notification-count" v-if="getUnreadNotiCount"> {{ getUnreadNotiCount < 10 ? getUnreadNotiCount : "+9" }} </div>
+                        </router-link>
                         <router-link to="/faq" class="highlightActive" > FAQ </router-link>
                     </div>
                 </div>
@@ -145,7 +148,8 @@ export default {
         ...mapGetters(
             {
                 getUser: 'user/getUser',
-                getUnreadMsgsCount: "user/getUnreadCount"
+                getUnreadMsgsCount: "user/getUnreadCount",
+                getUnreadNotiCount: "user/getUnreadNotiCount"
             }
         ),
 
@@ -320,6 +324,7 @@ nav a:hover {
     color: var(--accent);
     font-weight: 600;
     font-style: italic;
+    align-self: flex-end;
 }
 
 .admin-panel-link .notification {
