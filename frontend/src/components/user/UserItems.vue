@@ -187,7 +187,7 @@ export default {
 
         sortProductsHandler(fltr) {
             console.log("sort prod", fltr);
-            this.productsSortFilter = fltr.id;
+            this.productsSortFilter = fltr.name;
             this.getProductsData();
         },
 
@@ -206,7 +206,7 @@ export default {
         },
 
         sortRatingsHandler(fltr) {
-            this.ratingsSortFilter = fltr.id;
+            this.ratingsSortFilter = fltr.name;
             this.getRatingsData();
         },
 

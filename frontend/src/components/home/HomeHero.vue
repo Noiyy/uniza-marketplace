@@ -8,7 +8,7 @@
                 <div class="hero-content d-flex flex-1 flex-column justify-content-center align-items-center text-center">
                     
                     <div class="hero-grid">
-                        <router-link :to="`/browse?ctg=${'clothing'}`"
+                        <router-link :to="`/browse?ctg=${'books'}`"
                             class="item animate black d-flex flex-column align-items-end text-end justify-content-center gap-8">
                             <div>
                                 <h1> {{ $t('ctg_books') }} </h1>
@@ -24,7 +24,7 @@
                             </div>
                             <img :src="getAssetUrl('img/tickets-min.png')" alt="">
                         </router-link>
-                        <router-link :to="`/browse?ctg=${'services'}`"
+                        <router-link :to="`/browse?ctg=${'pcPhone'}`"
                             class="item animate black d-flex align-items-center justify-content-left gap-8">
                             <div>
                                 <h1> {{ $t('ctg_pcPhone') }} </h1>
@@ -55,7 +55,7 @@
                             <img :src="getAssetUrl('img/electro-min.png')" alt="">
                         </router-link>
 
-                        <router-link :to="`/browse?ctg=${'books'}`"
+                        <router-link :to="`/browse?ctg=${'clothing'}`"
                             class="item animate full d-flex justify-content-center align-items-center">
                             <div class="">
                                 <h1> {{ $t('ctg_clothing') }} </h1>
@@ -71,7 +71,7 @@
                             </div>
                             <img :src="getAssetUrl('img/furniture-min.png')" alt="">
                         </router-link>
-                        <router-link :to="`/browse?ctg=${'pcPhone'}`"
+                        <router-link :to="`/browse?ctg=${'services'}`"
                             class="item animate white d-flex align-items-center">
                             <div class="text-left">
                                 <h1> {{ $t('ctg_services') }} </h1>

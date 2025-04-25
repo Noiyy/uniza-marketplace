@@ -201,7 +201,7 @@ export default {
         },
 
         selectSortFilter(fltr) {
-            this.selectedSortFilter = fltr.id;
+            this.selectedSortFilter = fltr.name;
             this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
             this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
         },
@@ -243,7 +243,7 @@ export default {
 
         getSearchTitle() {
             if (this.searchQuery) return `"${this.searchQuery}"`;
-            else if (this.selectedSearchCategory) return this.selectedSearchCategory.name.toUpperCase();
+            else if (this.selectedSearchCategory) return this.$t(`ctg_${this.selectedSearchCategory.name}`).toUpperCase();
             else return this.$t("AllProducts").toUpperCase();
         },
 

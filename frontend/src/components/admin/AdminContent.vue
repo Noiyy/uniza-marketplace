@@ -660,27 +660,27 @@ export default {
 
         /* SORT HANDLERS */
         sortProductsHandler(fltr) {
-            this.productsSortFilter = fltr.id;
+            this.productsSortFilter = fltr.name;
             this.getProductsData();
         },
 
         sortRatingsHandler(fltr) {
-            this.ratingsSortFilter = fltr.id;
+            this.ratingsSortFilter = fltr.name;
             this.getRatingsData();
         },
 
         sortUsersHandler(fltr) {
-            this.usersSortFilter = fltr.id;
+            this.usersSortFilter = fltr.name;
             this.getUsersData();
         },
 
         sortReportsHandler(fltr) {
-            this.reportsSortFilter = fltr.id;
+            this.reportsSortFilter = fltr.name;
             this.getReportsData();
         },
 
         sortSalesHandler(fltr) {
-            this.salesSortFilter = fltr.id;
+            this.salesSortFilter = fltr.name;
             this.getSalesData();
         },
 

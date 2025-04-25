@@ -12,6 +12,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const history = require('connect-history-api-fallback');
 const http = require("http");
+const https = require("https");
+const fs = require('fs');
 const { Server } = require('socket.io');
 const socketIoHandler = require("./util/socketIoHandler");
 
@@ -58,7 +60,24 @@ if (isDev) {
     app.use(cors(corsOptions));
 }
 
-const server = http.createServer(app);
+let httpsServerOptions;
+if (!isDev) {
+    const keyPath = process.env.SSL_KEY_FILE;
+    const certPath = process.env.SSL_CERT_FILE;
+
+    if (!keyPath || !certPath) {
+        console.error('SSL_KEY_FILE and SSL_CERT_FILE environment variables must be set.');
+        process.exit(1);
+    }
+
+    httpsServerOptions = {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+    }
+}
+
+const server = isDev ? http.createServer(app) : https.createServer(httpsServerOptions, app);
+// const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: isDev ? "http://localhost:5173" : "https://unizamarketplace.noiyy.eu",

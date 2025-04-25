@@ -107,7 +107,7 @@ export default {
         },
 
         sortProductsHandler(fltr) {
-            this.productsSortFilter = fltr.id;
+            this.productsSortFilter = fltr.name;
             this.getProductsData();
         },
 
