@@ -98,7 +98,7 @@ export default {
         },
 
         filterProductsHandler(fltr) {
-            this.productsTypeFilter = fltr.name;
+            this.productsTypeFilter = fltr.id;
             this.productFilters.forEach(pr => pr.active = false);
             const selFilter = this.productFilters.find(pr => pr.name == this.productsTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -107,7 +107,7 @@ export default {
         },
 
         sortProductsHandler(fltr) {
-            this.productsSortFilter = fltr.name;
+            this.productsSortFilter = fltr.id;
             this.getProductsData();
         },
 
@@ -118,8 +118,8 @@ export default {
 
         setupProductFilters() {
             this.productFilters = [
-                { name: "onSale", count: this.allFavoriteProducts.filter(pr => pr.status == "onSale").length, active: true },
-                { name: "saleEnded", count: this.allFavoriteProducts.filter(pr => pr.status == "saleEnded").length }
+                { name: this.$t("onSale"), id: "onSale", count: this.allFavoriteProducts.filter(pr => pr.status == "onSale").length, active: true },
+                { name: this.$t("saleEnded"), id: "saleEnded", count: this.allFavoriteProducts.filter(pr => pr.status == "saleEnded").length }
             ];
         },
 

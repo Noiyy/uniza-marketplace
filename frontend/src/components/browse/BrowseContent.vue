@@ -112,16 +112,6 @@ export default {
             filteredProducts: [],
 
             sortFiltersOpened: false,
-            sortFilters: [
-                { name: "latest" },
-                { name: "oldest" },
-                { name: "minPrice" },
-                { name: "maxPrice" },
-                { name: "agreement", icon: "icomoon-free:price-tags" },
-                { name: "offer", icon: "icomoon-free:price-tags" },
-                { name: "inText", icon: "icomoon-free:price-tags" },
-                { name: "free", icon: "icomoon-free:price-tags" }
-            ],
             selectedSortFilter: "latest",
 
             activeViewType: "list",
@@ -211,7 +201,7 @@ export default {
         },
 
         selectSortFilter(fltr) {
-            this.selectedSortFilter = fltr.name;
+            this.selectedSortFilter = fltr.id;
             this.filteredProducts = this.filterProducts(this.products, this.searchQuery, this.selectedSearchCategory, this.selectedPriceRange, this.selectedLocation);
             this.sortedProducts = this.sortProducts(this.filteredProducts, this.selectedSortFilter);
         },

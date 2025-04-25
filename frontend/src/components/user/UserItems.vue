@@ -177,7 +177,7 @@ export default {
 
         filterProductsHandler(fltr) {
             console.log("fltr prod", fltr);
-            this.productsTypeFilter = fltr.name;
+            this.productsTypeFilter = fltr.id;
             this.productFilters.forEach(pr => pr.active = false);
             const selFilter = this.productFilters.find(pr => pr.name == this.productsTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -187,7 +187,7 @@ export default {
 
         sortProductsHandler(fltr) {
             console.log("sort prod", fltr);
-            this.productsSortFilter = fltr.name;
+            this.productsSortFilter = fltr.id;
             this.getProductsData();
         },
 
@@ -197,7 +197,7 @@ export default {
         },
 
         filterRatingsHandler(fltr) {
-            this.ratingsTypeFilter = fltr.name;
+            this.ratingsTypeFilter = fltr.id;
             this.ratingFilters.forEach(ft => ft.active = false);
             const selFilter = this.ratingFilters.find(ft => ft.name == this.ratingsTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -206,7 +206,7 @@ export default {
         },
 
         sortRatingsHandler(fltr) {
-            this.ratingsSortFilter = fltr.name;
+            this.ratingsSortFilter = fltr.id;
             this.getRatingsData();
         },
 

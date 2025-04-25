@@ -8,7 +8,7 @@
                     
                     <div class="admin-wrapper">
                         <div class="admin-heading-cont d-flex flex-column gap-8">
-                            <h1> Admin panel </h1>
+                            <h1> {{ $t('AdminPanel') }} </h1>
                             <div class="line-divider"></div>
                         </div>
 
@@ -23,7 +23,7 @@
                         <div class="admin-items-content d-flex flex-column">
                             <div id="products" class="admin-section">
                                 <ItemContentList
-                                    :list-title="'Products'"
+                                    :list-title="$t('Products')"
                                     :item-filters="productFilters"
                                     :search-query="productsSearchQuery"
                                     :selected-sort-filter="productsSortFilter"
@@ -45,7 +45,7 @@
 
                             <div id="users" class="admin-section">
                                 <ItemContentList
-                                    :list-title="'Users'"
+                                    :list-title="$t('Users')"
                                     :item-filters="usersFilters"
                                     :search-query="usersSearchQuery"
                                     :selected-sort-filter="usersSortFilter"
@@ -65,7 +65,7 @@
 
                             <div id="ratings" class="admin-section">
                                 <ItemContentList
-                                    :list-title="'Ratings'"
+                                    :list-title="$t('Ratings')"
                                     :item-filters="ratingFilters"
                                     :search-query="ratingsSearchQuery"
                                     :selected-sort-filter="ratingsSortFilter"
@@ -85,7 +85,7 @@
 
                             <div id="sales" class="admin-section">
                                 <ItemContentList
-                                    :list-title="'Sales'"
+                                    :list-title="$t('Sales')"
                                     :item-filters="salesFilters"
                                     :search-query="salesSearchQuery"
                                     :selected-sort-filter="salesSortFilter"
@@ -123,7 +123,7 @@
 
                             <div id="reports" class="admin-section">
                                 <ItemContentList
-                                    :list-title="'Reports'"
+                                    :list-title="$t('Reports')"
                                     :item-filters="reportsFilters"
                                     :search-query="reportsSearchQuery"
                                     :selected-sort-filter="reportsSortFilter"
@@ -165,29 +165,29 @@
                     <!-- user -->
                     <template v-if="itemToEdit.type == 'user'">
                         <div>
-                            Other settings are available directly in 
+                            {{ $t("UserAdminEditInfo1") }}
                             <router-link :to="`/user/${itemToEdit.data._id}`"> 
-                                user profile
+                                {{ $t("UserAdminEditInfo2") }}
                                 <Icon icon="prime:arrow-up-right" class="arrow-icon" /> 
                              </router-link>
                         </div>
 
                         <div class="input-row d-flex gap-32 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Username </div>
+                                <div class="input-tag"> {{ $t('Username') }} </div>
                                 <input v-model="itemToEdit.data.username" type="text" class="styled" :placeholder="'Username'">
                             </div>
 
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> email </div>
+                                <div class="input-tag"> {{ $t("Email") }} </div>
                                 <input v-model="itemToEdit.data.email" type="email" class="styled" :placeholder="'Email'" disabled>
                             </div>
                         </div>
 
                         <div>
-                            <div class="input-cont d-flex gap-16     flex-1">
+                            <div class="input-cont d-flex gap-16 flex-1">
                                 <Checkbox
-                                    :text="'Delete user avatar'"
+                                    :text="$t('DelAvatarInfo')"
                                     :disabled="itemToEdit.data.avatarPath ? false : true"
                                     v-model:is-checked="itemToEdit.data.deleteAvatar"
                                 ></Checkbox>
@@ -205,7 +205,7 @@
                     <template v-if="itemToEdit.type == 'sale'">
                         <div class="input-row d-flex gap-32 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Buyer </div>
+                                <div class="input-tag"> {{ $t("Buyer") }} </div>
                                 <Multiselect
                                     v-model="itemToEdit.data.buyer"
                                     :options="allUsers.filter(usr => usr._id != itemToEdit.data.product.sellerId)"
@@ -250,14 +250,14 @@
                             </div>
 
                             <div class="input-cont d-flex flex-column gap-8">
-                                <div class="input-tag"> Count </div>
+                                <div class="input-tag"> {{ $t("Count") }} </div>
                                 <input v-model="itemToEdit.data.count" type="number" min="1" max="9999" class="styled" :placeholder="'Count'">
                             </div>
                         </div>
 
                         <div>
                             <Checkbox
-                                :text="'Is sale confirmed'"
+                                :text="$t('IsSaleConfInfo')"
                                 v-model:is-checked="itemToEdit.data.confirmed"
                             ></Checkbox>
                         </div>
@@ -272,8 +272,8 @@
                     ></RatingModalContent>
 
                     <div class="btns-wrapper d-flex gap-24 justify-content-end">
-                        <button class="btn primary  " @click="confirmedEditHandler()"> Edit </button>
-                        <button class="btn secondary" @click="closeEditModal()"> Cancel </button>
+                        <button class="btn primary  " @click="confirmedEditHandler()"> {{ $t("Edit") }} </button>
+                        <button class="btn secondary" @click="closeEditModal()"> {{ $t("Cancel") }} </button>
                     </div>
                 </div>
 
@@ -343,29 +343,29 @@ export default {
         return {
             navItems: [
                 {
-                    name: "Products",
+                    name: this.$t("Products"),
                     active: true,
                     href: "products"
                 },
                 {
-                    name: "Users",
+                    name: this.$t("Users"),
                     href: "users"
                 },
                 {
-                    name: "Ratings",
+                    name: this.$t("Ratings"),
                     href: "ratings"
                 },
                 {
-                    name: "Sales",
+                    name: this.$t("Sales"),
                     href: "sales"
                 },
                 // {
-                //     name: "Support",
+                //     name: ("Support"),
                 //     href: "support",
                 //     newCount: 11
                 // },
                 {
-                    name: "Reports",
+                    name: this.$t("Reports"),
                     href: "reports",
                     newCount: 0
                 },
@@ -617,7 +617,7 @@ export default {
 
         /* FILTER HANDLERS */
         filterProductsHandler(fltr) {
-            this.productsTypeFilter = fltr.name;
+            this.productsTypeFilter = fltr.id;
             this.productFilters.forEach(pr => pr.active = false);
             const selFilter = this.productFilters.find(pr => pr.name == this.productsTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -632,7 +632,7 @@ export default {
         },
 
         filterUsersHandler(fltr) {
-            this.usersTypeFilter = fltr.name;
+            this.usersTypeFilter = fltr.id;
             this.usersFilters.forEach(ft => ft.active = false);
             const selFilter = this.usersFilters.find(ft => ft.name == this.usersTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -641,7 +641,7 @@ export default {
         },
 
         filterReportsHandler(fltr) {
-            this.reportsTypeFilter = fltr.name;
+            this.reportsTypeFilter = fltr.id;
             this.reportsFilters.forEach(ft => ft.active = false);
             const selFilter = this.reportsFilters.find(ft => ft.name == this.reportsTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -650,7 +650,7 @@ export default {
         },
 
         filterSalesHandler(fltr) {
-            this.salesTypeFilter = fltr.name;
+            this.salesTypeFilter = fltr.id;
             this.salesFilters.forEach(ft => ft.active = false);
             const selFilter = this.salesFilters.find(ft => ft.name == this.salesTypeFilter);
             if (selFilter) selFilter.active = true;
@@ -660,27 +660,27 @@ export default {
 
         /* SORT HANDLERS */
         sortProductsHandler(fltr) {
-            this.productsSortFilter = fltr.name;
+            this.productsSortFilter = fltr.id;
             this.getProductsData();
         },
 
         sortRatingsHandler(fltr) {
-            this.ratingsSortFilter = fltr.name;
+            this.ratingsSortFilter = fltr.id;
             this.getRatingsData();
         },
 
         sortUsersHandler(fltr) {
-            this.usersSortFilter = fltr.name;
+            this.usersSortFilter = fltr.id;
             this.getUsersData();
         },
 
         sortReportsHandler(fltr) {
-            this.reportsSortFilter = fltr.name;
+            this.reportsSortFilter = fltr.id;
             this.getReportsData();
         },
 
         sortSalesHandler(fltr) {
-            this.salesSortFilter = fltr.name;
+            this.salesSortFilter = fltr.id;
             this.getSalesData();
         },
 
@@ -713,37 +713,37 @@ export default {
         /* SETUP FILTERS */
         setupProductFilters() {
             this.productFilters = [
-                { name: "onSale", count: this.allProducts.filter(pr => pr.status == "onSale").length, active: true },
-                { name: "saleEnded", count: this.allProducts.filter(pr => pr.status == "saleEnded").length }
+                { name: this.$t("onSale"), id: "onSale", count: this.allProducts.filter(pr => pr.status == "onSale").length, active: true },
+                { name: this.$t("saleEnded"), id: "saleEnded", count: this.allProducts.filter(pr => pr.status == "saleEnded").length }
             ];
         },
 
         setupRatingFilters() {
             this.ratingFilters = [
-                { name: "all", count: this.allRatings.length, active: true }
+                { name: this.$t("all"), id: "all", count: this.allRatings.length, active: true }
             ];
         },
 
         setupUserFilters() {
             this.usersFilters = [    
-                { name: "active", count: this.allUsers.filter(usr => !usr.ban).length, active: true },
-                { name: "banned", count: this.allUsers.filter(usr => usr.ban && usr.ban.isBanned).length }
+                { name: this.$t("active"), id: "active", count: this.allUsers.filter(usr => !usr.ban).length, active: true },
+                { name: this.$t("banned"), id: "banned", count: this.allUsers.filter(usr => usr.ban && usr.ban.isBanned).length }
             ];
         },
 
         setupReportFilters() {
             this.reportsFilters = [    
-                { name: "all", count: this.allReports.length, active: true },
-                { name: "users", count: this.allReports.filter(rp => !rp.toProductId).length },
-                { name: "products", count: this.allReports.filter(rp => rp.toProductId).length }
+                { name: this.$t("all"), id: "all", count: this.allReports.length, active: true },
+                { name: this.$t("users"), id: "users", count: this.allReports.filter(rp => !rp.toProductId).length },
+                { name: this.$t("products"), id: "products", count: this.allReports.filter(rp => rp.toProductId).length }
             ];
         },
 
         setupSaleFilters() {
             this.salesFilters = [
-                { name: "all", count: this.allSales.length, active: true },
-                { name: "confirmed", count: this.allSales.filter(sl => sl.confirmed).length },
-                { name: "unconfirmed", count: this.allSales.filter(sl => !sl.confirmed).length },
+                { name: this.$t("all"), id: "all", count: this.allSales.length, active: true },
+                { name: this.$t("confirmed"), id: "confirmed", count: this.allSales.filter(sl => sl.confirmed).length },
+                { name: this.$t("unconfirmed"), id: "unconfirmed", count: this.allSales.filter(sl => !sl.confirmed).length },
             ];
         },
 

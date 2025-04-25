@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="product-info d-flex flex-column pos-relative">
-                <div class="product-heading"> Product </div>
+                <div class="product-heading"> {{ $t('Product') }} </div>
                 <div class="product-name gradient-text">
                     <template v-if="ratingData.product && ratingData.product.title"> {{ ratingData.product.title }} </template>
                     <template v-else> - </template>

@@ -41,11 +41,11 @@
                             <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
                             <span class="rating-avg"> {{ ratingAvg ? ratingAvg : '0.0' }} </span>
     
-                            <span> (<span class="count">{{ userData.ownRatings.length }}</span> ratings) </span>
+                            <span> (<span class="count">{{ userData.ownRatings.length }}</span> {{ $t("Ratings").toLowerCase() }}) </span>
                         </div>
                         
                         <span class="rated-others">
-                            Rated <span class="count"> {{ userData.ratedOthersCount }} </span> others
+                            {{ $t('Rated') }} <span class="count"> {{ userData.ratedOthersCount }} </span> {{ $t('others') }}
                         </span>
                     </div>
                 </div>
@@ -58,32 +58,32 @@
                 <div class="products-cont info-cont d-flex gap-8">
                     <div class="info-heading montserrat d-flex gap-8">
                         <Icon icon="ix:product" class="info-heading-icon" />
-                        Products
+                        {{ $t("Products") }}
                     </div>
                     <div class="divider"></div>
                     <div class="info-content d-flex flex-column">
-                        <div> <span class="gradient-text"> {{ userData.ownProducts.filter(prd => prd.status == "onSale").length }} </span> on sale </div>
-                        <div> <span class="gradient-text"> {{ userData.sales.reduce((acc, sale) => acc + sale.count, 0) }} </span> sold </div>
-                        <div> <span class="gradient-text"> {{ userData.boughtProducts }} </span> bought </div>
+                        <div> <span class="gradient-text"> {{ userData.ownProducts.filter(prd => prd.status == "onSale").length }} </span> {{ $t("OnSale").toLowerCase() }} </div>
+                        <div> <span class="gradient-text"> {{ userData.sales.reduce((acc, sale) => acc + sale.count, 0) }} </span> {{ $t("Sold").toLowerCase() }} </div>
+                        <div> <span class="gradient-text"> {{ userData.boughtProducts }} </span> {{ $t("Bought").toLowerCase() }} </div>
                     </div>
                 </div>
 
                 <div class="reports-cont info-cont d-flex gap-8">
                     <div class="info-heading montserrat d-flex gap-8">
                         <Icon icon="mdi:alert" class="info-heading-icon" />
-                        Reports
+                        {{ $t("Reports") }}
                     </div>
                     <div class="divider"></div>
                     <div class="info-content d-flex flex-column">
-                        <div> <span class="gradient-text"> {{ userData.ownReports.length }} </span> own </div>
-                        <div> <span class="gradient-text"> {{ userData.othersReports.length }} </span> others </div>
+                        <div> <span class="gradient-text"> {{ userData.ownReports.length }} </span> {{ $t("Own") }} </div>
+                        <div> <span class="gradient-text"> {{ userData.othersReports.length }} </span> {{ $t("Others") }} </div>
                     </div>
                 </div>
 
                 <div class="created-at-cont info-cont d-flex gap-8">
                     <div class="info-heading montserrat d-flex gap-8">
                         <Icon icon="lets-icons:date-fill" class="info-heading-icon" />
-                        Created at
+                        {{ $t("CreatedAt") }}
                     </div>
                     <div class="divider"></div>
                     <div class="info-content d-flex flex-column">
@@ -94,7 +94,7 @@
         </router-link>
 
         <div class="user-ban-cont">
-            <button class="btn secondary" @click="showBanUser()" :disabled="userData.isAdmin || userIsBanned"> ban </button>
+            <button class="btn secondary" @click="showBanUser()" :disabled="userData.isAdmin || userIsBanned"> {{ $t("Ban") }} </button>
         </div>
 
         <div class="item-id-info">
