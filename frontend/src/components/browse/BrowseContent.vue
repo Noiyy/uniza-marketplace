@@ -10,12 +10,12 @@
                         <div class="categories d-flex flex-column">
                             <div class="main-category category" v-for="ctg in categories" :key="ctg.name" @click="(e) => chooseCategory(e, ctg, true)"
                                 :class="ctg.active ? 'active' : ctg.subCategories.some(sCtg => sCtg.active) ? 'main-sub_active' : ''">
-                                {{ ctg.name }}
+                                {{ ctg.name == "allProducts" ? $t('AllProducts') : $t(`ctg_${ctg.name}`) }}
 
                                 <div class="sub-categories d-flex flex-column gap-8" v-if="ctg.showSub">
                                     <div class="sub-category category" v-for="subCtg in ctg.subCategories" :key="subCtg.name" @click="(e) => chooseCategory(e, subCtg, false)"
                                         :class="subCtg.active ? 'active' : ''">
-                                        {{ subCtg.name }}
+                                        {{ $t(`ctg_${subCtg.name}`) }}
                                     </div>
                                 </div>
                             </div>
@@ -26,9 +26,9 @@
                                 <div class="content d-flex justify-content-between">
                                     <div class="info d-flex flex-column">
                                         <div class="breadcrumbs d-flex gap-8" v-if="selectedSearchCategory && selectedSearchCategory._id">
-                                            <span > {{ selectedMainCtg }} </span>
+                                            <span> {{ $t(`ctg_${selectedMainCtg}`) }} </span>
                                             <span v-if="selectedSubCtg"> > </span>
-                                            <span v-if="selectedSubCtg"> {{ selectedSubCtg }} </span>
+                                            <span v-if="selectedSubCtg"> {{ $t(`${selectedSubCtg}`) }} </span>
                                         </div>
                                         <div class="heading d-flex align-items-center gap-16">
                                             <h2> {{ getSearchTitle }} </h2>

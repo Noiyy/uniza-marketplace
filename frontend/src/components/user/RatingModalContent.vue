@@ -1,13 +1,13 @@
 <template>
     <template v-if="localItemToEditData">
         <div class="input-cont d-flex flex-column gap-8">
-            <div class="input-tag"> Rating title </div>
-            <input v-model="localItemToEditData.title" type="text" class="styled" :placeholder="'Title'">
+            <div class="input-tag"> {{ $t('RatingTitle') }} </div>
+            <input v-model="localItemToEditData.title" type="text" class="styled" :placeholder="$t('Title')">
         </div>
     
         <div class="input-row d-flex gap-24 align-items-center justify-content-between">
             <div class="input-cont d-flex flex-column gap-8 flex-1" v-if="isEdit">
-                <div class="input-tag"> Rated by </div>
+                <div class="input-tag"> {{ $t('RatedBy') }} </div>
                 <Multiselect
                     disabled
                     v-model="localItemToEditData.ratedByUser"
@@ -54,7 +54,7 @@
 
             <div class="input-cont rating-cont d-flex flex-column gap-8 flex-1" v-else>
                 <div class="input-cont d-flex flex-column gap-8">
-                    <div class="input-tag"> Select rating </div>
+                    <div class="input-tag"> {{ $t('SelectRating') }} </div>
 
                     <div class="d-flex align-items-end gap-8">
                         <Vue3StarRatings
@@ -66,7 +66,7 @@
             </div>
     
             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                <div class="input-tag"> Rated user </div>
+                <div class="input-tag"> {{ $t('RatedUser') }} </div>
 
                 <!-- v-if="localItemToEditData.ratedByUser" -->
                 <Multiselect
@@ -118,7 +118,7 @@
             <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
     
             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                <div class="input-tag"> Rated product </div>
+                <div class="input-tag"> {{ $t('RatedProduct') }} </div>
                 <Multiselect
                     v-model="localItemToEditData.ratedProduct"
                     :options="localItemToEditData.ratedUser ? allProducts.filter(prd => prd.sellerId == localItemToEditData.ratedUser._id) : []"
@@ -132,8 +132,8 @@
         </div>
     
         <div class="input-cont description-cont d-flex flex-column gap-8">
-            <div class="input-tag"> Description </div>
-            <textarea v-model="localItemToEditData.description" type="text" class="styled" :placeholder="'Description'"></textarea>
+            <div class="input-tag"> {{ $t('Description') }} </div>
+            <textarea v-model="localItemToEditData.description" type="text" class="styled" :placeholder="$t('Description')"></textarea>
         </div>
     </template>
 </template>

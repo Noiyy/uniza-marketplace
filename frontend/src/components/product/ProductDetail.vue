@@ -4,18 +4,18 @@
             <div class="heading-main d-flex justify-content-between gap-32">
                 <div class="product-title d-flex flex-column gap-8 ">
                     <div class="breadcrumbs d-flex gap-8" v-if="!isPreview">
-                            <router-link to="/browse"> Browse </router-link>
+                            <router-link to="/browse"> {{ $t('Browse') }} </router-link>
                             <span> > </span>
                             <router-link :to="`/browse?ctg=${productMainCtg.name}`" v-if="productMainCtg">
-                                {{ productMainCtg.name }}
+                                {{ $t(`ctg_${productMainCtg.name}`) }}
                             </router-link>
                             <span v-if="productSubCtg"> > </span>
                             <router-link :to="`/browse?ctg=${productSubCtg.name}`" v-if="productSubCtg">
-                                {{ productSubCtg.name }} 
+                                {{ $t(`ctg_${productSubCtg.name}`) }}
                             </router-link>
                         </div>
                     <div class="product-title-text">
-                        <h1 class="gradient-text"> {{ product.title ? product.title : 'Product title' }} </h1>
+                        <h1 class="gradient-text"> {{ product.title ? product.title : $t('ProductTitle') }} </h1>
                     </div>
                 </div>
 
@@ -23,7 +23,7 @@
                     <div class="options-wrapper d-flex gap-16 align-items-center" v-if="!isPreview">
                         <div class="back d-flex align-items-center" @click="$router.back()">
                             <Icon icon="mdi:arrow-left-top" class="back-icon" />
-                            back
+                            {{ $t('Back').toLowerCase() }}
                         </div>
                         <template v-if="getLoggedUser && (getLoggedUser._id == product.sellerId || getLoggedUser.isAdmin)">
                             <button class="btn primary btn-icon" @click="deleteProduct()" v-if="getLoggedUser.isAdmin">
@@ -62,8 +62,8 @@
                 </div>
                 <div class="images-price d-flex flex-column gap-24 align-items-end">
                     <div class="price d-flex gap-24 align-items-center">
-                        <h3 class="gradient-text"> Price </h3>
-                        <span class="montserrat" v-if="product.price.specialValue"> {{ product.price.specialValue }} </span>
+                        <h3 class="gradient-text"> {{ $t('Price') }} </h3>
+                        <span class="montserrat" v-if="product.price.specialValue"> {{ $t(`${product.price.specialValue}`) }} </span>
                         <span class="montserrat" v-else> {{ product.price.value && typeof product.price.value === "string" ?
                             product.price.value :
                             product.price.value.$numberDecimal ?
@@ -93,7 +93,7 @@
             <div class="under-showcase d-flex gap-32 justify-content-between">
                 <div class="product-stats d-flex gap-32 align-items-end">
                     <div class="stat-cont d-flex flex-column">
-                        <span> Location </span>
+                        <span> {{ $t('Location') }} </span>
                         <div class="location d-flex gap-8 align-items-center">
                             <Icon icon="mdi:location" class="location-icon detail-icon" />
                             {{ getProductLocation }}
@@ -101,7 +101,7 @@
                     </div>
 
                     <div class="stat-cont d-flex flex-column">
-                        <span> Views </span>
+                        <span> {{ $t("Views") }} </span>
                         <div class="views d-flex gap-8 align-items-center">
                             <Icon icon="mdi:eye" class="views-icon detail-icon" />
                             2719x
@@ -109,7 +109,7 @@
                     </div>
 
                     <div class="stat-cont d-flex flex-column">
-                        <span> Count </span>
+                        <span> {{ $t("Count") }} </span>
                         <div class="count d-flex gap-8 align-items-center">
                             <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />
                             {{ product.count.available }}
@@ -119,14 +119,16 @@
 
                 <div class="product-seller-info d-flex gap-32">
                     <div class="seller-btns d-flex gap-16 align-items-end">
-                        <button class="btn secondary smaller" :disabled="isPreview" @click="openChatWithSeller()" v-if="getLoggedUser"> MESSAGE </button>
+                        <button class="btn secondary smaller" :disabled="isPreview || !getLoggedUser || getLoggedUser._id == user._id" @click="openChatWithSeller()" v-if="getLoggedUser"> 
+                            {{ $t('Message').toUpperCase() }} 
+                        </button>
                         <button class="btn primary smaller" :disabled="isPreview" @click="copyTelNumber()" v-if="user && user.phone"> 
                             <Icon icon="ic:baseline-phone" class="phone-icon" />
                             {{ user.phone }}
                         </button>
                     </div>
                     <router-link :to="`/user/${product.sellerId}`" class="seller d-flex flex-column gap-8 text-end">
-                        <span> Seller </span>
+                        <span> {{ $t("Seller") }} </span>
 
                         <div class="d-flex gap-8">
                             <div class="rating-values d-flex gap-8 align-items-end">
@@ -163,7 +165,7 @@
                 <div class="option pos-relative">
                     <div class="d-flex gap-8 align-items-center share-btn"  @click="shareIsOpen = !shareIsOpen">
                         <Icon icon="mdi:share" class="opt-icon" />
-                        <span class="montserrat"> Share </span>
+                        <span class="montserrat"> {{ $t("Share") }} </span>
                     </div>
 
                     <ShareButtons v-if="shareIsOpen"
@@ -175,19 +177,19 @@
 
                 <div class="option d-flex gap-8 align-items-center" @click="doPrint()">
                     <Icon icon="material-symbols:print" class="opt-icon" />
-                    <span class="montserrat"> Print </span>
+                    <span class="montserrat"> {{ $t("Print") }} </span>
                 </div>
 
                 <div class="option d-flex gap-8 align-items-center" @click="showRatingModal()"
                     :class="getLoggedUser ? '' : 'disabled'">
                     <Icon icon="mingcute:user-star-fill" class="opt-icon" />
-                    <span class="montserrat"> Rate user </span>
+                    <span class="montserrat"> {{ $t('RateUser') }} </span>
                 </div>
 
                 <div class="option d-flex gap-8 align-items-center" @click="doReport()"
                     :class="getLoggedUser ? '' : 'disabled'">
                     <Icon icon="mdi:alert" class="opt-icon" />
-                    <span class="montserrat"> Report product </span>
+                    <span class="montserrat"> {{ $t('ReportProduct') }} </span>
                 </div>
             </div>
         </div>
@@ -279,7 +281,7 @@ export default {
     methods: {
         ...mapActions(
             {
-
+                storeAddUserToChat: "user/addUserToChat",
             }
         ),
 
@@ -385,8 +387,23 @@ export default {
             
         },
 
-        openChatWithSeller() {
+        async openChatWithSeller() {
+            if (!this.getLoggedUser) return;
+            // pridaj userId k loggedUser openedChats ak tam ešte nie je a prejdi na chat s aktívnym chat oknom usera
+            if (!this.getLoggedUser.openedChats.includes(this.user._id)) {
+                const resp = await this.userApi.addUserToChat(this.getLoggedUser._id, this.user._id);
+                if (resp.data.success) {
+                    this.storeAddUserToChat(resp.data.addedUserId);
+                } else {
+                    this.$toast.error("FailedToOpenChatWithUser");
+                    return;
+                }
+            }
 
+            this.$router.push({
+                name: "Chat",
+                query: { openUserId: this.user._id }
+            })
         },
 
         copyTelNumber() {

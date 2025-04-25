@@ -13,8 +13,8 @@
                 ></RatingModalContent>
 
                 <div class="btns-wrapper d-flex gap-24 justify-content-end">
-                    <button class="btn primary  " @click="rateUser()"> Rate </button>
-                    <button class="btn secondary" @click="closeModal()"> Cancel </button>
+                    <button class="btn primary  " @click="rateUser()"> {{ $t("Rate") }} </button>
+                    <button class="btn secondary" @click="closeModal()"> {{ $t("Cancel") }} </button>
                 </div>
             </div>
         </template>
@@ -59,7 +59,7 @@ export default {
             allProducts: [],
             allUsers: [],
 
-            modalHeading: "Rate user",
+            modalHeading: this.$t("RateUser"),
             localIsShown: false,
             ratingData: {
                 title: "",

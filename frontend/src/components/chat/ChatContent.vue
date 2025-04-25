@@ -10,7 +10,7 @@
                         <div class="chat-info-heading-cont d-flex flex-column gap-8">
                             <div class="chat-info-heading d-flex justify-content-between gap-24 align-items-center">
                                 <div class="chat-heading-cont d-flex">
-                                    <h1> {{ shownComponent === 'ChatNormal' ? "Chat" : 'Notifications' }} </h1>
+                                    <h1> {{ shownComponent === 'ChatNormal' ? $t("Chat") : $t('Notifications') }} </h1>
                                 </div>
     
                                 <div class="edit-options d-flex gap-32 align-items-center">
@@ -19,14 +19,14 @@
                                             @click="showSystemChat()"
                                             :class="shownComponent === 'ChatSystem' ? 'active' : ''"
                                         > 
-                                            System
+                                            {{ $t('System') }}
                                             <div class="new-indicator" v-if="systemHasUnread"></div>
                                         </button>
                                         <button class="btn nav-btn pos-relative" 
                                             @click="showChat()"
                                             :class="shownComponent === 'ChatNormal' ? 'active' : ''"
                                         > 
-                                            Messages
+                                            {{ $t('Messages') }}
                                             <div class="new-indicator" v-if="chatHasUnread"></div>
                                         </button>
                                     </div>
@@ -40,18 +40,9 @@
                             <Transition name="fade" mode="out-in" @after-leave="changedComponent">
                                 <KeepAlive>
                                     <component :is="shownComponent"
-                                        v-if="shownComponent === 'ChatSystem'"
-                                        @hasUnread="(flag) => systemHasUnread = flag"
-                                    ></component>
-                                </KeepAlive>
-                            </Transition>
-    
-                            <Transition name="fade" mode="out-in" @after-leave="changedComponent">
-                                <KeepAlive>
-                                    <component :is="shownComponent"
-                                        v-if="shownComponent === 'ChatNormal'"
-                                        @hasUnread="(flag) => chatHasUnread = flag"
-                                     
+                                        @hasUnread="(flag) => shownComponent === 'ChatSystem' ?
+                                            systemHasUnread = flag :
+                                            chatHasUnread = flag"
                                     ></component>
                                 </KeepAlive>
                             </Transition>

@@ -7,7 +7,7 @@
         <template #body>
             <div class="input-row d-flex gap-32 align-items-center justify-content-between">
                 <div class="input-cont d-flex flex-column gap-8 flex-1">
-                    <div class="input-tag"> Buyer </div>
+                    <div class="input-tag"> {{ $t('Buyer') }} </div>
                     <Multiselect
                         v-model="newBuyer"
                         :options="filteredUsers"
@@ -52,13 +52,13 @@
                 </div>
 
                 <div class="input-cont d-flex flex-column gap-8">
-                    <div class="input-tag"> Count </div>
-                    <input v-model="saleCount" type="number" min="1" max="9999" class="styled" :placeholder="'Count'">
+                    <div class="input-tag"> {{ $t('Count') }} </div>
+                    <input v-model="saleCount" type="number" min="1" max="9999" class="styled" :placeholder="$t('Count')">
                 </div>
             </div>
 
             <div class="btns-cont d-flex justify-content-center">
-                <button class="btn primary" @click="addSale"> Add </button>
+                <button class="btn primary" @click="addSale"> {{ $t("Add") }} </button>
             </div>
         </template>
     </Modal>
@@ -155,7 +155,7 @@ export default {
         },
 
         modalHeading() {
-            return this.isEdit ? "Edit sale" : "Add sale";
+            return this.isEdit ? this.$t("EditSale") : this.$t("AddSale");
         }
     },
 

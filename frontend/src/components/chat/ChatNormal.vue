@@ -22,7 +22,7 @@
                             <div class="req-heading d-flex justify-content-between align-items-center">
                                 <h6> 
                                     <span class="req-unread-indicator" v-if="hasUnreadReqMsgs"></span>
-                                    Requests 
+                                    {{ $t("Requests") }} 
                                 </h6>
     
                                 <Icon icon="mdi:chevron-down" class="chevron-icon" />
@@ -62,14 +62,14 @@
                                 </div>
                             </template>
 
-                            <div class="no-requests-info text-center" v-else> No requests yet! </div>
+                            <div class="no-requests-info text-center" v-else> {{ $t("NoReqInfo") }} </div>
                         </div>
                     </div>
         
                     <!-- Normal chats -->
                     <div class="nav-chats-content d-flex flex-column">
                         <div class="nav-chats-title">
-                            <h6> Known </h6>
+                            <h6> {{ $t("Known") }} </h6>
                         </div>
 
                         <div class="nav-chats d-flex flex-column gap-8 scrollbar">
@@ -94,7 +94,7 @@
                                         <div class="chat-info d-flex flex-column gap-8">
                                             <div class="user-name gradient-text"> {{ user.data.username }} </div>
                                             <div class="latest-msg"> 
-                                                <span v-if="user.latestMsg.content && user.latestMsg.sender != 'self'"> You: </span>
+                                                <span v-if="user.latestMsg.content && user.latestMsg.sender != 'self'"> {{ $t("You") }}: </span>
                                                 {{ user.latestMsg ? user.latestMsg.content : "" }}
                                             </div>
                                         </div>
@@ -109,7 +109,7 @@
                             </template>
 
                             <div class="no-requests-info text-center" v-else>
-                                ... so empty :(
+                                {{ $t("SoEmpty") }}
                                 <Icon icon="game-icons:capybara" class="no-messages-icon" />
                             </div>
                         </div>
@@ -162,20 +162,20 @@
                         </template>
     
                         <div class="no-messages d-flex flex-column align-items-center" v-if="!activeMessages[activeUser.data._id] || !activeMessages[activeUser.data._id].length">
-                            Seems like there are no messages yet!   
-                            <span> Be the first one to say hi :) </span>
+                            {{ $t("NoMsgsInfo1") }}
+                            <span> {{ $t("NoMsgsInfo2") }} </span>
                             <Icon icon="game-icons:capybara" class="no-messages-icon" />
                         </div>
                     </template>
 
                     <div class="no-selected-chat d-flex align-items-center justify-content-center text-center" v-else>
-                        Select a chat to send & view messages
+                        {{ $t("SelectChatInfo") }}
                     </div>
                 </div>
 
                 <div class="request-info d-flex justify-content-center align-items-center gap-16 flex-wrap" v-if="activeUser && activeUser.isRequest">
-                    <span> Accept this request to start messaging with user </span>
-                    <button class="btn primary smaller" @click="acceptRequest(activeUser)"> Accept </button>
+                    <span> {{ $t("AcceptReqInfo") }} </span>
+                    <button class="btn primary smaller" @click="acceptRequest(activeUser)"> {{ $t("Accept") }} </button>
                 </div>
 
                 <form class="chat-input-wrapper d-flex justify-content-between gap-24" @submit.prevent="null">
@@ -195,13 +195,13 @@
         <!-- Add user to chat modal -->
         <Modal
             v-model:is-shown="isShowAddUserModal"
-            :header-text="`Add user to chat`"
+            :header-text="$t(`AddUserToChat`)"
             :modal-id="'add-user-chat-modal'"
             @close="closeAddUserModal">
             <template #body>
                 <div class="add-user-body d-flex flex-column gap-32">
                     <div class="input-cont d-flex flex-column gap-8 flex-1">
-                        <div class="input-tag"> User </div>
+                        <div class="input-tag"> {{ $t("User") }} </div>
                         <Multiselect
                             v-model="userToAdd"
                             :options="filteredAvailableUsersToAdd"
@@ -246,8 +246,8 @@
                     </div>
 
                     <div class="btns-wrapper justify-content-end d-flex gap-24">
-                        <button class="btn primary" @click="addUserToChat()"> Add </button>
-                        <button class="btn secondary" @click="closeAddUserModal()"> Cancel </button>
+                        <button class="btn primary" @click="addUserToChat()"> {{ $t("Add") }} </button>
+                        <button class="btn secondary" @click="closeAddUserModal()"> {{ $t("Cancel") }} </button>
                     </div>
                 </div>
             </template>

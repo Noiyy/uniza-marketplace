@@ -13,17 +13,17 @@
                     </div>
                 </div>
                 <div class="right d-flex flex-column gap-32 montserrat">
-                    <p> CUSTOMER SERVICE </p>
+                    <p> {{ $t('CustomerService').toUpperCase() }} </p>
                     <div class="info-links d-flex">
                         <div class="left-col d-flex flex-column">
-                            <a href=""> Support </a>
-                            <a href=""> FAQ </a>
-                            <a href=""> Terms </a>
-                            <a href=""> Collaboration </a>
+                            <router-link to="/chat/system"> {{ $t('Notifications') }} </router-link>
+                            <router-link to="/faq"> FAQ </router-link>
+                            <a href=""> {{ $t('Terms') }} </a>
+                            <a href=""> {{ $t('Collaboration') }} </a>
                         </div>
                         <div class="right-col d-flex flex-column">
-                            <a href=""> About us </a>
-                            <a href=""> Data privacy </a>
+                            <a href=""> {{ $t('AboutUs') }} </a>
+                            <a href=""> {{ $t('DataPrivacy') }} </a>
                         </div>
                     </div>
                 </div>
@@ -31,8 +31,8 @@
         </div>
         <div class="lower-content">
             <div class="container d-flex flex-column gap-16 align-items-center">
-                <p> &copy; UNIZA Marketplace 2025, all rights reserved. </p>
-                <a href="https://noiyy.eu/" target="_blank" class="montserrat"> made by Noiyy<Icon icon="prime:arrow-up-right" class="arrow-icon" /> </a>
+                <p> &copy; UNIZA Marketplace 2025, {{ $t('FooterCopy').toLowerCase() }}. </p>
+                <a href="https://noiyy.eu/" target="_blank" class="montserrat"> {{ $t('MadeBy').toLowerCase() }} Noiyy<Icon icon="prime:arrow-up-right" class="arrow-icon" /> </a>
             </div>
         </div>
     </footer>

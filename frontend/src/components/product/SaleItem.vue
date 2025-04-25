@@ -31,7 +31,7 @@
                         </div>
                     </router-link>
                     <div class="sold-info">
-                        Bought <span>{{ saleData.count }}x</span>
+                        {{ $t("Bought") }} <span>{{ saleData.count }}x</span>
                     </div>
 
                     <div class="product-info gradient-text" v-if="isInAdmin">

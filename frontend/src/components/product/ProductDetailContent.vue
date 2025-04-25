@@ -20,9 +20,9 @@
                         <div class="product-history">
                             <div class="history-heading d-flex flex-column gap-8">
                                 <div class="d-flex gap-32 justify-content-between align-items-center">
-                                    <h2> PRODUCT HISTORY </h2>
+                                    <h2> {{ $t('ProductHistory').toUpperCase() }} </h2>
                                     <div class="created-at d-flex gap-24 align-items-center">
-                                        Created at
+                                        {{ $t('CreatedAt') }}
                                         <span> {{ isoToDateString(product.createdAt) }} </span> 
                                     </div>
                                 </div>
@@ -33,7 +33,7 @@
                         <div class="history-content d-flex flex-column gap-24">
                             <div class="sale-ended d-flex flex-column text-center" v-if="product.status === 'saleEnded'">
                                 <div class="sale-ended-title pos-relative" >
-                                    <h2 class="pos-relative"> sale ended </h2>
+                                    <h2 class="pos-relative"> {{ $t("SaleEnded") }} </h2>
                                     <div class="line-divider"></div>
                                 </div>
                                 <div class="date montserrat"> 18.12.2024 </div>
@@ -48,12 +48,12 @@
                                 </template>
 
                                 <div class="no-history text-center" v-if="!productHistory || !productHistory.length">
-                                    This product didn't have any significant changes made yet!
+                                   {{ $t("NoHistoryInfo") }}
                                 </div>
 
                                 <div class="view-divider-cont" v-if="!shownHistory && productHistory.length && productHistory.length > 3">
                                     <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary" @click="shownHistory = !shownHistory"> View </button>
+                                        <button class="btn secondary" @click="shownHistory = !shownHistory"> {{ $t("View") }} </button>
                                         <div class="divider"></div>
                                     </div>
                         

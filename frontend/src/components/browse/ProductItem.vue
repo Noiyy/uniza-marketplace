@@ -29,7 +29,7 @@
             </div>
             <div class="details d-flex flex-column gap-8">
                 <div class="price">
-                    <span v-if="prodData.price.specialValue"> {{ prodData.price.specialValue }} </span>
+                    <span v-if="prodData.price.specialValue"> {{ $t(`${prodData.price.specialValue}`) }} </span>
                     <span v-else> {{ prodData.price.value.$numberDecimal }}€ </span>      
                 </div>
                 <div class="location">

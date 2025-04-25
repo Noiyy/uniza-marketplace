@@ -2,7 +2,7 @@
     <div class="user-items d-flex flex-column gap-48">
         <div class="user-products pos-relative" :class="shownProducts ? 'shown' : ''">
             <ItemContentList
-                :list-title="'Products'"
+                :list-title="$t('Products')"
                 :item-filters="productFilters"
                 :search-query="productsSearchQuery"
                 :selected-sort-filter="productsSortFilter"
@@ -25,7 +25,7 @@
 
             <div class="view-divider-cont" v-if="!shownProducts && sortedProducts.length && sortedProducts.length > 1">
                 <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                    <button class="btn secondary" @click="shownProducts = !shownProducts"> View </button>
+                    <button class="btn secondary" @click="shownProducts = !shownProducts"> {{ $t("View") }} </button>
                     <div class="divider"></div>
                 </div>
     
@@ -35,7 +35,7 @@
     
         <div class="user-ratings pos-relative" :class="shownRatings ? 'shown' : ''">
             <ItemContentList
-                :list-title="'Ratings'"
+                :list-title="$t('Ratings')"
                 :item-filters="ratingFilters"
                 :search-query="ratingsSearchQuery"
                 :selected-sort-filter="ratingsSortFilter"
@@ -54,10 +54,10 @@
                 <template #heading-right-other>
                     <div class="small-btns-wrapper d-flex gap-16">
                         <button class="btn secondary transBg" @click="reportUser()" :disabled="isDisabledForLogged || user.ban && user.ban.isBanned"> 
-                            ReportUser 
+                            {{ $t('ReportUser') }} 
                         </button>
                         <button class="btn primary" @click="rateUser()" :disabled="isDisabledForLogged || user.ban && user.ban.isBanned"> 
-                            RateUser
+                            {{ $t('RateUser') }}
                         </button>
                     </div>
                 </template>
@@ -65,7 +65,7 @@
 
             <div class="view-divider-cont" v-if="!shownRatings && sortedRatings.length && sortedRatings.length > 1">
                 <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                    <button class="btn secondary" @click="shownRatings = !shownRatings"> View </button>
+                    <button class="btn secondary" @click="shownRatings = !shownRatings"> {{ $t("View") }} </button>
                     <div class="divider"></div>
                 </div>
     
@@ -212,15 +212,15 @@ export default {
 
         setupProductFilters() {
             this.productFilters = [
-                { name: "onSale", count: this.products.filter(pr => pr.status == 'onSale').length, active: true },
-                { name: "saleEnded", count: this.products.filter(pr => pr.status == 'saleEnded').length },
+                { name: this.$t("onSale"), count: this.products.filter(pr => pr.status == 'onSale').length, active: true },
+                { name: this.$t("saleEnded"), count: this.products.filter(pr => pr.status == 'saleEnded').length },
             ];
         },
 
         setupRatingFilters() {
             this.ratingFilters = [
-                { name: "self", count: this.ratings.filter(rt => rt.type__ == "self").length, active: true },
-                { name: "others", count: this.ratings.filter(rt => rt.type__ == "others").length },
+                { name: this.$t("self"), count: this.ratings.filter(rt => rt.type__ == "self").length, active: true },
+                { name: this.$t("others"), count: this.ratings.filter(rt => rt.type__ == "others").length },
             ];
         },
 

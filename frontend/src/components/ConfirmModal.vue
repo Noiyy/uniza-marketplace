@@ -1,7 +1,7 @@
 <template>
     <Modal
         v-model:is-shown="localIsShown"
-        :header-text="'Are you sure?'"
+        :header-text="`${$t('AreYouSure')}?`"
         :modal-id="modalId"
         @close="closeModal"
         :header-class="'confirm-modal-header'"
@@ -11,8 +11,8 @@
                 <p> {{ bodyText }} <span> {{ itemName }} </span> </p>
 
                 <div class="btns-wrapper d-flex gap-24">
-                    <button class="btn secondary smaller" @click="$emit('yes')"> Yes </button>
-                    <button class="btn primary smaller" @click="closeModal"> No </button>
+                    <button class="btn secondary smaller" @click="$emit('yes')"> {{ $t('Yes') }} </button>
+                    <button class="btn primary smaller" @click="closeModal"> {{ $t('No') }} </button>
                 </div>
             </div>
         </template>

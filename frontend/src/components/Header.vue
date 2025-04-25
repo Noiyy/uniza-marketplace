@@ -43,20 +43,20 @@
                         <div class="filters d-flex gap-32 align-items-center">
                             <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
                                 <div class="selected">
-                                    {{ selectedSearchCategory ? selectedSearchCategory.name : 'All categories' }}
+                                    {{ selectedSearchCategory ? $t(`ctg_${selectedSearchCategory.name}`) : $t('AllCategories') }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                                 <div class="filters-dropdown-content">
                                     <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
                                         :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
                                         @click="selectMainCtgHandler(ctg)"> 
-                                        {{ ctg.name }}
+                                        {{ $t(`ctg_${ctg.name}`) }}
 
                                         <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
                                             <div class="option sub-ctg" v-for="(sCtg, sIndex) in ctg.subCategories" :key="sIndex"
                                                 :class="selectedSearchCategory && selectedSearchCategory.name == sCtg.name ? 'selected' : ''"
                                                 @click="selectSubCtgHandler(sCtg, $event)">
-                                                {{ sCtg.name }}
+                                                {{ $t(`ctg_${sCtg.name}`) }}
                                             </div>
                                         </div>
                                     </div>
@@ -66,7 +66,7 @@
 
                             <div class="price" :class="{ open: isOpen['price'] }" @click="(e) => toggleDropdown('price', e)"> 
                                 <div class="d-flex gap-8 align-items-center price-selected">
-                                    Price
+                                    {{ $t('Price') }}
                                     <div class="d-flex align-items-center">
                                         <span v-if="selectedPriceRange[0] == 0 && selectedPriceRange[1] == 9999"> > 0€ </span>
                                         <div class="d-flex gap-8 price-range align-items-center" v-else>
@@ -106,15 +106,15 @@
 
                             <div class="location" :class="{ open: isOpen['location'] }" @click="(e) => toggleDropdown('location', e)">
                                 <div class="selected">
-                                    {{ selectedLocation ? selectedLocation : 'Anywhere' }}
+                                    {{ selectedLocation ? selectedLocation : $t('Anywhere') }}
                                     <Icon icon="mdi:chevron-down" class="chevron-icon" />     
                                 </div>
                                 <div class="filters-dropdown-content">
-                                    <div class="option" @click="selectNearMeLocation">
-                                        Near me
-                                    </div>
+                                    <!-- <div class="option" @click="selectNearMeLocation">
+                                        {{ $t('NearMe') }}
+                                    </div> -->
                                     <div class="location-input-cont" @click="(e) => { e.preventDefault(); e.stopPropagation(); }">
-                                        <input type="text" placeholder="search" v-model="locationSearch" @input="filterLocations()">
+                                        <input type="text" :placeholder="$t('Search').toLowerCase()" v-model="locationSearch" @input="filterLocations()">
                                     </div>
                                     <div class="search-options" v-if="locationSearch">
                                         <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`"
@@ -131,7 +131,7 @@
         
                     <div class="right d-flex align-items-center gap-16">
                         <Icon icon="material-symbols:refresh" class="refresh-icon" @click="resetAllSearchParams()" />
-                        <button class="btn" type="submit" @click.prevent="doSearch()"> Search </button>
+                        <button class="btn" type="submit" @click.prevent="doSearch()"> {{ $t('Search') }} </button>
                     </div>
                 </form>
             </div>

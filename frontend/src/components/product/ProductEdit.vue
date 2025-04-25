@@ -4,14 +4,14 @@
             <div class="under-heading d-flex gap-32 justify-content-between align-items-center">
                 <div class="back d-flex align-items-center" @click="$router.back()">
                     <Icon icon="mdi:arrow-left-top" class="back-icon" />
-                    back
+                    {{ $t("Back").toLowerCase() }}
                 </div>
 
                 <div class="sales-view-link d-flex justify-content-end flex-1">
                     <a role="button" class="btn" :href="isAdd ? '' : '#sales'" @click.prevent="isAdd ? null : $emit('scroll-to-sales')"
                         :aria-disabled="isAdd ? true : false" :class="isAdd ? 'disabled' : ''">
                         <Icon icon="material-symbols:shopping-cart" class="sales-icon" />
-                        Sales
+                        {{ $t('Sales') }}
                         <Icon icon="mdi:arrow-down" class="arrow-icon" />
                     </a>
                 </div>
@@ -20,7 +20,7 @@
             <div class="product-main-edit d-flex gap-48">
                 <div class="images-edit flex-1">
                     <div class="images-heading d-flex gap-32 justify-content-between align-items-center">
-                        <h2> Images </h2>
+                        <h2> {{ $t('Images') }} </h2>
                         <div class="images-count montserrat"> {{ productImages ? productImages.length : 0 }} </div>
                     </div>
 
@@ -28,7 +28,7 @@
                         class="images-wrapper" :class="!loadedData ? 'loading' : ''">
                         <template v-if="loadedData">
                             <div v-for="(img, index) in productImages" :key="index" class="img-cont">
-                                <div class="main-img-tag" v-if="index == 0"> Main </div>
+                                <div class="main-img-tag" v-if="index == 0"> {{ $t("Main") }} </div>
                                 <div class="remove-img-cont" @click="removeImg(img, index)">
                                     <Icon icon="material-symbols:close" class="remove-icon" />
                                 </div>
@@ -39,7 +39,7 @@
                             </div>
     
                             <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
-                                :title="'Add image'"
+                                :title="$t('AddImage')"
                                 @submit.prevent="uploadImages" @click="triggerFileInput">
                                 <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
                                     type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
@@ -52,13 +52,13 @@
                 </div>
                 <div class="info-edit flex-1 d-flex flex-column gap-32">
                     <div class="input-cont d-flex flex-column gap-8">
-                        <div class="input-tag"> Title </div>
-                        <input v-model="product.title" type="text" class="styled" :placeholder="'Title'">
+                        <div class="input-tag"> {{ $t('Title') }} </div>
+                        <input v-model="product.title" type="text" class="styled" :placeholder="$t('Title')">
                     </div>
 
                     <div class="input-row d-flex gap-24 align-items-center justify-content-between">
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Category </div>
+                            <div class="input-tag"> {{ ('Category') }} </div>
                             <Multiselect
                                 v-model="localProductMainCtg"
                                 :options="mainCategories"
@@ -74,7 +74,7 @@
                         <Icon icon="mdi:arrow-right" class="input-row-divider icon" />
 
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Sub category </div>
+                            <div class="input-tag"> {{ ('SubCategory') }} </div>
                             <Multiselect
                                 v-model="localProductSubCtg"
                                 :options="subCategories"
@@ -89,12 +89,12 @@
 
                     <div class="input-row d-flex gap-24 align-items-center justify-content-between">
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Price </div>
-                            <input v-model="productPrice" type="number" min="1" max="99999" class="styled" :placeholder="'Price'" @input="(e) => sanitizeInput(e, 'price')">
+                            <div class="input-tag"> {{ $t("Price") }} </div>
+                            <input v-model="productPrice" type="number" min="1" max="99999" class="styled" :placeholder="$t('Price')" @input="(e) => sanitizeInput(e, 'price')">
                             <span class="price-currency"> € </span>
                         </div>
 
-                        <span class="input-row-divider montserrat"> Or </span>
+                        <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
 
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
                             <Multiselect
@@ -104,21 +104,21 @@
                                 :multiple="false"
                                 :show-labels="false"
                             ></Multiselect>
-                            <div class="input-tag"> Special Price </div>
+                            <div class="input-tag"> {{ $t('SpecialPrice') }} </div>
                         </div>
                     </div>
 
                     <div class="input-row-cont d-flex flex-column gap-24">
                         <div>
                             <Checkbox
-                                :text="'Use the same address as your account'"
+                                :text="$t('SameAddressInfo')"
                                 v-model:is-checked="product.address.asProfile"
                             ></Checkbox>
                         </div>
 
                         <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="product.address.asProfile ? 'disabled' : ''">
                             <div class="input-cont address-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Address </div>
+                                <div class="input-tag"> {{ $t("Address") }} </div>
                                 <Multiselect
                                     :disabled="product.address.asProfile"
                                     v-model="productAddress"
@@ -139,10 +139,10 @@
                                 </Multiselect>
                             </div>
 
-                            <span class="input-row-divider montserrat"> Or </span>
+                            <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
 
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Dorm </div>
+                                <div class="input-tag"> {{ $t("Dorm") }} </div>
                                 <Multiselect
                                     :disabled="product.address.asProfile"
                                     v-model="productDorm"
@@ -156,23 +156,23 @@
                     </div>
 
                     <div class="input-row-cont d-flex flex-column gap-24">
-                        <div>
+                        <!-- <div>
                             <Checkbox
                                 :text="'Delete product automatically when count reaches 0'"
                                 v-model:is-checked="product.count.deleteOnZero"
                             ></Checkbox>
                             
-                        </div>
+                        </div> -->
 
                         <div class="input-row d-flex gap-8 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> Count </div>
-                                <input v-model="product.count.available" type="number" min="1" max="99999" class="styled" :placeholder="'Count'" @input="(e) => sanitizeInput(e)">
+                                <div class="input-tag"> {{ $t('Count') }} </div>
+                                <input v-model="product.count.available" type="number" min="1" max="99999" class="styled" :placeholder="$t('Count')" @input="(e) => sanitizeInput(e)">
                             </div>
 
                             <div class="product-stats d-flex justify-content-end gap-8 flex-2">
                                 <template v-if="!isAdd">
-                                    sold:
+                                    {{ $t("Sold").toLowerCase() }}:
                                     <span> {{ product.count.sold }} </span>
                                 </template>
                             </div>
@@ -182,7 +182,7 @@
             </div>
 
             <div class="product-description-edit">
-                <h2 class="input-tag"> Description </h2>
+                <h2 class="input-tag"> {{ $t('Description') }} </h2>
                 <Quill
                     v-model="productDescription"
                 ></Quill>
@@ -192,7 +192,7 @@
         <div class="product-sales" id="sales" v-if="!isAdd">
             <div class="sales-heading d-flex flex-column gap-8">
                 <div class="d-flex gap-32 justify-content-between align-items-center">
-                    <h2> SALES </h2>
+                    <h2> {{ $t("Sales").toUpperCase() }} </h2>
                     <Icon icon="ic:baseline-plus" class="plus-icon" @click="salesModalIsShown = true" />
                 </div>
                 <div class="line-divider"></div>
@@ -201,7 +201,7 @@
             <div class="sales-wrapper d-flex flex-column gap-16 pos-relative" :class="shownSales ? 'shown' : ''">
                 <div class="view-divider-cont" v-if="!shownSales && productSales.length && productSales.length > 3">
                     <div class="view-divider shorter d-flex justify-content-center align-items-center">
-                        <button class="btn secondary" @click="shownSales = !shownSales"> View </button>
+                        <button class="btn secondary" @click="shownSales = !shownSales"> {{ $t("View") }} </button>
                         <div class="divider"></div>
                     </div>
         
@@ -215,7 +215,7 @@
                 </template>
 
                 <div class="no-sales text-center" v-if="!productSales || !productSales.length">
-                    This product doesn't have any sales yet! :(
+                    {{ $t("NoSalesInfo") }}
                 </div>
             </div>
         </div>

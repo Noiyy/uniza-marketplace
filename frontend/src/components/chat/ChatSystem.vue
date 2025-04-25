@@ -11,7 +11,7 @@
     
                         <div class="sale-info d-flex gap-24 align-items-center">
                             <div>
-                                Bought {{ sale.count }}x <router-link :to="`/product/${sale.productId}`" class="gradient-text" > {{ sale.productDetail.title }} </router-link>
+                                {{ $t("Bought") }} {{ sale.count }}x <router-link :to="`/product/${sale.productId}`" class="gradient-text" > {{ sale.productDetail.title }} </router-link>
                             </div>
     
                             <div class="item-date d-flex gap-8 align-items-center montserrat">
@@ -23,13 +23,13 @@
                     </div>
     
                     <div class="noti-body d-flex align-items-center">
-                        <button class="btn primary smaller" @click="confirmSale(sale)"> Confirm </button>
+                        <button class="btn primary smaller" @click="confirmSale(sale)"> {{ $t("Confirm") }} </button>
                     </div>
                 </div>
             </template>
 
             <div class="no-notifications text-center" v-else>
-                Seems like there are no notifications for you yet!
+                {{ $t("NoNotiInfo") }}
             </div>
         </div>
 

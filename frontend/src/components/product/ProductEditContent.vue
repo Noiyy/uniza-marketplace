@@ -9,11 +9,11 @@
                     <div class="heading-cont d-flex flex-column gap-8">
                         <div class="edit-heading d-flex justify-content-between gap-32">
                             <router-link :to="`/product/${product._id}`" class="heading-title d-flex gap-8 align-items-end" v-if="!isAdd">
-                                <h1> Edit Product </h1>
+                                <h1> {{ $t('EditProduct') }} </h1>
                                 <Icon icon="prime:arrow-up-right" class="arrow-icon" />
                             </router-link>
                             <div class="heading-title d-flex gap-8 align-items-end" v-else>
-                                <h1> Create product </h1>
+                                <h1> {{ $t('CreateProduct') }} </h1>
                             </div>
 
                             <div class="edit-options d-flex gap-32 align-items-center">
@@ -22,18 +22,18 @@
                                         @click="showProductDetail()"
                                         :class="shownComponent === 'ProductDetail' ? 'active' : ''"
                                     > 
-                                        Preview 
+                                        {{ $t('Preview ') }}
                                     </button>
                                     <button class="btn nav-btn" 
                                         @click="showProductEditor()"
                                         :class="shownComponent === 'ProductEdit' ? 'active' : ''"
                                     > 
-                                        Editor
+                                        {{ $t('Editor') }}
                                     </button>
                                 </div>
 
                                 <button class="btn primary" @click="isAdd ? addProduct() : saveProduct()"> 
-                                    {{ isAdd ? 'Create' : 'Save' }}
+                                    {{ isAdd ? $t('Create') : $t('Save') }}
                                 </button>
                             </div>
                         </div>

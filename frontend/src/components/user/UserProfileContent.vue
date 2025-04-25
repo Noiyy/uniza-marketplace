@@ -36,7 +36,7 @@
     
                                     <div class="joined-on d-flex gap-32 align-items-center">
                                         <span> {{ isoToDateString(user.createdAt) }} </span>
-                                        Joined on
+                                        {{ $t('JoinedOn') }}
                                     </div>
                                 </div>
 
@@ -71,7 +71,7 @@
                             <div class="user-other d-flex flex-column gap-40">
                                 <div class="user-rating d-flex justify-content-between pos-relative">
                                     <div class="rating-heading d-flex gap-32 align-items-center">
-                                        <div class="heading">Rating</div>
+                                        <div class="heading"> {{ $t("Rating") }} </div>
                                         <div class="rating-values d-flex gap-8 align-items-center">
                                             <span> {{ userRatingAvg >= 0 ? userRatingAvg : "?" }} </span>
                                             <div class="stars d-flex">
@@ -90,28 +90,28 @@
 
                                     <div class="stats">
                                         <span class="gradient-text"> {{ userRatings.filter(rt => rt.type__ == "self").length }} </span>
-                                        {{ userRatings.filter(rt => rt.type__ == "self").length > 1 ? 'ratings' : 'rating' }}
+                                        {{ userRatings.filter(rt => rt.type__ == "self").length > 1 ? $t('Ratings').toLowerCase() : $t('Rating').toLowerCase() }}
                                     </div>
 
                                     <div class="view-divider full d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary" @click="viewRatings()"> View </button>
+                                        <button class="btn secondary" @click="viewRatings()"> {{ $t("View") }} </button>
                                         <div class="divider"></div>
                                     </div>
                                 </div>
 
                                 <div class="user-products d-flex justify-content-between pos-relative">
                                     <div class="products-heading d-flex gap-32 align-items-center">
-                                        <div class="heading">Products</div>
+                                        <div class="heading"> {{ $t("Products") }} </div>
                                     </div>
 
                                     <div class="stats d-flex gap-24">
-                                        <div> <span class="gradient-text"> {{ getSoldProductsCount() }} </span> sold </div>
-                                        <div> <span class="gradient-text"> {{ userProducts.filter(pr => pr.status == "onSale").length }} </span> on sale </div>
-                                        <div> <span class="gradient-text"> {{ user.boughtProducts }} </span> bought </div>
+                                        <div> <span class="gradient-text"> {{ getSoldProductsCount() }} </span> {{ $t("Sold").toLowerCase() }} </div>
+                                        <div> <span class="gradient-text"> {{ userProducts.filter(pr => pr.status == "onSale").length }} </span> {{ $t("OnSale").toLowerCase() }} </div>
+                                        <div> <span class="gradient-text"> {{ user.boughtProducts }} </span> {{ $t("Bought").toLowerCase() }} </div>
                                     </div>
 
                                     <div class="view-divider full d-flex justify-content-center align-items-center">
-                                        <button class="btn secondary" @click="viewProducts()"> View </button>
+                                        <button class="btn secondary" @click="viewProducts()"> {{ $t("View") }} </button>
                                         <div class="divider"></div>
                                     </div>
                                 </div>
@@ -139,7 +139,7 @@
                 <div class="d-flex flex-column gap-32">
                     <div class="input-row address-inputs d-flex gap-32 align-items-center justify-content-between">
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Address </div>
+                            <div class="input-tag"> {{ $t('Address') }} </div>
                             <Multiselect
                                 v-model="userAddress"
                                 :options="filteredAddresses"
@@ -159,10 +159,10 @@
                             </Multiselect>
                         </div>
     
-                        <span class="input-row-divider montserrat"> Or </span>
+                        <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
     
                         <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> Dorm </div>
+                            <div class="input-tag"> {{ $t('Dorm') }} </div>
                             <Multiselect
                                 v-model="userDorm"
                                 :options="getDorms"
@@ -175,7 +175,7 @@
     
                     <div>
                         <div class="input-cont d-flex flex-column gap-8">
-                            <div class="input-tag"> Phone number </div>
+                            <div class="input-tag"> {{ $t('PhoneNumber') }} </div>
                             <VueTelInput
                                 v-model="userPhone"
 
@@ -190,8 +190,8 @@
                     </div>
     
                     <div class="btns-cont d-flex gap-16 justify-content-center">
-                        <button class="btn secondary" @click="closeSettingsModal()"> Cancel </button>
-                        <button class="btn primary" @click="saveUserSettings()"> Save </button>
+                        <button class="btn secondary" @click="closeSettingsModal()"> {{ $t("Cancel") }} </button>
+                        <button class="btn primary" @click="saveUserSettings()"> {{ $t("Save") }} </button>
                     </div>
                 </div>
             </template>
@@ -257,7 +257,7 @@ export default {
             pageTitle: null,
 
             settingsModalIsShown: false,
-            modalHeading: "User settings",
+            modalHeading: this.$t("UserSettings"),
             filteredAddresses: [],
 
             userAddress: null,
@@ -266,9 +266,9 @@ export default {
 
             userPhoneNumIsValid: false,
             telInputOptions: {
-                placeholder: 'CisloPlaceholder',
+                placeholder: this.$t('CisloPlaceholder'),
                 showSearchBox: true,
-                searchBoxPlaceholder: "HladajKrajinu",
+                searchBoxPlaceholder: this.$t("HladajKrajinu"),
                 required: false,
             },
             telInputValidCharactersOnly: true,

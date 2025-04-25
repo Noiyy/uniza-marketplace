@@ -24,7 +24,7 @@
                 </router-link>
 
                 <a class="logout d-flex gap-8" v-if="user" @click.prevent="logoutUser()">
-                    logout
+                    {{ $t('Logout').toLowerCase() }}
                     <Icon icon="material-symbols:logout" class="logout-icon" />
                 </a>
             </div>
@@ -32,40 +32,40 @@
             <nav class="d-flex flex-column flex-1 align-items-end gap-64 montserrat">
                 <div class="d-flex flex-column gap-32">
                     <div class="d-flex flex-column gap-16">
-                        <router-link to="/" class="highlightActive" > Home </router-link>
-                        <router-link to="/browse" class="highlightActive" > Browse </router-link>
+                        <router-link to="/" class="highlightActive" > {{ $t('Home') }} </router-link>
+                        <router-link to="/browse" class="highlightActive" > {{ $t('Browse') }} </router-link>
 
                         <template v-if="user">
-                            <router-link to="/favoriteProducts/" class="highlightActive" > Favourites </router-link>
+                            <router-link to="/favoriteProducts/" class="highlightActive" > {{ $t('Favourites') }} </router-link>
                             <!-- <router-link to="/browse" > Auction </router-link> -->
-                            <router-link :to="{ path: `/user/${user._id}`, hash: '#products' }" class="highlightActive" > My products </router-link>
+                            <router-link :to="{ path: `/user/${user._id}`, hash: '#products' }" class="highlightActive" > {{ $t('MyProducts') }} </router-link>
                             <router-link to="/product/add"  class="add-product-link">
                                 <Icon icon="ic:baseline-plus" class="plus-icon" />
                             </router-link>
                             <router-link to="/chat"  class="d-flex gap-8 align-items-center chat-link highlightActive"> 
-                                Chat
+                                {{ $t('Chat') }}
                                 <div class="notification-count" v-if="getUnreadMsgsCount"> {{ getUnreadMsgsCount < 10 ? getUnreadMsgsCount : "+9" }} </div>
                             </router-link>
                         </template>
                     </div>
     
                     <div class="d-flex flex-column gap-16" v-if="!user">
-                        <router-link to="/login" class="btn primary" role="" > Login </router-link>
-                        <router-link to="/signUp" class="btn secondary" > Sign up </router-link>
+                        <router-link to="/login" class="btn primary" role="" > {{ $t('Login') }} </router-link>
+                        <router-link to="/signUp" class="btn secondary" > {{ $t('SignUp') }} </router-link>
                     </div>
                 </div>
     
                 <div>
                     <div class="d-flex flex-column gap-16">
                         <router-link to="/admin" v-if="user && user.isAdmin" class="d-flex gap-8 align-items-center admin-panel-link highlightActive"> 
-                            ADMIN PANEL
+                            {{ $t('AdminPanel').toUpperCase() }}
                             <div class="notification" v-if="unconfirmedReports.length"> ! </div>
                             <!-- <Icon icon="material-symbols:person" class="admin-icon" /> -->
                         </router-link>
 
                         <!-- <router-link to="/support" class="highlightActive" > Support </router-link> -->
                         <router-link to="/chat/system" class="highlightActive d-flex gap-8 align-items-center chat-link" > 
-                            Notifications
+                            {{ $t('Notifications') }}
                             <div class="notification-count" v-if="getUnreadNotiCount"> {{ getUnreadNotiCount < 10 ? getUnreadNotiCount : "+9" }} </div>
                         </router-link>
                         <router-link to="/faq" class="highlightActive" > FAQ </router-link>

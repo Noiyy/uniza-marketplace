@@ -11,24 +11,24 @@
                         <router-link :to="`/browse?ctg=${'clothing'}`"
                             class="item animate black d-flex flex-column align-items-end text-end justify-content-center gap-8">
                             <div>
-                                <h1> Books </h1>
-                                <p> fiction, textbooks, homemade ... </p>
+                                <h1> {{ $t('ctg_books') }} </h1>
+                                <p>  {{ $t('ctg_fiction') }}, {{ $t('ctg_textbooks') }}, {{ $t('ctg_homemade') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/books-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'tickets'}`"
                             class="item animate full d-flex flex-column align-items-center justify-content-center gap-8">
                             <div>
-                                <h1> Tickets </h1>
-                                <p> plane tickets, festivals ... </p>
+                                <h1> {{ $t('ctg_tickets') }} </h1>
+                                <p> {{ $t('ctg_planeTickets') }}, {{ $t('ctg_festivals') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/tickets-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'services'}`"
                             class="item animate black d-flex align-items-center justify-content-left gap-8">
                             <div>
-                                <h1> Pc & phone </h1>
-                                <p> laptops, mouses ... </p>
+                                <h1> {{ $t('ctg_pcPhone') }} </h1>
+                                <p> {{ $t('ctg_laptops') }}, {{ $t('ctg_mouse') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/pc-min.png')" alt="">
                         </router-link>
@@ -36,21 +36,21 @@
                         <router-link :to="`/browse?ctg=${'music'}`"
                             class="item animate full d-flex align-items-center">
                             <div class="info">
-                                <h1> Music </h1>
-                                <p> drums, keyboard ... </p>
+                                <h1> {{ $t('ctg_music') }} </h1>
+                                <p> {{ $t('ctg_drums') }}, {{ $t('ctg_keyboard') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/music-min.png')" alt="">
                         </router-link>
                         <div class="item mid d-flex flex-column justify-content-center align-items-center">
                             <h1> {{ soldProductsCount }} </h1>
-                            <p> Products sold </p>
+                            <p> {{ $t('ProductsSold') }} </p>
                             <img :src="getAssetUrl('img/logo-sm_dark.svg')" alt="UNIZA Marketplace logo">
                         </div>
                         <router-link :to="`/browse?ctg=${'electronics'}`"
                             class="item animate full d-flex align-items-center justify-content-between gap-16">
                             <div class="text-left">
-                                <h1> Electronics </h1>
-                                <p> microwaves, refrigerators ... </p>
+                                <h1> {{ $t('ctg_electronics') }} </h1>
+                                <p> {{ $t('ctg_microwaves') }}, {{ $t('ctg_refrigerators') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/electro-min.png')" alt="">
                         </router-link>
@@ -58,24 +58,24 @@
                         <router-link :to="`/browse?ctg=${'books'}`"
                             class="item animate full d-flex justify-content-center align-items-center">
                             <div class="">
-                                <h1> Clothing </h1>
-                                <p> footwear, accessories ... </p>
+                                <h1> {{ $t('ctg_clothing') }} </h1>
+                                <p> {{ $t('ctg_footwear') }}, {{ $t('ctg_accessories') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/clothing-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'furniture'}`"
                             class="item animate black d-flex flex-column-reverse align-items-center justify-content-center">
                             <div>
-                                <h1> Furniture </h1>
-                                <p> chairs, tables, drawers ... </p>
+                                <h1> {{ $t('ctg_furniture') }} </h1>
+                                <p> {{ $t('ctg_chairs') }}, {{ $t('ctg_tables') }}, {{ $t('ctg_drawers') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/furniture-min.png')" alt="">
                         </router-link>
                         <router-link :to="`/browse?ctg=${'pcPhone'}`"
                             class="item animate white d-flex align-items-center">
                             <div class="text-left">
-                                <h1> Services </h1>
-                                <p> tutoring, accomodation ... </p>
+                                <h1> {{ $t('ctg_services') }} </h1>
+                                <p> {{ $t('ctg_tutoring') }}, {{ $t('ctg_accomodation') }} ... </p>
                             </div>
                             <img :src="getAssetUrl('img/services-min.png')" alt="">
                         </router-link>

@@ -13,7 +13,7 @@
     </div>
 
     <div class="products-wrapper no-items text-center pos-relative" v-else>
-        <span> No products were found! :( </span>
+        <span> {{ $t('NoProductsFound') }} </span>
         <Icon icon="game-icons:capybara" class="no-items-icon" />
     </div>
 </template>

@@ -7,18 +7,18 @@
         <template #body>
             <div class="add-content d-flex flex-column gap-32">
                 <div class="report-info d-flex flex-column gap-8">
-                    <div> User <span> {{ user ? user.username : "" }} </span> </div>
-                    <div v-if="!reportUser"> Product <span> {{ product ? product.title : "" }} </span> </div>
+                    <div> {{ $t("User") }} <span> {{ user ? user.username : "" }} </span> </div>
+                    <div v-if="!reportUser"> {{ $t("Product") }} <span> {{ product ? product.title : "" }} </span> </div>
                 </div>
 
                 <div class="input-cont d-flex flex-column gap-8">
-                    <div class="input-tag"> Report description </div>
-                    <textarea v-model="reportDescription" type="text" class="styled" :placeholder="'Description'"></textarea>
+                    <div class="input-tag"> {{ $t('ReportDescription') }} </div>
+                    <textarea v-model="reportDescription" type="text" class="styled" :placeholder="$t('Description')"></textarea>
                 </div>
 
                 <div class="btns-wrapper d-flex gap-24 justify-content-end">
-                    <button class="btn primary  " @click="doReport()"> Report </button>
-                    <button class="btn secondary" @click="closeModal()"> Cancel </button>
+                    <button class="btn primary  " @click="doReport()"> {{ $t("Report") }} </button>
+                    <button class="btn secondary" @click="closeModal()"> {{ $t("Cancel") }} </button>
                 </div>
             </div>
         </template>
@@ -64,7 +64,7 @@ export default {
     data() {
         return {
             localIsShown: false,
-            modalHeading: this.reportUser ? "Report user" : "Report product",
+            modalHeading: this.reportUser ? this.$t("ReportUser") : this.$t("ReportProduct"),
 
             reportDescription: ""
         }

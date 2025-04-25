@@ -5,7 +5,7 @@
         <div class="selected-cont d-flex gap-8">
             <Icon icon="bx:sort" class="sort-icon" />
             <div class="selected d-flex align-items-center">
-                {{ selectedSortFilter }}
+                {{ $t(`fltr_${selectedSortFilter}`) }}
                 <Icon icon="mdi:chevron-down" class="chevron-icon" />
             </div>
         </div>
@@ -14,7 +14,7 @@
                 :class="selectedSortFilter && selectedSortFilter == fltr.name ? 'selected' : ''"
                 @click="optionCallback(fltr)"> 
                 <Icon :icon="fltr.icon" class="filter-sort-option-icon" v-if="fltr.icon"/>
-                {{ fltr.name }}
+                {{ $t(`fltr_${fltr.name}`) }}
             </div>
         </div>
     </div>

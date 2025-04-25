@@ -4,13 +4,13 @@
             <slot name="content">
                 <div class="item-misc d-flex gap-16 align-items-center">
                     <div class="type-indicator"></div>
-                    <span v-if="historyData.historyType == 'sale'"> Sold {{ historyData.newValue }}x </span>
-                    <span v-else-if="historyData.historyType == 'count'"> Added +{{ historyData.newValue - historyData.oldValue }} </span>
-                    <span v-else-if="historyData.historyType == 'priceChange'"> Changed price </span>
+                    <span v-if="historyData.historyType == 'sale'"> {{ $t("Sold") }} {{ historyData.newValue }}x </span>
+                    <span v-else-if="historyData.historyType == 'count'"> {{ $t("Added") }} +{{ historyData.newValue - historyData.oldValue }} </span>
+                    <span v-else-if="historyData.historyType == 'priceChange'"> {{ $t("ChangedPrice") }} </span>
                 </div>
                 <div class="item-info">
-                    <span v-if="historyData.historyType == 'count'"> Count of available left: {{ historyData.newValue }} </span>
-                    <span v-if="historyData.historyType == 'sale'"> Count of available left: {{ historyData.oldValue }} </span>
+                    <span v-if="historyData.historyType == 'count'"> {{ $t("CountOfLeft") }}: {{ historyData.newValue }} </span>
+                    <span v-if="historyData.historyType == 'sale'"> {{ $t("CountOfLeft") }}: {{ historyData.oldValue }} </span>
                     <span v-if="historyData.historyType == 'priceChange'" class="d-flex gap-8 align-items-center"> 
                         {{ historyData.oldValue }}€
                         <Icon icon="formkit:arrowright" class="arrow-icon" :class="historyData.oldValue > historyData.newValue ? 'lower' : 'higher'" />

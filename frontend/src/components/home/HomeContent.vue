@@ -10,18 +10,18 @@
                     <div class="pattern" :style="patternBgStyle"></div>
 
                     <div class="left d-flex flex-column align-items-center gap-16">
-                        <router-link to="/browse" class="btn secondary"> browse </router-link>
-                        <span> {{ soldVeryRecentlyCount }} products sold in last 96 hours </span>
+                        <router-link to="/browse" class="btn secondary"> {{ $t('Browse').toLowerCase() }} </router-link>
+                        <span> {{ soldVeryRecentlyCount }} {{ $t('SoldIn96hInfo') }} </span>
                     </div>
     
                     <div class="mid d-flex flex-column align-items-center gap-16">
-                        <span> frequently asked questions </span>
+                        <span> {{ $t('FAQInfo') }} </span>
                         <router-link to="/faq" class="btn secondary"> faq </router-link>
                     </div>
     
                     <div class="right d-flex flex-column align-items-center gap-16">
-                        <router-link to="/support" class="btn secondary"> support </router-link>
-                        <span> contact us in case of need </span> 
+                        <router-link to="/support" class="btn secondary"> {{ $t('Notifications') }} </router-link>
+                        <span> {{ $t('NotiInfo') }} </span> 
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
             <section id="latestProducts">
                 <div class="content">
     
-                    <h1> LATEST SOLD PRODUCTS </h1>
+                    <h1> {{ $t('LatestSoldProducts').toUpperCase() }} </h1>
                     <div class="line-divider"></div>
     
                     <div class="latest-products-wrapper" v-if="latestProducts && latestProducts.length">

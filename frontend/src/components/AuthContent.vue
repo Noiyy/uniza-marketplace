@@ -5,39 +5,39 @@
         <section id="auth-section" class="d-flex justify-content-center align-items-center">
             <div class="container">
                 <div class="content d-flex flex-column align-items-center">
-                    <h1> {{ mode == 'signup' ? 'Sign Up' : 'Login' }} </h1>
+                    <h1> {{ mode == 'signup' ? $t('DoSignUp') : $t('DoLogin') }} </h1>
 
                     <form class="form-wrapper d-flex flex-column gap-32" @submit.prevent="null">
                         <div class="form-row d-flex flex-column gap-8" v-if="mode == 'signup'">
-                            <div class="input-tag"> Username </div>
-                            <input v-model="userName" type="text" class="styled" :placeholder="'Username'" required>
+                            <div class="input-tag"> {{ $t('Username') }} </div>
+                            <input v-model="userName" type="text" class="styled" :placeholder="$t('Username')" required>
                         </div>
 
                         <div class="form-row d-flex flex-column gap-8">
-                            <div class="input-tag"> Email </div>
-                            <input v-model="email" type="email" class="styled" :placeholder="'Email'" required>
+                            <div class="input-tag"> {{ $t('Email') }} </div>
+                            <input v-model="email" type="email" class="styled" :placeholder="$t('Email')" required>
                         </div>
         
                         <div class="form-row  d-flex flex-column gap-8">
-                            <div class="input-tag"> Password </div> 
-                            <input v-model="password" type="password" class="styled" :placeholder="'Password'" required>
+                            <div class="input-tag"> {{ $t('Password') }} </div> 
+                            <input v-model="password" type="password" class="styled" :placeholder="$t('Password')" required>
                         </div>
 
                         <div class="form-row  d-flex flex-column gap-8" v-if="mode == 'signup'">
-                            <div class="input-tag"> Repeat password </div>
-                            <input v-model="passwordRepeat" type="password" class="styled" :placeholder="'PasswordRepeat'" required>
+                            <div class="input-tag"> {{ $t('RepeatPassword') }} </div>
+                            <input v-model="passwordRepeat" type="password" class="styled" :placeholder="$t('RepeatPassword')" required>
                         </div>
         
                         <div class="text-center alt-text" v-if="mode == 'login'">
-                            Don't have an account yet? <router-link to="/signUp"> Sign up <Icon icon="prime:arrow-up-right" class="arrow-icon" /> </router-link>
+                            {{ $t('AuthNoAccInfo') }} <router-link to="/signUp"> {{ $t('DoSignUp') }} <Icon icon="prime:arrow-up-right" class="arrow-icon" /> </router-link>
                         </div>
                         <div class="text-center alt-text" v-if="mode == 'signup'">
-                            Already have an account? <router-link to="/login"> Login <Icon icon="prime:arrow-up-right" class="arrow-icon" /> </router-link>
+                            {{ $t('AuthHasAccInfo') }} <router-link to="/login"> {{ $t('DoLogin') }} <Icon icon="prime:arrow-up-right" class="arrow-icon" /> </router-link>
                         </div>
 
                         <div class="btns-wrapper d-flex gap-8 justify-content-center">
                             <button class="btn primary" type="submit" @click.prevent="doSign">
-                                {{ mode == 'signup' ? 'Sign Up' : 'Login' }}
+                                {{ mode == 'signup' ? $t('SignUp') : $t('Login') }}
                             </button>
                         </div>
                     </form>
@@ -93,8 +93,8 @@ export default {
         ),
         async doSign() {
             if (!this.email || !this.password) {
-                if (!this.email) this.$toast.error("InvalidEmail");
-                if (!this.password) this.$toast.error("InvalidPassword");
+                if (!this.email) this.$toast.error(this.$t("InvalidEmail"));
+                if (!this.password) this.$toast.error(this.$t("InvalidPassword"));
                 return;
             }
             this.emitter.emit("show-loader");
@@ -106,8 +106,8 @@ export default {
 
             if (this.mode == "signup") {
                 if (!this.userName || this.password != this.passwordRepeat) {
-                    if (!this.userName) this.$toast.error("InvalidUsername");
-                    if (this.password != this.passwordRepeat) this.$toast.error("PasswordsDontMatch");
+                    if (!this.userName) this.$toast.error(this.$t("InvalidUsername"));
+                    if (this.password != this.passwordRepeat) this.$toast.error(this.$t("PasswordsDontMatch"));
                     this.emitter.emit("hide-loader");
                     return;
                 }
@@ -116,16 +116,16 @@ export default {
                 try {
                     const registerResp = await this.userApi.registerUser(post);
                     if (registerResp.data.success) {
-                        this.$toast.success("RegisterSuccess");
+                        this.$toast.success(this.$t("RegisterSuccess"));
                         this.$router.push({name: "Login"});
                     } else {
-                        this.$toast.error("RegisterFailed");
+                        this.$toast.error(this.$t("RegisterFailed"));
                     }
                     this.emitter.emit("hide-loader");
 
                 } catch (error) {
                     console.error(error);
-                    this.$toast.error("RegisterFailed");
+                    this.$toast.error(this.$t("RegisterFailed"));
                 }
 
             } else if (this.mode == "login") {
@@ -136,18 +136,18 @@ export default {
                         this.setUser(loginResp.data.user);
                         this.setCheckedForUser(true);
     
-                        this.$toast.success("LoginSuccess");
+                        this.$toast.success(this.$t("LoginSuccess"));
                         this.$router.push({name: "Home"});
                     } else {
-                        this.$toast.error("LoginFailed");
+                        this.$toast.error(this.$t("LoginFailed"));
                     }
                 } catch (error) {
                     console.error(error);
                 
                     if (error.response.data.banned) {
-                        this.$toast.error(`BannedUserInfo: ${error.response.data.banReason}`)
+                        this.$toast.error(`${this.$t('BannedUserInfo')} ${error.response.data.banReason}`)
                     } else
-                        this.$toast.error("InvalidCredentials");
+                        this.$toast.error(this.$t("InvalidCredentials"));
                 }
 
                 this.emitter.emit("hide-loader");
