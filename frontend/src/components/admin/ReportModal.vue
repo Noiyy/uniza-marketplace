@@ -80,7 +80,7 @@ export default {
 
         async doReport() {
             if (!this.reportDescription) {
-                this.$toast.error("InvalidDescription");
+                this.$toast.error(this.$t("InvalidDescription"));
                 return;
             }
             this.emitter.emit("show-loader");
@@ -96,9 +96,9 @@ export default {
             const resp = await this.feedbackApi.addReport(post);
             console.log("hm", resp);
             if (resp.data.success) {
-                this.$toast.success("ReportAddSuccess");
+                this.$toast.success(this.$t("ReportAddSuccess"));
                 this.closeModal();
-            } else this.$toast.error("ReportAddFailed");
+            } else this.$toast.error(this.$t("ReportAddFailed"));
 
             this.emitter.emit("hide-loader");
         }

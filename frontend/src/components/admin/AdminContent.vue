@@ -465,7 +465,7 @@ export default {
             this.emitter.emit("show-loader");
 
             if (!this.itemToEdit) {
-                this.$toast.error("InvalidItemToEdit");
+                this.$toast.error(this.$t("InvalidItemToEdit"));
                 return;
             }
             let resp;
@@ -480,9 +480,9 @@ export default {
                 if (itemType == "rating") await this.getRatings();
                 if (itemType == "sale") await this.getSales();
                 
-                this.$toast.success("ItemEditSuccess");
+                this.$toast.success(this.$t("ItemEditSuccess"));
             }
-            else this.$toast.error("ItemEditFailed");
+            else this.$toast.error(this.$t("ItemEditFailed"));
 
             this.editModalIsShown = false;
             this.emitter.emit("hide-loader");
@@ -493,7 +493,7 @@ export default {
             console.log("do delete");
 
             if (!this.itemToDelete) {
-                this.$toast.error("InvalidItemToDelete");
+                this.$toast.error(this.$t("InvalidItemToDelete"));
                 return;
             }
             let resp;
@@ -512,9 +512,9 @@ export default {
                 if (itemType == "report") await this.getReports();
                 if (itemType == "sale") await this.getSales();
                 
-                this.$toast.success("ItemDeleteSuccess");
+                this.$toast.success(this.$t("ItemDeleteSuccess"));
             }
-            else this.$toast.error("ItemDeleteFailed");
+            else this.$toast.error(this.$t("ItemDeleteFailed"));
 
             this.deleteModalIsShown = false;
             this.emitter.emit("hide-loader");

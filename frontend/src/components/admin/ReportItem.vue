@@ -93,10 +93,10 @@ export default {
             console.log(resp);
 
             if (resp.data.success) {
-                this.$toast.success("ConfirmReportSuccess");
+                this.$toast.success(this.$t("ConfirmReportSuccess"));
                 this.emitter.emit("confirmed-report", this.reportData._id);
             } else {
-                this.$toast.error("ConfirmReportFailed");
+                this.$toast.error(this.$t("ConfirmReportFailed"));
             }
             this.emitter.emit("hide-loader");
         }

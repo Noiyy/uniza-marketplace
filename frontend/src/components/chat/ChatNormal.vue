@@ -331,7 +331,7 @@ export default {
 
         async addUserToChat(fromRequest) {
             if (!this.userToAdd) {
-                this.$toast.error("InvalidSelectedUserToAddChat");
+                this.$toast.error(this.$t("InvalidSelectedUserToAddChat"));
                 return;
             }
             this.emitter.emit("show-loader");

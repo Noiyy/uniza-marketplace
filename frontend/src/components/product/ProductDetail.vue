@@ -335,17 +335,17 @@ export default {
                 console.log("gh", resp);
                 if (resp.data.removed) {
                     if (resp.data.success) {
-                        this.$toast.success("BookmarkRemoveSuccess");
+                        this.$toast.success(this.$t("BookmarkRemoveSuccess"));
                         this.emitter.emit("update-user-data");
                     } else {
-                        this.$toast.error("BookmarkRemoveFailed");
+                        this.$toast.error(this.$t("BookmarkRemoveFailed"));
                     }
                 } else {
                     if (resp.data.success) {
-                        this.$toast.success("BookmarkAddSuccess");
+                        this.$toast.success(this.$t("BookmarkAddSuccess"));
                         this.emitter.emit("update-user-data");
                     } else {
-                        this.$toast.error("BookmarkAddFailed");
+                        this.$toast.error(this.$t("BookmarkAddFailed"));
                     }
                 }
     
@@ -359,13 +359,13 @@ export default {
                 const resp = await this.productApi.deleteProduct(this.product._id);
 
                 if (resp.data.deletedId) {
-                    this.$toast.success("ProductDeleteSuccess");
+                    this.$toast.success(this.$t("ProductDeleteSuccess"));
                     this.$router.push({ name: "Browse" });
                 } else this.$toast.error("ProductDeleteFailed");
 
             } catch (err) {
                 console.error(err);
-                this.$toast.error("ProductDeleteFailed");
+                this.$toast.error(this.$t("ProductDeleteFailed"));
             }
 
             this.emitter.emit("hide-loader");
@@ -395,7 +395,7 @@ export default {
                 if (resp.data.success) {
                     this.storeAddUserToChat(resp.data.addedUserId);
                 } else {
-                    this.$toast.error("FailedToOpenChatWithUser");
+                    this.$toast.error(this.$t("FailedToOpenChatWithUser"));
                     return;
                 }
             }
@@ -409,10 +409,10 @@ export default {
         copyTelNumber() {
             navigator.clipboard.writeText(this.user.phone)
                 .then(() => {
-                    this.$toast.info(`PhoneCopySuccess: ${this.user.phone}`)
+                    this.$toast.info(`${this.$t('PhoneCopySuccess')}: ${this.user.phone}`)
                 })
                 .catch(err => {
-                    this.$toast.error("PhoneCopyFailed");
+                    this.$toast.error(this.$t("PhoneCopyFailed"));
                     console.error('Failed to copy: ', err);
                 });
         },

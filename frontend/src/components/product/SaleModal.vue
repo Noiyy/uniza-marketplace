@@ -135,11 +135,11 @@ export default {
                 const resp = await this.productApi.addSale(this.$route.params.id, post);
                 console.log("added?", resp);
                 if (resp.data.id) {
-                    this.$toast.success("SaleAddSuccess");
+                    this.$toast.success(this.$t("SaleAddSuccess"));
                     this.closeModal();
                     this.emitter.emit("sale-add-success");
                 } else {
-                    this.$toast.error("SaleAddFailed");
+                    this.$toast.error(this.$t("SaleAddFailed"));
                 }
                 this.emitter.emit("hide-loader");
             } catch (err) {

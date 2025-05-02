@@ -390,23 +390,23 @@ export default {
             let failed = false;
             if (!this.product.title) {
                 failed = true;
-                this.$toast.error("InvalidProductTitle");
+                this.$toast.error(this.$t("InvalidProductTitle"));
             }
             if (!this.localProductMainCtg || !this.localProductMainCtg._id) {
                 failed = true;
-                this.$toast.error("InvalidProductMainCategory");
+                this.$toast.error(this.$t("InvalidProductMainCategory"));
             }
             if (!this.productPrice && !this.productSpecialPrice) {
                 failed = true;
-                this.$toast.error("InvalidProductPrice");
+                this.$toast.error(this.$t("InvalidProductPrice"));
             }
             if (!this.productAddress && !this.productDorm && !this.product.address.asProfile) {
                 failed = true;
-                this.$toast.error("InvalidProductAddress");
+                this.$toast.error(this.$t("InvalidProductAddress"));
             }
             if (!this.product.count.available) {
                 failed = true;
-                this.$toast.error("InvalidProductCount");
+                this.$toast.error(this.$t("InvalidProductCount"));
             }
 
             console.log("nee",this.productAddress, this.productDorm, this.product.address.asProfile);
@@ -490,10 +490,10 @@ export default {
             const resp = await this.productApi.updateProduct(this.product._id, post);
             console.log("did?", resp);
             if (resp.data._id) {
-                this.$toast.success("ProductEditSuccess");
-                // this.$router.push({ name: "ProductDetail", params: { id: resp.data._id } });
+                this.$toast.success(this.$t("ProductEditSuccess"));
+                this.$router.push({ name: "ProductDetail", params: { id: resp.data._id } });
             } else {
-                this.$toast.error("ProductEditFailed");
+                this.$toast.error(this.$t("ProductEditFailed"));
             }
 
             this.emitter.emit("hide-loader");
@@ -523,13 +523,13 @@ export default {
                 const resp = await this.productApi.addProduct(post);
                 console.log("added?", resp);
                 if (resp.data.id) {
-                    this.$toast.success("ProductAddSuccess");
+                    this.$toast.success(this.$t("ProductAddSuccess"));
                     this.$router.push({ name: "ProductDetail", params: { id: resp.data.id } });
                 } else {
-                    this.$toast.error("ProductAddFailed");
+                    this.$toast.error(this.$t("ProductAddFailed"));
                 }
             } catch (err) {
-                this.$toast.error("ProductAddFailed");
+                this.$toast.error(this.$t("ProductAddFailed"));
                 console.error(err);
             }
 

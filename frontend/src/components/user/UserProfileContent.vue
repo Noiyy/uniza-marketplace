@@ -345,7 +345,7 @@ export default {
         },
 
         async uploadUserAvatar() {
-            if (!this.selectedAvatarFile) return this.$toast.warning("PleaseSelectFile");
+            if (!this.selectedAvatarFile) return this.$toast.warning(this.$t("PleaseSelectFile"));
 
             const formData = new FormData();
             formData.append('image', this.selectedAvatarFile);
@@ -357,9 +357,9 @@ export default {
                 console.log("man", resp);
                 if (resp.data.file) {
                     this.user.avatarPath = resp.data.file.filename;
-                    this.$toast.success("SavedAvatarSuccess");
+                    this.$toast.success(this.$t("SavedAvatarSuccess"));
                 } else {
-                    this.$toast.error("SavedAvatarFailed");
+                    this.$toast.error(this.$t("SavedAvatarFailed"));
                 }
 
 
@@ -396,7 +396,7 @@ export default {
                 if (resp.data.success) {
                     this.storeAddUserToChat(resp.data.addedUserId);
                 } else {
-                    this.$toast.error("FailedToOpenChatWithUser");
+                    this.$toast.error(this.$t("FailedToOpenChatWithUser"));
                     return;
                 }
             }
@@ -410,10 +410,10 @@ export default {
         copyTelNumber() {
             navigator.clipboard.writeText(this.userPhone)
                 .then(() => {
-                    this.$toast.info(`PhoneCopySuccess: ${this.userPhone}`)
+                    this.$toast.info(`${this.$t('PhoneCopySuccess')}: ${this.userPhone}`)
                 })
                 .catch(err => {
-                    this.$toast.error("PhoneCopyFailed");
+                    this.$toast.error(this.$t("PhoneCopyFailed"));
                     console.error('Failed to copy: ', err);
                 });
         },
@@ -443,11 +443,11 @@ export default {
             }
 
             if (this.userPhone && !this.userPhoneNumIsValid) {
-                this.$toast.error("InvalidPhoneNumber");
+                this.$toast.error(this.$t("InvalidPhoneNumber"));
                 return;
             }
             if (!this.userDorm && !this.userAddress && !this.userPhone) {
-                this.$toast.error("NothingToSave");
+                this.$toast.error(this.$t("NothingToSave"));
                 return;
             }
 
@@ -463,16 +463,16 @@ export default {
                 const resp = await this.userApi.updateUserSettings(this.user._id, post);
                 console.log("did?", resp);
                 if (resp.data.success) {
-                    this.$toast.success("UpdateUserSettingsSuccess");
+                    this.$toast.success(this.$t("UpdateUserSettingsSuccess"));
                     await this.getUserData();
                     this.closeSettingsModal();
                 } else {
-                    this.$toast.error("UpdateUserSettingsFailed");
+                    this.$toast.error(this.$t("UpdateUserSettingsFailed"));
                 }
 
                 this.emitter.emit("hide-loader");
             } catch (err) {
-                this.$toast.error("UpdateUserSettingsFailed");
+                this.$toast.error(this.$t("UpdateUserSettingsFailed"));
                 this.emitter.emit("hide-loader");
                 console.error(err);
             }

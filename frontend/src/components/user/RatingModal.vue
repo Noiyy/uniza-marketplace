@@ -98,7 +98,7 @@ export default {
 
         async rateUser() {
             if (!this.ratingData.title) {
-                this.$toast.error("MissingRatingTitle");
+                this.$toast.error(this.$t("MissingRatingTitle"));
                 return;
             }
 
@@ -116,11 +116,11 @@ export default {
             const resp = await this.feedbackApi.addRating(post);
             console.log("more", resp);
             if (resp.data.success) {
-                this.$toast.success("RatedUserSuccess");
+                this.$toast.success(this.$t("RatedUserSuccess"));
                 this.emitter.emit("added-rating");
                 this.closeModal();
             } else {
-                this.$toast.error("RatedUserFailed");
+                this.$toast.error(this.$t("RatedUserFailed"));
             }
 
             this.emitter.emit("hide-loader");

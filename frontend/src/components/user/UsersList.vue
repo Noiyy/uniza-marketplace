@@ -89,11 +89,11 @@ export default {
             const resp = await this.userApi.banUser(this.userToBan._id, this.banReason);
             console.log(resp);
             if (resp.data.success) {
-                this.$toast.success("UserBanSuccess");
+                this.$toast.success(this.$t("UserBanSuccess"));
                 this.closeBanModal();
                 this.emitter.emit("user-ban-success");
             } else {
-                this.$toast.error("UserBanFailed");
+                this.$toast.error(this.$t("UserBanFailed"));
             }
 
             this.emitter.emit("hide-loader");

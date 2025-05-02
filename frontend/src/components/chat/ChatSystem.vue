@@ -100,10 +100,10 @@ export default {
             const resp = await this.productApi.confirmSale(sale._id);
             console.log("did?", resp);
             if (resp.data.success) {
-                this.$toast.success("ConfirmSaleSuccess");
+                this.$toast.success(this.$t("ConfirmSaleSuccess"));
                 await this.getUserUnconfirmedSales();
             } else
-                this.$toast.error("ConfirmSaleFailed");
+                this.$toast.error(this.$t("ConfirmSaleFailed"));
 
             this.emitter.emit("hide-loader");
         }

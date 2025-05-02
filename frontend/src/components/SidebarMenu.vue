@@ -130,10 +130,10 @@ export default {
                 forceDisconnect();
 
                 this.emitter.emit('close-sidebarMenu')
-                this.$toast.success("LogoutSuccess");
+                this.$toast.success(this.$t("LogoutSuccess"));
                 this.$router.push({name: "Home"});
             } else {
-                this.$toast.error("LogoutFailed");
+                this.$toast.error(this.$t("LogoutFailed"));
             }
             this.emitter.emit("hide-loader");
         },

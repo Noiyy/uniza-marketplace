@@ -82,14 +82,14 @@ export default {
                 console.log("gh", resp);
                 if (resp.data.removed) {
                     if (resp.data.success) {
-                        this.$toast.success("BookmarkRemoveSuccess");
+                        this.$toast.success(this.$t("BookmarkRemoveSuccess"));
                         this.emitter.emit("update-user-data");
                         this.$emit("removed-bookmark", prodData._id);
                     } else {
-                        this.$toast.error("BookmarkRemoveFailed");
+                        this.$toast.error(this.$t("BookmarkRemoveFailed"));
                     }
                 } else
-                    this.$toast.error("BookmarkRemoveFailed");
+                    this.$toast.error(this.$t("BookmarkRemoveFailed"));
     
                 this.emitter.emit("hide-loader");
             } 
