@@ -634,6 +634,8 @@ export default {
                 getSpecialPrices: "product/getSpecialPrices",
                 getDorms: "product/getDorms",
                 getAllPSC: 'misc/getAllPSC',
+
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -1007,6 +1009,40 @@ export default {
 
 .no-sales {
     opacity: 0.66;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .under-heading {
+        margin-top: 8px;
+    }
+
+    .product-main-edit {
+        flex-direction: column-reverse;
+    }
+
+    .sales-view-link {
+        background: linear-gradient(90deg, rgba(15, 11, 7, 0.00) 0%, rgba(240, 237, 234, 0.10) 100%);
+    }
+
+    .sales-view-link .btn {
+        padding: 2px 16px;
+        font-size: 16px;
+        gap: 4px;
+    }
+
+    .sales-view-link .btn .sales-icon, .sales-view-link .btn .arrow-icon {
+        font-size: 20px;
+    }
+
+    .images-wrapper {
+        grid-auto-rows: 110px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
 

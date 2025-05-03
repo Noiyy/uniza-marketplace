@@ -5,7 +5,7 @@
             <input v-model="localItemToEditData.title" type="text" class="styled" :placeholder="$t('Title')">
         </div>
     
-        <div class="input-row d-flex gap-24 align-items-center justify-content-between">
+        <div class="input-row objs-row d-flex gap-24 align-items-center justify-content-between">
             <div class="input-cont d-flex flex-column gap-8 flex-1" v-if="isEdit">
                 <div class="input-tag"> {{ $t('RatedBy') }} </div>
                 <Multiselect
@@ -115,7 +115,7 @@
         </div>
     
         <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-            <div class="input-cont d-flex flex-column gap-8 flex-1"></div>
+            <div class="input-cont d-flex flex-column gap-8 flex-1" v-if="!IS_MOBILE"></div>
     
             <div class="input-cont d-flex flex-column gap-8 flex-1">
                 <div class="input-tag"> {{ $t('RatedProduct') }} </div>
@@ -144,6 +144,7 @@ import Multiselect from 'vue-multiselect';
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import { Icon } from '@iconify/vue';
+import { mapGetters } from "vuex/dist/vuex.cjs.js";
 
 export default {
     name: 'RatingModalContent',
@@ -192,7 +193,9 @@ export default {
     },
     
     computed: {
-
+        ...mapGetters({
+            IS_MOBILE: 'misc/getIsMobile',
+        })
     },
 
     created() {
@@ -246,6 +249,28 @@ export default {
 .rating-cont .input-tag {
     left: 0;
     padding: 4px 0; 
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    textarea {
+        min-height: 15vh;
+        max-height: 17vh;
+    }
+
+    .objs-row {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .objs-row > div {
+        width: 100%;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
 

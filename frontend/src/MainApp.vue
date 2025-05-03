@@ -586,4 +586,31 @@ width */
 .banned-badge {
   background-color: var(--red);
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+  .scroll-to-top {
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .chat-bubble {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .nav-btns-wrapper {
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .nav-btns-wrapper .btn.nav-btn {
+      padding: 2px 16px;
+  }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

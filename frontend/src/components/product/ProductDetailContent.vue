@@ -284,6 +284,23 @@ export default {
     opacity: 0.66;
 }
 
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    #product-detail {
+        margin-top: 40px;
+    }
+
+    .created-at {
+        font-size: 12px;
+        white-space: nowrap;
+        gap: 8px !important;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
 
 <style>

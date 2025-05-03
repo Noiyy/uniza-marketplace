@@ -20,8 +20,15 @@
                     </div>
     
                     <div class="right d-flex flex-column align-items-center gap-16">
-                        <router-link to="/support" class="btn secondary"> {{ $t('Notifications') }} </router-link>
-                        <span> {{ $t('NotiInfo') }} </span> 
+                        <template v-if="getLoggedUser">
+                            <router-link to="/chat/system" class="btn secondary"> {{ $t('Notifications') }} </router-link>
+                            <span> {{ $t('NotiInfo') }} </span> 
+                        </template>
+
+                        <template v-else>
+                            <router-link to="/login" class="btn secondary"> {{ $t('Login') }} </router-link>
+                            <span> {{ $t('LoginInfo') }} </span> 
+                        </template>
                     </div>
                 </div>
             </div>
@@ -94,7 +101,7 @@
 import Footer from '../Footer.vue'
 import Header from '../Header.vue';
 import HomeHero from './HomeHero.vue';
-// import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import { Icon } from '@iconify/vue';
 
@@ -167,11 +174,11 @@ export default {
     },
     
     computed: {
-        // ...mapGetters(
-        //     {
-
-        //     }
-        // ),
+        ...mapGetters(
+            {
+                getLoggedUser: "user/getUser"
+            }
+        ),
         patternBgStyle() {
             return `
                 background: url(${this.patternImgSrc}) 0% 0% / 65% 270% repeat`;

@@ -205,12 +205,25 @@ footer {
 
 /* SMALL - Mobile */
 @media(max-width: 640px) { 
-    /* footer {
-        margin-top: 64px;
-    } */
+    footer {
+        margin-top: 124px;
+    }
 
     .upper-content .container {
         column-gap: 48px;
+    }
+
+    .info-links a {
+        font-size: 14px;
+    }
+
+    .lower-content p {
+        font-size: 14px;
+    }
+
+    .lower-content a {
+        font-size: 12px;
+        letter-spacing: 13px;
     }
 }
 

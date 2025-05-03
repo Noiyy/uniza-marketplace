@@ -16,6 +16,8 @@
                                 <h1> {{ $t('CreateProduct') }} </h1>
                             </div>
 
+                            <div class="line-divider" v-if="IS_MOBILE"></div>
+
                             <div class="edit-options d-flex gap-32 align-items-center">
                                 <div class="nav-btns-wrapper d-flex">
                                     <button class="btn nav-btn" 
@@ -32,13 +34,13 @@
                                     </button>
                                 </div>
 
-                                <button class="btn primary" @click="isAdd ? addProduct() : saveProduct()"> 
+                                <button class="btn primary" @click="isAdd ? addProduct() : saveProduct()" :class="IS_MOBILE ? 'smaller' : ''"> 
                                     {{ isAdd ? $t('Create') : $t('Save') }}
                                 </button>
                             </div>
                         </div>
 
-                        <div class="line-divider"></div>
+                        <div class="line-divider" v-if="!IS_MOBILE"></div>
                     </div>
 
                     <Transition name="fade" mode="out-in" @after-leave="changedComponent">
@@ -262,6 +264,7 @@ export default {
                 getSubCategories: "product/getSubCategories",
 
                 getLoggedUser: "user/getUser",
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
     },
@@ -310,5 +313,28 @@ export default {
     color: var(--red);
 }
 
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    #product-edit {
+        margin-top: 40px;
+    }
 
+    .edit-heading {
+        flex-direction: column;
+        gap: 8px !important;
+    }
+
+    .edit-heading .heading-title h1 {
+        font-size: 18px;
+    }
+
+    .edit-options {
+        justify-content: space-between;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

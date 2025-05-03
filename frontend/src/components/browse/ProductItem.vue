@@ -51,7 +51,7 @@
             </div>
         </router-link>
     
-        <router-link :to="`/product/${prodData._id}`" class="product-item d-flex flex-column grid" v-else-if="viewType == 'grid'">
+        <router-link :to="`/product/${prodData._id}`" class="product-item list-item d-flex flex-column grid" v-else-if="viewType == 'grid'">
             <div class="thumbnail d-flex justify-content-center align-items-center">
                 <div class="location">
                     <Icon icon="mdi:location" class="location-icon detail-icon" />
@@ -377,5 +377,51 @@ export default {
     border-radius: 50%;
     opacity: 0;
     transition: opacity 0.15s ease-in;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .product-item {
+        gap: 12px;
+    }
+
+    .thumbnail {
+        flex: 3;
+    }
+
+    .main {
+        flex: 4;
+    }
+
+    .main .heading h2 {
+        font-size: 14px;
+    }
+
+    .main .description {
+        font-size: 13px;
+    }
+
+    .details {
+        flex: 3;
+    }
+
+    .location {
+        font-size: 11px;
+    }
+
+    .price {
+        font-size: 14px;
+    }
+
+    .detail-icon {
+        font-size: 16px;
+    }
+
+
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>

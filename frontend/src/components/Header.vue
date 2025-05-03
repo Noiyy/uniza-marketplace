@@ -50,7 +50,7 @@
                                     <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
                                         :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
                                         @click="selectMainCtgHandler(ctg)"> 
-                                        {{ $t(`ctg_${ctg.name}`) }}
+                                        <span> {{ $t(`ctg_${ctg.name}`) }} </span>
 
                                         <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
                                             <div class="option sub-ctg" v-for="(sCtg, sIndex) in ctg.subCategories" :key="sIndex"
@@ -153,7 +153,7 @@
                                 <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
                                     :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
                                     @click="selectMainCtgHandler(ctg)"> 
-                                    {{ $t(`ctg_${ctg.name}`) }}
+                                    <span> {{ $t(`ctg_${ctg.name}`) }} </span>
     
                                     <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
                                         <div class="option sub-ctg" v-for="(sCtg, sIndex) in ctg.subCategories" :key="sIndex"
@@ -849,7 +849,15 @@ header {
     background-color: var(--black);
     cursor: pointer;
 }
-.filters-dropdown-content .option:hover {
+
+.filters-dropdown-content .option.main-ctg span {
+    width: 100%;
+    display: inline-flex;
+    padding: 8px;
+}
+
+.filters-dropdown-content .option.main-ctg:hover span,
+.filters-dropdown-content .option.sub-ctg:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
 

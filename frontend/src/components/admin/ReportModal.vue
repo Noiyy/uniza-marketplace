@@ -135,4 +135,17 @@ textarea {
     min-width: 64px;
     max-height: 35vh;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    textarea {
+        min-height: 30vh;
+        max-height: 35vh;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

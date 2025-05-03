@@ -138,4 +138,43 @@ export default {
 .item-misc {
     font-weight: 300;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .history-item {
+        padding: 4px 12px;
+        gap: 16px;
+    }
+
+    .type-indicator {
+        width: 8px;
+        height: 24px;
+    }
+
+    .item-misc {
+        gap: 8px !important;
+        font-size: 14px;
+    }
+
+    .item-main {
+        gap: 16px !important;
+    }
+
+    .item-info {
+        font-size: 14px;
+    }
+
+    .item-date {
+        font-size: 12px;
+    }
+
+    .item-date .date-icon {
+        font-size: 16px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

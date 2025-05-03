@@ -199,4 +199,27 @@ export default {
 .product-info:hover {
     filter: brightness(0.7);
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .user-avatar-cont, .default-avatar-cont {
+        width: 32px;
+        height: 32px;
+        max-width: 32px;
+        max-height: 32px;
+    }
+
+    .default-avatar-cont {
+        font-size: 16px;
+    }
+
+    .sold-info {
+        font-size: 14px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

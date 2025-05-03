@@ -19,12 +19,13 @@
                     </div>
                 </div>
 
-                <div class="product-heading-options d-flex align-items-center">
+                <div class="product-heading-options d-flex gap-16 align-items-center">
+                    <div class="back d-flex align-items-center" @click="$router.back()">
+                        <Icon icon="mdi:arrow-left-top" class="back-icon" />
+                        {{ $t('Back').toLowerCase() }}
+                    </div>
+
                     <div class="options-wrapper d-flex gap-16 align-items-center" v-if="!isPreview">
-                        <div class="back d-flex align-items-center" @click="$router.back()">
-                            <Icon icon="mdi:arrow-left-top" class="back-icon" />
-                            {{ $t('Back').toLowerCase() }}
-                        </div>
                         <template v-if="getLoggedUser && (getLoggedUser._id == product.sellerId || getLoggedUser.isAdmin)">
                             <button class="btn primary btn-icon" @click="deleteProduct()" v-if="getLoggedUser.isAdmin">
                                 <Icon icon="mdi:trash" class="opt-icon" />
@@ -60,7 +61,7 @@
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
                 </div>
-                <div class="images-price d-flex flex-column gap-24 align-items-end" :class="product.status == 'saleEnded' ? 'saleEnded' : ''">
+                <div v-if="!IS_MOBILE" class="images-price d-flex flex-column gap-24 align-items-end" :class="product.status == 'saleEnded' ? 'saleEnded' : ''">
                     <div class="price d-flex gap-24 align-items-center">
                         <div class="sale-ended-info" v-if="product.status == 'saleEnded'">
                             {{ $t("SaleEnded") }}
@@ -85,6 +86,16 @@
                             /> <!--  @mouseleave="shownMainImgIndex = null" -->
                         </template>
                     </div>
+                </div>
+
+                <div v-if="IS_MOBILE" class="other-images-tracker d-flex justify-content-center gap-8">
+                    <template v-if="productHasImages && loadedData">
+                        <!-- shownMainImgIndex -->
+                        <div class="img-tracker" v-for="(image, index) in product.images" :key="index"
+                            :class="index == shownMainImgIndex ? 'active' : ''"
+                            @click="shownMainImgIndex = index">
+                        </div>
+                    </template>
                 </div>
 
                 <VueEasyLightbox
@@ -149,6 +160,23 @@
                             </div>
                         </div>
                     </router-link>
+                </div>
+
+                <div v-if="IS_MOBILE" class="images-price d-flex justify-content-end" :class="product.status == 'saleEnded' ? 'saleEnded' : ''">
+                    <div class="price d-flex gap-24 align-items-center">
+                        <div class="sale-ended-info" v-if="product.status == 'saleEnded'">
+                            {{ $t("SaleEnded") }}
+                        </div>
+    
+                        <h3 class="gradient-text"> {{ $t('Price') }} </h3>
+                        <span class="montserrat" v-if="product.price.specialValue"> {{ $t(`${product.price.specialValue}`) }} </span>
+                        <span class="montserrat" v-else> {{ product.price.value && typeof product.price.value === "string" ?
+                            product.price.value :
+                            product.price.value.$numberDecimal ?
+                                product.price.value.$numberDecimal :
+                                "? "
+                        }}€ </span>      
+                    </div>
                 </div>
             </div>
         </div>
@@ -432,7 +460,8 @@ export default {
     computed: {
         ...mapGetters(
             {
-                getLoggedUser: "user/getUser"
+                getLoggedUser: "user/getUser",
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -584,16 +613,16 @@ export default {
     width: 100%;
 }
 
-.product-showcase .images-price {
+.images-price {
     flex: 1;
 }
 
-.product-showcase .images-price .price h3 {
+.images-price .price h3 {
     font-size: 18px;
     font-weight: 800;
 }
 
-.product-showcase .images-price .price span {
+.images-price .price span {
     background: var(--white);
     color: var(--black);
     padding: 4px 16px;
@@ -603,12 +632,12 @@ export default {
     font-weight: 800;
 }
 
-.product-showcase .images-price.saleEnded .price h3,
-.product-showcase .images-price.saleEnded .price span {
+.images-price.saleEnded .price h3,
+.images-price.saleEnded .price span {
     opacity: 0.5;
 }
 
-.product-showcase .images-price .sale-ended-info {
+.images-price .sale-ended-info {
     color: var(--black);
     padding: 4px 16px;
     line-height: 100%;
@@ -781,6 +810,126 @@ export default {
 
 .rating-values {
     margin-bottom: 6px;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .breadcrumbs {
+        font-size: 13px;
+        gap: 4px !important;
+    }
+
+    .product-title-text h1 {
+        font-size: 16px;
+    }
+
+    .product-title {
+        justify-content: flex-end;
+    }
+
+    .main-img-icon {
+        font-size: 24px;
+    }
+
+    .product-showcase .main-img-cont,
+    .product-showcase .main-img-cont img {
+        height: 60svw;
+        min-height: 60svw;
+        max-height: 60svw;
+    }
+
+    .product-showcase {
+        flex-direction: column;
+        gap: 12px !important;
+    }
+
+    .product-showcase .other-images-tracker .img-tracker {
+        background: var(--gradient-angle);
+        border-radius: 4px;
+        width: 16px;
+        height: 8px;
+        opacity: 0.5;
+    }
+    .product-showcase .other-images-tracker .img-tracker.active {
+        opacity: 1;
+    }
+
+    .product-heading-options {
+        align-items: flex-end !important;
+        flex-direction: column;
+        gap: 4px !important;
+    }
+
+    .product-heading-options .options-wrapper {
+        gap: 8px !important;
+    }
+
+    .product-heading-options .options-wrapper .btn {
+        width: 24px;
+        height: 24px;
+        font-size: 18px;
+    }
+
+    .under-showcase {
+        flex-direction: column-reverse;
+        gap: 16px !important;
+    }
+
+    .product-seller-info {
+        flex-direction: row-reverse;
+        align-items: flex-end;
+        gap: 24px !important;
+        justify-content: space-between;
+    }
+
+    .seller > div {
+        flex-direction: row-reverse;
+    }
+
+    .seller > span {
+        margin-right: 0;
+        margin-left: 6px;
+        text-align: left;
+    }
+
+    .rating-values {
+        margin-bottom: 16px;
+    }
+
+    .seller-btns {
+        flex-direction: column;
+        gap: 8px !important;
+    }
+
+    .product-description {
+        padding: 8px;
+    }
+
+    .product-misc-options .options-wrapper {
+        flex-wrap: wrap;
+        justify-content: center;
+        row-gap: 12px !important;
+        column-gap: 32px !important;
+        font-size: 14px;
+    }
+
+    .images-price {
+        margin-top: 8px;
+    }
+
+    .images-price .price h3 {
+        font-size: 14px;
+    }
+
+    .images-price .price span {
+        font-size: 20px;
+        padding: 3px 8px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 
 /* XL */

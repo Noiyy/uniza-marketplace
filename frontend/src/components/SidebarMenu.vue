@@ -64,7 +64,7 @@
                         </router-link>
 
                         <!-- <router-link to="/support" class="highlightActive" > Support </router-link> -->
-                        <router-link to="/chat/system" class="highlightActive d-flex gap-8 align-items-center chat-link" > 
+                        <router-link to="/chat/system" class="highlightActive d-flex gap-8 align-items-center chat-link" v-if="user" > 
                             {{ $t('Notifications') }}
                             <div class="notification-count" v-if="getUnreadNotiCount"> {{ getUnreadNotiCount < 10 ? getUnreadNotiCount : "+9" }} </div>
                         </router-link>

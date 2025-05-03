@@ -9,7 +9,7 @@
                     <div class="faq-wrapper d-flex flex-column gap-40">
                         <div class="question d-flex flex-column gap-24" v-for="(question, index) in questions" :key="index">
 
-                            <a role="button" class="heading d-flex flex-column gap-8" 
+                            <a role="button" class="heading d-flex flex-column gap-8 collapsed" 
                                 @click="question.shown = !question.shown" :class="question.shown ? 'collapseShown' : ''"
                                 data-bs-toggle="collapse" :href="`#questionCollapse${index}`" aria-expanded="false" :aria-controls="`questionCollapse${index}`">
                                 <div class="heading-content d-flex justify-content-between align-items-center gap-16">
@@ -178,5 +178,17 @@ export default {
 
 .question .body p {
     font-weight: 300;
+}
+
+.question a.heading {
+    color: var(--primary);
+}
+
+.question a.heading.collapsed {
+    color: var(--white);
+}
+
+.question a.heading:hover {
+    color: var(--primary);
 }
 </style>

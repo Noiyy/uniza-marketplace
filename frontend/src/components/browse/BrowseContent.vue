@@ -7,7 +7,7 @@
                 <div class="content">
 
                     <div class="browse-wrapper d-flex">
-                        <div class="categories d-flex flex-column">
+                        <div class="categories d-flex flex-column" v-if="!IS_MOBILE">
                             <div class="main-category category" v-for="ctg in categories" :key="ctg.name" @click="(e) => chooseCategory(e, ctg, true)"
                                 :class="ctg.active ? 'active' : ctg.subCategories.some(sCtg => sCtg.active) ? 'main-sub_active' : ''">
                                 {{ ctg.name == "allProducts" ? $t('AllProducts') : $t(`ctg_${ctg.name}`) }}
@@ -24,8 +24,8 @@
                         <div class="results d-flex flex-column gap-40 flex-1">
                             <div class="results-header d-flex flex-column gap-8">
                                 <div class="content d-flex justify-content-between">
-                                    <div class="info d-flex flex-column">
-                                        <div class="breadcrumbs d-flex gap-8" v-if="selectedSearchCategory && selectedSearchCategory._id">
+                                    <div class="info d-flex flex-column" >
+                                        <div class="breadcrumbs d-flex gap-8" v-if="!IS_MOBILE && selectedSearchCategory && selectedSearchCategory._id">
                                             <span> {{ $t(`ctg_${selectedMainCtg}`) }} </span>
                                             <span v-if="selectedSubCtg"> > </span>
                                             <span v-if="selectedSubCtg"> {{ $t(`${selectedSubCtg}`) }} </span>
@@ -37,7 +37,7 @@
                                     </div>
 
                                     <div class="options d-flex gap-64 align-items-center">
-                                        <div class="filters">
+                                        <div class="filters" v-if="!IS_MOBILE">
                                             <ItemsSorter
                                                 :option-callback="selectSortFilter"
                                                 :selected-sort-filter="selectedSortFilter"
@@ -59,6 +59,40 @@
                                 </div>
 
                                 <div class="line-divider"></div>
+
+                                <div class="mobile-under-content d-flex align-items-center justify-content-between gap-24" v-if="IS_MOBILE">
+                                    <div class="category-filters pos-relative" :class="mobileCtgsDropdownOpened ? 'open' : ''" @click="(e) => toggleCategoryDropdown(e)"> 
+                                        <div class="selected d-flex">
+                                            {{ selectedSubCtg ? $t(`ctg_${selectedSubCtg}`) :
+                                                selectedMainCtg ? $t(`ctg_${selectedMainCtg}`) :
+                                                $t('AllProducts') 
+                                            }}
+                                            <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                                        </div>
+
+                                        <div class="filters-dropdown-content">
+                                            <div class="option main-category category" v-for="ctg in categories" :key="ctg.name" @click="(e) => chooseCategory(e, ctg, true)"
+                                                :class="ctg.active ? 'active' : ctg.subCategories.some(sCtg => sCtg.active) ? 'main-sub_active' : ''"> 
+                                                {{ ctg.name == "allProducts" ? $t('AllProducts') : $t(`ctg_${ctg.name}`) }}
+                
+                                                <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
+                                                    <div class="option sub-category category" v-for="subCtg in ctg.subCategories" :key="subCtg.name" @click="(e) => chooseCategory(e, subCtg, false)"
+                                                        :class="subCtg.active ? 'active' : ''">
+                                                        {{ $t(`ctg_${subCtg.name}`) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="filters">
+                                        <ItemsSorter
+                                            :option-callback="selectSortFilter"
+                                            :selected-sort-filter="selectedSortFilter"
+                                            :show-special-prices="true"
+                                        ></ItemsSorter>
+                                    </div>
+                                </div>
                             </div>
                             <div class="results-content">
                                 <ProductsList
@@ -114,7 +148,7 @@ export default {
             sortFiltersOpened: false,
             selectedSortFilter: "latest",
 
-            activeViewType: "list",
+            activeViewType: this.IS_MOBILE ? "grid" : "list",
 
             selectedMainCtg: null,
             selectedSubCtg: null,
@@ -123,6 +157,8 @@ export default {
             selectedPriceRange: [0, 9999],
             selectedLocation: null,
             searchQuery: "",
+
+            mobileCtgsDropdownOpened: false,
         }
     },
 
@@ -230,12 +266,18 @@ export default {
                 });
             }
             return activeCtg;
+        },
+
+        toggleCategoryDropdown(e) {
+            if (e.target.classList.contains("filters-dropdown-content")) return;
+            this.mobileCtgsDropdownOpened = !this.mobileCtgsDropdownOpened;
         }
     },
     
     computed: {
         ...mapGetters(
             {
+                IS_MOBILE: 'misc/getIsMobile',
                 getAllCategories: "product/getAllCategories",
                 getBrowseOptions: "browse/getBrowseOptions"
             }
@@ -268,6 +310,8 @@ export default {
         if (this.querySearch) {
             this.searchQuery = this.querySearch;
         }
+
+        if (this.IS_MOBILE) this.activeViewType = "grid";
     },
 
     async mounted() {
@@ -382,5 +426,40 @@ export default {
 
 .results-header .info {
     gap: 4px;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .browse-wrapper {
+        margin-top: 40px;
+    }
+
+    .results-header .heading h2 {
+        font-size: 18px;
+    }
+
+    .mobile-under-content .category-filters .selected {
+        gap: 4px;
+        background-color: var(--white-5a);
+        border-radius: 4px;
+        padding: 6px 10px;
+    }
+
+    .mobile-under-content > .open .filters-dropdown-content {
+        display: block;
+    }
+    .mobile-under-content > .open .chevron-icon {
+        transform: rotate(180deg);
+    }
+
+    .category-filters .filters-dropdown-content {
+        top: initial;
+        right: initial;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
