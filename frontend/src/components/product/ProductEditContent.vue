@@ -9,7 +9,7 @@
                     <div class="heading-cont d-flex flex-column gap-8">
                         <div class="edit-heading d-flex justify-content-between gap-32">
                             <router-link :to="`/product/${product._id}`" class="heading-title d-flex gap-8 align-items-end" v-if="!isAdd">
-                                <h1> {{ $t('EditProduct') }} </h1>
+                                <h1 :class="product.status == 'saleEnded' ? 'saleEnded' : ''"> {{ $t('EditProduct') }} </h1>
                                 <Icon icon="prime:arrow-up-right" class="arrow-icon" />
                             </router-link>
                             <div class="heading-title d-flex gap-8 align-items-end" v-else>
@@ -22,7 +22,7 @@
                                         @click="showProductDetail()"
                                         :class="shownComponent === 'ProductDetail' ? 'active' : ''"
                                     > 
-                                        {{ $t('Preview ') }}
+                                        {{ $t('Preview') }}
                                     </button>
                                     <button class="btn nav-btn" 
                                         @click="showProductEditor()"
@@ -63,6 +63,7 @@
                                 :product-sub-ctg="productSubCtg"
                                 :is-add="isAdd"
                                 @scroll-to-sales="scrollToSales()"
+                                @update-product-data="(data) => isAdd ? null : product = data"
                             ></component>
                         </KeepAlive>
                     </Transition>
@@ -128,7 +129,7 @@ export default {
                 count: {
                     available: 1,
                     sold: 0,
-                    deleteOnZero: false
+                    endSaleOnZero: false
                 },
                 description: null,
                 history: [],
@@ -303,6 +304,10 @@ export default {
     font-weight: bold;
     text-transform: uppercase;
     line-height: 100%;
+}
+
+.edit-heading .heading-title h1.saleEnded {
+    color: var(--red);
 }
 
 

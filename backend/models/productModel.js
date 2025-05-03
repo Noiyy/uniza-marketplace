@@ -37,7 +37,7 @@ const productSchema = new mongoose.Schema({
 	count: {
 		available: { type: Number, default: 1, required: true },
 		sold: { type: Number, default: 0, required: true },
-		deleteOnZero: { type: Boolean, default: false, required: true }
+		endSaleOnZero: { type: Boolean, default: false, required: true }
 	},
 	status: {
 		type: String,

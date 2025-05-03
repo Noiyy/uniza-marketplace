@@ -36,12 +36,12 @@
                                     <h2 class="pos-relative"> {{ $t("SaleEnded") }} </h2>
                                     <div class="line-divider"></div>
                                 </div>
-                                <div class="date montserrat"> 18.12.2024 </div>
+                                <div class="date montserrat"> {{ getSaleEndedDate }} </div>
                             </div>
     
                             <div class="history-wrapper d-flex flex-column gap-16 pos-relative" :class="shownHistory ? 'shown' : ''">
                                 <template v-for="(hist, index) in productHistory" :key="index">
-                                    <HistoryItem
+                                    <HistoryItem v-if="hist.historyType !== 'saleEnded'"
                                         :history-data="hist"
                                         :product-data="product"
                                     ></HistoryItem>
@@ -139,6 +139,12 @@ export default {
             try {
                 const resp = await this.productApi.getProductHistory(this.$route.params.id);
                 this.productHistory = resp.data;
+                this.productHistory.sort((a, b) => {
+                    const aEpoch = new Date(a.timestamp).getTime();
+                    const bEpoch = new Date(b.timestamp).getTime();
+
+                    return bEpoch - aEpoch;
+                });
                 console.log("history", this.productHistory);
             } catch (err) {
                 console.error(err);
@@ -157,6 +163,20 @@ export default {
 
         productHasImages() {
             return this.product && this.product.images && this.product.images.length;
+        },
+
+        getSaleEndedDate() {
+            const endSaleHistories = this.productHistory.filter(his => his.historyType == "saleEnded");
+            endSaleHistories.sort((a, b) => {
+                const aEpoch = new Date(a.timestamp).getTime();
+                const bEpoch = new Date(b.timestamp).getTime();
+
+                return bEpoch - aEpoch;
+            });
+
+            let hist = endSaleHistories[0];
+            if (hist)
+                return `${this.isoToDateString(hist.timestamp)} ${this.isoToDayTime(hist.timestamp)}`;
         }
     },
 

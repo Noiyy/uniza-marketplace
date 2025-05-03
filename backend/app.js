@@ -16,6 +16,7 @@ const https = require("https");
 const fs = require('fs');
 const { Server } = require('socket.io');
 const socketIoHandler = require("./util/socketIoHandler");
+const { startAgenda } = require('./util/agenda');
 
 const historyFallbackOptions = {
     rewrites: [
@@ -121,10 +122,12 @@ app.use((req, res, next) => {
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
     console.log('connected to database')
+    startAgenda().catch(console.error);
+
     server.listen(process.env.PORT, () => {
         console.log('listening for requests on port', process.env.PORT);
     })
 })
 .catch((err) => {
-    console.log(err);
+    console.log("Database connection error:", err);
 }) 

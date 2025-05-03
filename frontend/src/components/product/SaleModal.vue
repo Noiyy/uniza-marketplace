@@ -53,7 +53,7 @@
 
                 <div class="input-cont d-flex flex-column gap-8">
                     <div class="input-tag"> {{ $t('Count') }} </div>
-                    <input v-model="saleCount" type="number" min="1" max="9999" class="styled" :placeholder="$t('Count')">
+                    <input v-model="saleCount" type="number" min="1" :max="productAvailableCount" class="styled" :placeholder="$t('Count')">
                 </div>
             </div>
 
@@ -75,7 +75,7 @@ export default {
     name: 'SaleModal',
 
     inject: ['emitter', 'productApi'],
-    emits: ['close', 'update:isShown'],
+    emits: ['close', 'update:isShown', 'update-product-data'],
 
     props: {
         isShown: {
@@ -91,6 +91,11 @@ export default {
         saleData: {
             type: Object,
             default: null
+        },
+
+        productAvailableCount: {
+            type: Number,
+            default: 1
         }
     },
 
@@ -136,6 +141,8 @@ export default {
                 console.log("added?", resp);
                 if (resp.data.id) {
                     this.$toast.success(this.$t("SaleAddSuccess"));
+                    if (resp.data.newProdData) this.$emit("update-product-data", resp.data.newProdData);
+
                     this.closeModal();
                     this.emitter.emit("sale-add-success");
                 } else {

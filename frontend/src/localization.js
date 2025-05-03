@@ -265,7 +265,13 @@ const i18nOptions = {
       UpdateUserSettingsSuccess: "Zmena nastavení bola úspešná",
       UpdateUserSettingsFailed: "Nepodarilo sa zmeniť nastavenia!",
       UserBanSuccess: "Používateľ bol úspešne zabanovaný",
-      UserBanFailed: "Nepodarilo sa zabanovať používateľa!"
+      UserBanFailed: "Nepodarilo sa zabanovať používateľa!",
+      EndSaleOn0CountInfo: "Ukončenie predaja keď počet produktu klesne na 0",
+      EndSale: "Ukončiť predaj",
+      EndSaleSuccess: "Predaj produktu bol ukončený úspešne",
+      EndSaleFailed: "Nepodarilo sa ukončiť predaj produktu!",
+      ConfirmEndSaleInfo: "O ukončení predaja tohto produktu?",
+      SaleEndedAt: "Predaj ukončený",
     },
     en: {
       Menu: "Menu",
@@ -530,7 +536,13 @@ const i18nOptions = {
       UpdateUserSettingsSuccess: "User settings changes were successfull",
       UpdateUserSettingsFailed: "Failed to update user settings!",
       UserBanSuccess: "User was banned successfully",
-      UserBanFailed: "Failed to ban user!"
+      UserBanFailed: "Failed to ban user!",
+      EndSaleOn0CountInfo: "End sale automatically when count reaches 0",
+      EndSale: "End sale",
+      EndSaleSuccess: "Ended product sale successfully",
+      EndSaleFailed: "Failed to end product sale!",
+      ConfirmEndSaleInfo: "About ending sale of this product?",
+      SaleEndedAt: "Sale ended at",
     },
   },
 };

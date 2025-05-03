@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
     getAllProducts, getLatestProducts, getProduct, getUserProducts, addProduct, updateProduct,
-    deleteProduct, uploadProductImages, getProductHistory
+    deleteProduct, uploadProductImages, getProductHistory, endProductSale
 } = require("../controllers/productController");
 const { getAllCategories, getCategory, getMainCategories, getSubCategories } = require("../controllers/categoryController");
 const { 
@@ -26,6 +26,7 @@ router.get("/userProducts/:userId", getUserProducts);
 router.get("/:id/history", getProductHistory);
 
 router.post("/add", protect, addProduct);
+router.post("/endSale/", protect, endProductSale);
 router.patch('/update/:id', protect, updateProduct);
 router.delete('/delete/:id', protectAdmin, deleteProduct);
 

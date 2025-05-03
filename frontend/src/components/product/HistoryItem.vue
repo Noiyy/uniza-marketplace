@@ -7,6 +7,7 @@
                     <span v-if="historyData.historyType == 'sale'"> {{ $t("Sold") }} {{ historyData.newValue }}x </span>
                     <span v-else-if="historyData.historyType == 'count'"> {{ $t("Added") }} +{{ historyData.newValue - historyData.oldValue }} </span>
                     <span v-else-if="historyData.historyType == 'priceChange'"> {{ $t("ChangedPrice") }} </span>
+                    <span v-else-if="historyData.historyType == 'saleEnded'"> {{ $t("SaleEnded") }} </span>
                 </div>
                 <div class="item-info">
                     <span v-if="historyData.historyType == 'count'"> {{ $t("CountOfLeft") }}: {{ historyData.newValue }} </span>
@@ -98,6 +99,9 @@ export default {
 }
 .history-item.type-sale .type-indicator {
     background-color: var(--green);
+}
+.history-item.type-saleEnded .type-indicator {
+    background-color: var(--red);
 }
 
 .type-indicator {

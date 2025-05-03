@@ -4,6 +4,8 @@ const Product = require("../models/productModel");
 const ProductHistory = require("../models/productHistoryModel");
 const mongoose = require("mongoose");
 
+const { agenda } = require("../util/agenda");
+
 exports.getAllSales = async (req, res) => {
     const sales = await Sale.find({}).sort({soldAt: -1}).lean();
 
@@ -84,6 +86,21 @@ exports.addSale = async (req, res) => {
         let productAvalLeft = productCheck.count.available - count;
         productCheck.count.available = productAvalLeft > 0 ? productAvalLeft : 0;
         productCheck.count.sold += count;
+
+        let endedSale = false;
+        if (productCheck.count.endSaleOnZero && productCheck.count.available == 0) {
+            productCheck.status = "saleEnded";
+            endedSale = true;
+            console.log("do end sale xd");
+        } 
+        else if (productCheck.count.available == 0) {
+            // nastav vykonanie úlohy o 72h
+            await agenda.schedule('in 72 hours', 'end sale after 72h', { 
+                productId: productId,
+                userId: user.id
+            });
+        }
+
         productCheck.save();
 
         const historyEntry = new ProductHistory({
@@ -100,7 +117,22 @@ exports.addSale = async (req, res) => {
             await buyerUser.save();
         }
 
-        res.status(201).json({ message: 'Sale added successfully', id: sale._id });
+        let retData = { message: 'Sale added successfully', id: sale._id };
+
+        if (endedSale) {
+            const historyEntry = new ProductHistory({
+                productId: productId,
+                historyType: 'saleEnded',
+                oldValue: "-",
+                newValue: "-",
+                byUserId: user.id
+            });
+            await historyEntry.save();
+
+            retData.newProdData = productCheck;
+        }
+
+        res.status(201).json(retData);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

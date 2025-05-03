@@ -156,13 +156,13 @@
                     </div>
 
                     <div class="input-row-cont d-flex flex-column gap-24">
-                        <!-- <div>
+                        <div>
                             <Checkbox
-                                :text="'Delete product automatically when count reaches 0'"
-                                v-model:is-checked="product.count.deleteOnZero"
+                                :text="$t('EndSaleOn0CountInfo')"
+                                v-model:is-checked="product.count.endSaleOnZero"
                             ></Checkbox>
                             
-                        </div> -->
+                        </div>
 
                         <div class="input-row d-flex gap-8 align-items-center justify-content-between">
                             <div class="input-cont d-flex flex-column gap-8 flex-1">
@@ -193,7 +193,17 @@
             <div class="sales-heading d-flex flex-column gap-8">
                 <div class="d-flex gap-32 justify-content-between align-items-center">
                     <h2> {{ $t("Sales").toUpperCase() }} </h2>
-                    <Icon icon="ic:baseline-plus" class="plus-icon" @click="salesModalIsShown = true" />
+                    <div class="d-flex gap-24 align-items-center">
+                        <div class="sale-ended-info" v-if="product.status == 'saleEnded'"> 
+                            {{ $t('SaleEndedAt') }} 
+                            <span> {{ getSaleEndedDate }} </span>
+                        </div>
+                        <button class="btn secondary smaller" @click="endSaleModalIsShown = true" :disabled="product.status == 'saleEnded'"> 
+                            {{ $t("EndSale") }}
+                        </button>
+                        <Icon icon="ic:baseline-plus" class="plus-icon" :class="product.status == 'saleEnded' ? 'disabled' : ''"
+                            @click="product.status == 'saleEnded' ? null : salesModalIsShown = true" />
+                    </div>
                 </div>
                 <div class="line-divider"></div>
             </div>
@@ -224,7 +234,16 @@
             v-model:is-shown="salesModalIsShown"
             :available-users="availableUsersSale"
             :sale-data="selectedSaleData"
+            :product-available-count="product.count.available"
+            @update-product-data="(data) => { $emit('update-product-data', data); getProductHistory()}"
         ></SaleModal>
+
+        <ConfirmModal
+            v-model:is-shown="endSaleModalIsShown"
+            :body-text="$t('ConfirmEndSaleInfo')"
+            @yes="confirmedSaleEnd"
+            @close="null"
+        ></ConfirmModal>
     </div>
 </template>
 
@@ -232,6 +251,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Icon } from '@iconify/vue';
 
+import ConfirmModal from '../ConfirmModal.vue';
 import SaleModal from './SaleModal.vue';
 import SaleItem from './SaleItem.vue';
 import Checkbox from '../Checkbox.vue';
@@ -246,7 +266,7 @@ export default {
     name: 'ProductEdit',
 
     inject: ['emitter', 'productApi', 'userApi'],
-    emits: ['scroll-to-sales'],
+    emits: ['scroll-to-sales', 'update-product-data'],
 
     props: {
         product: {
@@ -277,7 +297,8 @@ export default {
         Multiselect,
         VueDraggableNext,
         SaleItem,
-        SaleModal
+        SaleModal,
+        ConfirmModal
     },
 
     data() {
@@ -308,7 +329,9 @@ export default {
 
             shownSales: false,
             salesModalIsShown: false,
+            endSaleModalIsShown: false,
             productSales: [],
+            productHistory: [],
 
             allUsers: [],
             availableUsersSale: [],
@@ -558,6 +581,22 @@ export default {
             }
         },
 
+        async confirmedSaleEnd() {
+            this.emitter.emit("show-loader");
+
+            const resp = await this.productApi.endProductSale(this.product._id);
+            console.log("end sale", resp);
+            if (resp.data.success) {
+                this.$toast.success(this.$t("EndSaleSuccess"));
+                this.$emit("update-product-data", resp.data.newData);
+                this.endSaleModalIsShown = false;
+            } else {
+                this.$toast.error(this.$t("EndSaleFailed"));
+            }
+
+            this.emitter.emit("hide-loader");
+        },
+
         async getProductSales() {
             try {
                 const resp = await this.productApi.getProductSales(this.$route.params.id);
@@ -571,8 +610,18 @@ export default {
         async getAllUsers() {
             const resp = await this.userApi.getAllUsers();
             this.allUsers = resp.data;
-            this.availableUsersSale = resp.data.filter(usr => usr && usr._id != this.product.sellerId);
+            this.availableUsersSale = resp.data.filter(usr => usr && usr._id != this.product.sellerId && !usr.ban);
             console.log("users", this.availableUsersSale);
+        },
+
+        async getProductHistory() {
+            try {
+                const resp = await this.productApi.getProductHistory(this.$route.params.id);
+                this.productHistory = resp.data;
+                console.log("history", this.productHistory);
+            } catch (err) {
+                console.error(err);
+            }
         },
     },
     
@@ -587,10 +636,28 @@ export default {
                 getAllPSC: 'misc/getAllPSC',
             }
         ),
+
+        getSaleEndedDate() {
+            if (this.isAdd) return;
+            const endSaleHistories = this.productHistory.filter(his => his.historyType == "saleEnded");
+            endSaleHistories.sort((a, b) => {
+                const aEpoch = new Date(a.timestamp).getTime();
+                const bEpoch = new Date(b.timestamp).getTime();
+
+                return bEpoch - aEpoch;
+            });
+
+            let hist = endSaleHistories[0];
+            if (hist)
+                return `${this.isoToDateString(hist.timestamp)} ${this.isoToDayTime(hist.timestamp)}`;
+        }
     },
 
     async mounted() {
-        if (!this.isAdd) await this.getProductSales();
+        if (!this.isAdd) {
+            await this.getProductSales();
+            await this.getProductHistory();
+        }
         this.getAllUsers();
 
         this.filteredAddresses = this.getAllPSC;
@@ -883,11 +950,26 @@ export default {
     transform: scale(1.3);
     cursor: pointer;
 }
+.product-sales .plus-icon.disabled {
+    transform: scale(1);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 .sales-heading h2 {
     font-size: 20px;
     font-weight: bold;
     line-height: 100%;
+}
+
+.sales-heading .sale-ended-info {
+    font-weight: 200;
+    font-size: 14px;
+}
+
+.sales-heading .sale-ended-info span {
+    font-weight: 500;
+    color: var(--red);
 }
 
 .drag-icon {

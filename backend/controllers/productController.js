@@ -227,6 +227,41 @@ exports.deleteProduct = async (req, res) => {
     res.status(200).json({ success: true, deletedId: id });
 }
 
+exports.endProductSale = async (req, res) => {
+    const { 
+        productId
+    } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(404).json({error: 'No product found for id ' + productId});
+
+    const user = await User.findById(req.user.id);
+    if (!user) 
+        return res.status(401).json({error: 'Auth user not found'});
+ 
+    const productCheck = await Product.findById(productId);
+    if (!productCheck) return res.status(404).json({error: 'No product found for id ' + productId});
+
+    // Only owner or admin is allowed to
+    if (productCheck.sellerId.toString() !== user.id && !user.isAdmin) 
+        return res.status(401).json({error: 'Auth user not authorized'});
+
+    const product = await Product.findOneAndUpdate(
+        { _id: productId },
+        { status: "saleEnded" },
+        { new: true, runValidators: true }
+    );
+
+    const historyEntry = new ProductHistory({
+        productId: productId,
+        historyType: 'saleEnded',
+        oldValue: "-",
+        newValue: "-",
+        byUserId: user.id
+    });
+    await historyEntry.save();
+
+    res.status(200).json({ success: true, newData: product });
+};
+
 async function initTestProducts() {
     const products = [
         {

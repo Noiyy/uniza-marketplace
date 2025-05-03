@@ -60,8 +60,12 @@
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-left" class="main-img-icon prev" @click="showPrevImage()" />
                     <Icon v-if="productHasImages" icon="material-symbols:chevron-right" class="main-img-icon next" @click="showNextImage()" />
                 </div>
-                <div class="images-price d-flex flex-column gap-24 align-items-end">
+                <div class="images-price d-flex flex-column gap-24 align-items-end" :class="product.status == 'saleEnded' ? 'saleEnded' : ''">
                     <div class="price d-flex gap-24 align-items-center">
+                        <div class="sale-ended-info" v-if="product.status == 'saleEnded'">
+                            {{ $t("SaleEnded") }}
+                        </div>
+
                         <h3 class="gradient-text"> {{ $t('Price') }} </h3>
                         <span class="montserrat" v-if="product.price.specialValue"> {{ $t(`${product.price.specialValue}`) }} </span>
                         <span class="montserrat" v-else> {{ product.price.value && typeof product.price.value === "string" ?
@@ -119,7 +123,7 @@
 
                 <div class="product-seller-info d-flex gap-32">
                     <div class="seller-btns d-flex gap-16 align-items-end">
-                        <button class="btn secondary smaller" :disabled="isPreview || !getLoggedUser || getLoggedUser._id == user._id" @click="openChatWithSeller()" v-if="getLoggedUser"> 
+                        <button class="btn secondary smaller" :disabled="isPreview || !getLoggedUser || (user && getLoggedUser._id == user._id)" @click="openChatWithSeller()" v-if="getLoggedUser"> 
                             {{ $t('Message').toUpperCase() }} 
                         </button>
                         <button class="btn primary smaller" :disabled="isPreview" @click="copyTelNumber()" v-if="user && user.phone"> 
@@ -289,6 +293,7 @@ export default {
             try {
                 const resp = await this.userApi.getUserById(this.product.sellerId);
                 this.user = resp.data;
+                console.log("hmm usr", this.user);
             } catch (err) {
                 console.error(err);
                 // this.$router.push("/404");
@@ -588,6 +593,19 @@ export default {
     border-bottom-left-radius: 16px;
     font-size: 24px;
     font-weight: 800;
+}
+
+.product-showcase .images-price.saleEnded .price h3,
+.product-showcase .images-price.saleEnded .price span {
+    opacity: 0.5;
+}
+
+.product-showcase .images-price .sale-ended-info {
+    color: var(--black);
+    padding: 4px 16px;
+    line-height: 100%;
+    font-weight: 800;
+    background: var(--red);
 }
 
 .other-images-wrapper {

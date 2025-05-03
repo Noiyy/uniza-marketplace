@@ -35,7 +35,9 @@ class ProductService extends DefaultService {
             withCredentials: true
         });
     } 
-
+    async endProductSale(productId) {
+        return await this.apiClient.post(`/endSale/`, { productId }, { withCredentials: true });
+    }
     async deleteProduct(productId) {
         return await this.apiClient.delete(`/delete/${productId}`, { withCredentials: true });
     }
