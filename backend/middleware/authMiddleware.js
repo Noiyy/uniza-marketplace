@@ -1,6 +1,28 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
+exports.getUser = async (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const usr =  await User.findById(decoded.id);
+      
+        req.user = usr;
+        next();
+    } catch (error) {
+        console.log("auth getUser error", error);
+        res.clearCookie('token', {
+            path: '/'
+        });
+
+        next();
+    }
+};
+
 exports.protect = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {

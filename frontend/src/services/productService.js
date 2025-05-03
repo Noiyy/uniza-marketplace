@@ -12,8 +12,8 @@ class ProductService extends DefaultService {
     async getLatestProducts() {
         return await this.apiClient.get("/getLatestProducts");
     }
-    async getProduct(productId) {
-        return await this.apiClient.get(`/${productId}`);
+    async getProduct(productId, trackViews = false) {
+        return await this.apiClient.get(`/${productId}/track/${trackViews}`, { withCredentials: true });
     }
     async getUserProducts(userId) {
         return await this.apiClient.get(`/userProducts/${userId}`);

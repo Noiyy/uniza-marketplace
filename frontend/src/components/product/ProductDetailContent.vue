@@ -126,7 +126,7 @@ export default {
 
         async getProductDetail() {
             try {
-                const resp = await this.productApi.getProduct(this.$route.params.id);
+                const resp = await this.productApi.getProduct(this.$route.params.id, 1);
                 this.product = resp.data;
                 this.pageTitle = `${this.product.title} - UNIZA Marketplace`;
                 console.log("product", this.product);

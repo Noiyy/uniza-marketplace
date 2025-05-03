@@ -9,7 +9,8 @@ const {
     deleteSale, updateSale, getUserUnconfirmedSales
 } = require("../controllers/saleController");
 
-const { protect, protectAdmin } = require("../middleware/authMiddleware");
+const { protect, protectAdmin, getUser } = require("../middleware/authMiddleware");
+const { trackProductView } = require("../middleware/productViewMiddleware");
 
 const crypto = require('crypto');
 const multer = require('multer');
@@ -21,7 +22,7 @@ const router = express.Router();
 // Product
 router.get("/getAllProducts", getAllProducts);
 router.get("/getLatestProducts", getLatestProducts);
-router.get("/:id", getProduct);
+router.get("/:id/track/:trackViews", [getUser, trackProductView], getProduct);
 router.get("/userProducts/:userId", getUserProducts);
 router.get("/:id/history", getProductHistory);
 

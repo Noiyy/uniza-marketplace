@@ -108,7 +108,7 @@
                         <span> {{ $t("Views") }} </span>
                         <div class="views d-flex gap-8 align-items-center">
                             <Icon icon="mdi:eye" class="views-icon detail-icon" />
-                            2719x
+                            {{ product.seenCount }}x
                         </div>
                     </div>
 
@@ -451,7 +451,7 @@ export default {
                         return `${this.$t("Dormitory")} ${customAddress.dorm}`;
                     } else
                         return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
-                        
+
                 } else if (this.product.address.asProfile) {
                     let address = this.user ? this.user.address : null;
                     if (address) {

@@ -41,7 +41,7 @@
                 <div class="d-flex gap-16 justify-content-between align-items-center">
                     <div class="views">
                         <Icon icon="mdi:eye" class="views-icon detail-icon" />
-                        2719x
+                        {{ prodData.seenCount }}x
                     </div>
                     <div class="count d-flex gap-8 align-items-center">
                         <Icon icon="fluent:book-number-24-regular" class="count-icon detail-icon" />

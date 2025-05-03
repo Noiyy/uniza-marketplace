@@ -165,7 +165,7 @@ export default function (emitter, isDev, axiosInstance) {
                     if (resp.data && resp.data._id) found = true;
 
                 } else if (pathName.toLowerCase().includes("product")) {
-                    const resp = await axiosInstance.get(`api/product/${id}`);
+                    const resp = await axiosInstance.get(`api/product/${id}/track/0`);
                     if (resp.data && resp.data._id) found = true;
                 }
             } catch (err) {
