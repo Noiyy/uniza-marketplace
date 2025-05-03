@@ -42,10 +42,10 @@ export default {
             langItems: [
                 {
                     locale: "en",
-                    active: true,
                 },
                 {
                     locale: "sk",
+                    active: true,
                 },
             ],
         }

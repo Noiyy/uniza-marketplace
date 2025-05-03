@@ -66,30 +66,7 @@ export default {
 
     data() {
         return {
-            questions: [
-                {
-                    title: "Ako funguje predávanie produktov?",
-                    shown: false,
-                    answers: [
-                        "abcd",
-                        "efgh"
-                    ]
-                },
-                {
-                    title: "Ako funguje kupovanie produktov?",
-                    shown: false,
-                    answers: [
-                        "abcd"
-                    ]
-                },
-                {
-                    title: "Ako funguje počet pri produktoch?",
-                    shown: false,
-                    answers: [
-                        "abcd"
-                    ]
-                }
-            ]
+            
         }
     },
 
@@ -107,6 +84,60 @@ export default {
 
             }
         ),
+
+        questions() {
+            return [
+                {
+                    title: this.$t("FAQ1_title"),
+                    shown: false,
+                    answers: [
+                        this.$t("FAQ1_answer1"),
+                        this.$t("FAQ1_answer2"),
+                        "",
+                        this.$t("FAQ1_answer3"),
+                        this.$t("FAQ1_answer4"),
+                    ]
+                },
+                {
+                    title: this.$t("FAQ2_title"),
+                    shown: false,
+                    answers: [
+                        this.$t("FAQ2_answer1"),
+                        "",
+                        this.$t("FAQ2_answer2"),
+                        this.$t("FAQ2_answer3"),
+                    ]
+                },
+                {
+                    title: this.$t("FAQ3_title"),
+                    shown: false,
+                    answers: [
+                        this.$t("FAQ3_answer1"),
+                        "",
+                        this.$t("FAQ3_answer2"),
+                        this.$t("FAQ3_answer3")
+                    ]
+                },
+                {
+                    title: this.$t("FAQ4_title"),
+                    shown: false,
+                    answers: [
+                        this.$t("FAQ4_answer1"),
+                        this.$t("FAQ4_answer2"),
+                        "",
+                        this.$t("FAQ4_answer3")
+                    ]
+                },
+                {
+                    title: this.$t("FAQ5_title"),
+                    shown: false,
+                    answers: [
+                        this.$t("FAQ5_answer1"),
+                        this.$t("FAQ5_answer2")
+                    ]
+                }
+            ]
+        } 
     },
 
     created() {
@@ -143,5 +174,9 @@ export default {
 
 .collapseShown .chevron-icon-cont {
     transform: rotate(180deg);
+}
+
+.question .body p {
+    font-weight: 300;
 }
 </style>
