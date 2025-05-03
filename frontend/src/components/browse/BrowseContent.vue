@@ -249,6 +249,10 @@ export default {
 
         queryCtg() {
             return this.$route.query.ctg;
+        },
+
+        querySearch() {
+            return this.$route.query.search;
         }
     },
 
@@ -256,10 +260,13 @@ export default {
         this.getSearchOptions();
         console.log("ctg?", this.getAllCategories);
 
+        console.log("hm hm hm", this.queryCtg, this.querySearch);
         if (this.queryCtg) {
             let activeCtg = this.findCategory(this.queryCtg);
-            console.log("ale jak toto može spraviť dpč", this.queryCtg);
             this.chooseCategory(null, activeCtg, activeCtg.parentName ? false : true);
+        }
+        if (this.querySearch) {
+            this.searchQuery = this.querySearch;
         }
     },
 

@@ -161,10 +161,10 @@
             <div class="options-wrapper d-flex gap-32">
                 <div class="pattern" :style="patternBgStyle"></div>
 
-                <!-- <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
+                <div class="option d-flex gap-8 align-items-center" @click="viewSimilarProducts()">
                     <Icon icon="lsicon:tree-filled" class="opt-icon" />
                     <span class="montserrat"> View similar </span>
-                </div> -->
+                </div>
 
                 <div class="option pos-relative">
                     <div class="d-flex gap-8 align-items-center share-btn"  @click="shareIsOpen = !shareIsOpen">
@@ -389,7 +389,13 @@ export default {
         },
 
         viewSimilarProducts() {
-            
+            let searchQuery = this.product.title.trim().split(/\s+/).slice(0, 2).join(" ");
+            console.log("hmmm", this.productMainCtg.name);
+
+            this.$router.push({
+                name: "Browse",
+                query: { ctg: this.productMainCtg.name, search: searchQuery }
+            });
         },
 
         async openChatWithSeller() {
