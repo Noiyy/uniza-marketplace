@@ -114,10 +114,10 @@ a:hover {
     background-color: var(--primary) !important;
 }
 
-body.openedSidebar {
+/* body.openedSidebar {
     overflow-y: scroll;
     position: fixed;
-}
+} */
 
 .section-heading {
     font-size: 32px;

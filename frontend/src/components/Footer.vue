@@ -146,6 +146,10 @@ footer {
     text-transform: uppercase;
 }
 
+.upper-content .right .info-links {
+    gap: 24px;
+}
+
 .upper-content .right .info-links > div {
     gap: 4px;
     flex: 1;
@@ -199,7 +203,19 @@ footer {
     cursor: pointer;
 }
 
-.lower-content a .arrow-icon {
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    /* footer {
+        margin-top: 64px;
+    } */
+
+    .upper-content .container {
+        column-gap: 48px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
 
 }
 </style>

@@ -348,4 +348,43 @@ export default {
 a.product:hover {
     color: var(--white);
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .latest-products-wrapper {
+        grid-template-columns: repeat(1, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+    }
+
+    .under-hero {
+        margin-top: 24px;
+    }
+
+    .under-hero .content {
+        flex-direction: column;
+        gap: 24px;
+        padding: 7px;
+    }
+
+    .under-hero .content > div {
+        gap: 8px !important;
+    }
+
+    .under-hero .pattern {
+        border-radius: 80px;
+    }
+
+    .under-hero .mid {
+        flex-direction: column-reverse !important;
+    }
+
+    #latestProducts {
+        margin-top: 64px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

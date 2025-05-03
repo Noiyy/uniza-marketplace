@@ -407,21 +407,95 @@ export default {
     font-size: 26px;
 }
 
-/* @media screen and (max-width: 1000px) {
-  .hero-grid {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-areas:
-        ""
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .hero-grid {
+        gap: 3vw;
+        padding: 1vw;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-areas:
+            "first   first   first  second second"
+            "first   first   first  second second"
+            "first   first   first   third  third"
+            "fourth  fourth  fourth  third  third"
+            "fourth  fourth  fourth third   third"
+            "mid     mid     mid    mid       mid"
+            "fifth   fifth   fifth  sixth   sixth"
+            "fifth   fifth   fifth  sixth   sixth"
+            "fifth   fifth   fifth  sixth   sixth"
+            "seventh seventh eighth eighth eighth"
+            "seventh seventh eighth eighth eighth"
+            "seventh seventh eighth eighth eighth"
         ;
-  }
+    }
+
+    .hero-grid .item.mid h1 {
+        font-size: 24px;
+    }
+    .hero-grid .item.mid img {
+        height: 100%;
+    }
+
+    .hero-grid .item h1 {
+        font-size: 1.4rem;
+        line-height: 100%;
+    }
+
+    .hero-grid .item p {
+        font-size: 0.8rem;
+    }
+
+    .hero-grid .item:nth-child(2) h1 {
+        font-size: 1.2rem;
+    }
+    .hero-grid .item:nth-child(2) p {
+        font-size: 0.8rem;
+    }
+
+    .hero-grid .item:nth-child(3) img {
+        transform: scale(1.1);
+        right: 0;
+    }
+
+    .hero-grid .item:nth-child(6) h1 {
+        font-size: 1.2rem;
+    }
+    .hero-grid .item:nth-child(6) p {
+        font-size: 0.8rem;
+    }
+
+    .hero-grid .item:nth-child(7) h1 {
+        font-size: 1.1rem;
+    }
+    .hero-grid .item:nth-child(7) p {
+        font-size: 0.8rem;
+    }
+
+    .hero-grid .item:nth-child(8) h1 {
+        font-size: 1rem;
+    }
+    .hero-grid .item:nth-child(8) p {
+        font-size: 0.7rem;
+    }
+    .hero-grid .item:nth-child(8) img {
+        width: 80%;
+        top: 32px;
+        right: 0;
+        left: initial;
+    }
+
+    .hero-grid .item:nth-child(9) h1 {
+        font-size: 1.3rem;
+    }
 }
 
-@media screen and (max-width: 750px) {
-  .hero-grid {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-areas:
-        ""
-        ;
-  }
-} */
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+    /* .hero-grid {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-areas:
+            ""
+            ;
+    } */
+}
 </style>

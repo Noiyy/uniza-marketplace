@@ -206,4 +206,18 @@ h1 {
 footer {
     margin-top: 64px;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .form-wrapper {
+        max-width: 100%;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+    .form-wrapper {
+        max-width: 80%;
+    }
+}
 </style>

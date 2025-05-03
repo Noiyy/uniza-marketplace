@@ -17,7 +17,7 @@
                     <LangSelector></LangSelector>
     
                     <a role="button" class="d-flex align-items-center menu gap-8 pos-relative" @click="toggleSidebarMenu">
-                        {{ $t("Menu").toUpperCase() }}
+                        <template v-if="!IS_MOBILE"> {{ $t("Menu").toUpperCase() }} </template>
                         <div class="menu-btn">
                             <Icon 
                                 :icon="!sidebarMenuOpened ? 'material-symbols-light:menu' : 'material-symbols-light:close'"
@@ -40,7 +40,7 @@
                             <input type="text" class="search-input" name="searchQuery" v-model="searchQuery">
                             <Icon icon="material-symbols:close" class="remove-icon" @click="searchQuery = ''" />
                         </div>
-                        <div class="filters d-flex gap-32 align-items-center">
+                        <div class="filters d-flex gap-32 align-items-center" v-if="!IS_MOBILE">
                             <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
                                 <div class="selected">
                                     {{ selectedSearchCategory ? $t(`ctg_${selectedSearchCategory.name}`) : $t('AllCategories') }}
@@ -130,10 +130,107 @@
                     </div>
         
                     <div class="right d-flex align-items-center gap-16">
-                        <Icon icon="material-symbols:refresh" class="refresh-icon" @click="resetAllSearchParams()" />
+                        <Icon icon="material-symbols:refresh" class="refresh-icon" @click="resetAllSearchParams()" v-if="!IS_MOBILE" />
                         <button class="btn" type="submit" @click.prevent="doSearch()"> {{ $t('Search') }} </button>
+                        <a role="button"
+                            @click="mobileFiltersShown = !mobileFiltersShown" :class="mobileFiltersShown ? 'collapseShown' : ''"
+                            data-bs-toggle="collapse" :href="`#mobileFilters`" aria-expanded="false" :aria-controls="`mobileFilters`">
+                            <div class="chevron-icon-cont">
+                                <Icon icon="mdi:chevron-down" class="chevron-icon" v-if="IS_MOBILE" />
+                            </div>
+                        </a>
                     </div>
                 </form>
+
+                <div class="filters-mobile-cont collapse" :id="'mobileFilters'" v-if="IS_MOBILE">
+                    <div class="filters d-flex gap-32 align-items-center">
+                        <div class="categories" :class="{ open: isOpen['categories'] }" @click="(e) => toggleDropdown('categories', e)"> 
+                            <div class="selected d-flex">
+                                {{ selectedSearchCategory ? $t(`ctg_${selectedSearchCategory.name}`) : $t('AllCategories') }}
+                                <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                            </div>
+                            <div class="filters-dropdown-content">
+                                <div class="option main-ctg" v-for="(ctg, index) in structuredCategories" :key="index"
+                                    :class="selectedSearchCategory && selectedSearchCategory.name == ctg.name ? 'selected' : ''"
+                                    @click="selectMainCtgHandler(ctg)"> 
+                                    {{ $t(`ctg_${ctg.name}`) }}
+    
+                                    <div class="sub-ctgs-wrapper d-flex flex-column" v-if="ctg.subCategories && ctg.subCategories.length">
+                                        <div class="option sub-ctg" v-for="(sCtg, sIndex) in ctg.subCategories" :key="sIndex"
+                                            :class="selectedSearchCategory && selectedSearchCategory.name == sCtg.name ? 'selected' : ''"
+                                            @click="selectSubCtgHandler(sCtg, $event)">
+                                            {{ $t(`ctg_${sCtg.name}`) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedSearchCategory = null" />
+                            </div>
+                        </div>
+    
+                        <div class="price" :class="{ open: isOpen['price'] }" @click="(e) => toggleDropdown('price', e)"> 
+                            <div class="d-flex gap-8 align-items-center price-selected">
+                                {{ $t('Price') }}
+                                <div class="d-flex align-items-center">
+                                    <span v-if="selectedPriceRange[0] == 0 && selectedPriceRange[1] == 9999"> > 0€ </span>
+                                    <div class="d-flex gap-8 price-range align-items-center" v-else>
+                                        {{ selectedPriceRange[0] }}€
+                                        <span> - </span>
+                                        {{ selectedPriceRange[1] }}€
+                                    </div>
+                                    <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                                </div>
+                            </div>
+                            <div class="filters-dropdown-content" @click="(e) => e.stopPropagation()">
+                                <div class="price-range-info d-flex justify-content-between gap-32">
+                                    <div class="price-input-cont d-flex gap-8 align-items-center">
+                                        <input type="number" min="0" :value="selectedPriceRange[0]" @input="(e) => setPriceRange('from', e)">
+                                        €
+                                    </div>
+                                    <div class="price-input-cont d-flex gap-8 align-items-center">
+                                        <input type="number" max="9999" :value="selectedPriceRange[1]" @input="(e) => setPriceRange('to', e)">
+                                        €
+                                    </div>
+                                    <Icon icon="formkit:arrowright" class="arrow-icon" />
+                                </div>
+                                <div class="slider-container">
+                                    <VueSlider
+                                        v-model="selectedPriceRange"
+                                        :min-range="2"
+                                        :min="0"
+                                        :max="9999"
+                                        @change="sliderChange"
+                                        tooltip="none"
+                                        @click="(e) => e.stopPropagation()">
+                                    </VueSlider>
+                                </div>
+                                <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedPriceRange = [0, 9999]" />
+                            </div>
+                        </div>
+    
+                        <div class="location" :class="{ open: isOpen['location'] }" @click="(e) => toggleDropdown('location', e)">
+                            <div class="selected d-flex">
+                                {{ selectedLocation ? selectedLocation : $t('Anywhere') }}
+                                <Icon icon="mdi:chevron-down" class="chevron-icon" />     
+                            </div>
+                            <div class="filters-dropdown-content">
+                                <!-- <div class="option" @click="selectNearMeLocation">
+                                    {{ $t('NearMe') }}
+                                </div> -->
+                                <div class="location-input-cont" @click="(e) => { e.preventDefault(); e.stopPropagation(); }">
+                                    <input type="text" :placeholder="$t('Search').toLowerCase()" v-model="locationSearch" @input="filterLocations()">
+                                </div>
+                                <div class="search-options" v-if="locationSearch">
+                                    <div class="option" v-for="(loc, index) in filteredLocations" :key="index" @click="selectedLocation = `${loc.city}, ${loc.postalCode}`"
+                                        :class="selectedLocation && selectedLocation == `${loc.city}, ${loc.postalCode}` ? 'selected' : ''">
+                                        {{ loc.city }} - {{ loc.region }} - {{ loc.postalCode }} 
+                                    </div>
+                                </div>
+    
+                                <Icon icon="material-symbols:refresh" class="refresh-icon" @click="selectedLocation = null" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -187,6 +284,8 @@ export default {
 
             filteredLocations: [],
             userDeviceLocation: null,
+
+            mobileFiltersShown: false
         }
     },
 
@@ -213,7 +312,7 @@ export default {
 
             sidebarMenu.classList.toggle("open");
             // menuBtn.classList.toggle("animate");
-            // document.body.classList.toggle("openedSidebar");
+            if (this.IS_MOBILE) document.body.classList.toggle("openedSidebar");
 
             setTimeout(() => {
                 this.sidebarMenuOpened = !this.sidebarMenuOpened;
@@ -639,6 +738,92 @@ header {
 /* header > .container {
     z-index: 16;
 } */
+
+/* SMALL - Mobile */
+@media(max-width: 640px) {
+    .main-header img {
+        height: 40px;
+    }
+
+    .header-right {
+        gap: 16px !important;
+    }
+
+    .header-right .menu-icon {
+        font-size: 44px;
+    }
+
+    .header-search {
+        padding: 8px 0;
+    }
+
+    .header-search .right {
+        gap: 8px !important;
+    }
+
+    .header-search .right .btn {
+        font-size: 14px;
+    }
+
+    .header-search .right .chevron-icon {
+        font-size: 32px;
+        color: var(--white);
+    }
+
+    .header-search .container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .header-search .container > form {
+        gap: 24px;
+    }
+
+    .header-search .left, .header-search .left .search, .header-search .left input {
+        max-width: 175px;
+    }
+
+    .header-search .filters-mobile-cont {
+        overflow-x: auto;
+        /* overflow-y: hidden; */
+    }
+
+    .header-search .filters {
+       font-size: 17px;
+       margin-top: 8px;
+    }
+
+    .header-search .filters > div > .d-flex {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .header-search .right .chevron-icon-cont {
+        transition: transform 0.3s ease-in;
+    }
+
+    .header-search .right .collapseShown .chevron-icon-cont {
+        transform: rotate(180deg);
+    }
+
+    .header-search .filters .categories, .header-search .filters .price,
+    .header-search .filters .location {
+        position: initial;
+    }
+
+    .header-search .filters .filters-dropdown-content {
+        left: 0;
+        top: 81px;
+        max-height: 260px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
 
 <style>
@@ -718,5 +903,12 @@ header {
     font-size: 24px;
     cursor: pointer;
     transition: transform 0.4s ease-out;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) {
+    .filters-dropdown-content {
+        padding: 8px;
+    }
 }
 </style>

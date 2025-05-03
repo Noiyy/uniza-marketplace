@@ -403,4 +403,32 @@ nav .highlightActive.router-link-active::after {
     display: none;
     cursor: pointer;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    #sidebar-menu {
+        width: 100%;
+        right: -100%;
+        box-shadow: none;
+        padding: 16px;
+    }
+
+    #sidebar-menu .content {
+        margin-top: 96px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
+</style>
+
+<style>
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    body.openedSidebar {
+        overflow: hidden;
+    }
+}
 </style>

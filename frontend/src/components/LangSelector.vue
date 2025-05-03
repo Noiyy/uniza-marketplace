@@ -163,4 +163,16 @@ export default {
     right: initial;
     left: -24px;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .navLang {
+        font-size: 16px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
