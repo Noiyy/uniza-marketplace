@@ -272,6 +272,7 @@ const i18nOptions = {
       EndSaleFailed: "Nepodarilo sa ukončiť predaj produktu!",
       ConfirmEndSaleInfo: "O ukončení predaja tohto produktu?",
       SaleEndedAt: "Predaj ukončený",
+      Dormitory: "Internát"
     },
     en: {
       Menu: "Menu",
@@ -543,6 +544,7 @@ const i18nOptions = {
       EndSaleFailed: "Failed to end product sale!",
       ConfirmEndSaleInfo: "About ending sale of this product?",
       SaleEndedAt: "Sale ended at",
+      Dormitory: "Dormitory"
     },
   },
 };

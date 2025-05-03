@@ -447,9 +447,11 @@ export default {
             if (this.product) {
                 const customAddress = this.product.address.custom;
                 if (customAddress) {
-                    return customAddress.dorm ? 
-                        customAddress.dorm :
-                        `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                    if (customAddress.dorm) {
+                        return `${this.$t("Dormitory")} ${customAddress.dorm}`;
+                    } else
+                        return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                        
                 } else if (this.product.address.asProfile) {
                     let address = this.user ? this.user.address : null;
                     if (address) {

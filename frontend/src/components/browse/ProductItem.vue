@@ -16,6 +16,8 @@
 
         <router-link :to="`/product/${prodData._id}`" class="product-item list-item d-flex flex-1 list" v-if="viewType == 'list'"> <!-- :class="viewType == 'grid' ? 'grid' : ''" -->
             <div class="thumbnail d-flex justify-content-center align-items-center">
+                <span class="sale-ended-info" v-if="prodData.status == 'saleEnded'"> {{ $t("SaleEnded") }} </span>
+
                 <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
                 <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
             </div>
@@ -55,6 +57,8 @@
                     <Icon icon="mdi:location" class="location-icon detail-icon" />
                     {{ getProductLocation }}
                 </div>
+
+                <span class="sale-ended-info" v-if="prodData.status == 'saleEnded'"> {{ $t("SaleEnded") }} </span>
     
                 <img v-if="prodData.images.length" :src="getAssetUrl(`img/products/${prodData.images[0]}`)" :alt="`${prodData.title} thumbnail`" class="img-fluid">
                 <img v-else :src="getAssetUrl('img/logo-sm_dark.svg')" aria-hidden="true" class="no-img img-fluid">
@@ -170,7 +174,11 @@ export default {
             if (this.prodData) {
                 const customAddress = this.prodData.address.custom;
                 if (customAddress) {
-                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                    if (customAddress.dorm) {
+                        return `${this.$t("Dormitory")} ${customAddress.dorm}`;
+                    } else
+                        return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+
                 } else if (this.prodData.address.asProfile) {
                     let address = this.prodData.sellerInfo ? this.prodData.sellerInfo.address : this.sellerData.address;
                     if (address) {
@@ -213,6 +221,7 @@ export default {
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
     overflow: hidden;
+    position: relative;
 }
 
 .thumbnail img {
@@ -225,6 +234,19 @@ export default {
     object-fit: initial;
     height: 75%;
     opacity: 0.2;
+}
+
+.thumbnail .sale-ended-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--red);
+    padding: 4px 16px;
+    color: var(--black);
+    text-align: center;
+    font-weight: 800;
+    opacity: 0.66;
 }
 
 .main {

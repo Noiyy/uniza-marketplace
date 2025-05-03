@@ -147,7 +147,11 @@ export default {
             if (prod) {
                 const customAddress = prod.address.custom;
                 if (customAddress) {
-                    return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                    if (customAddress.dorm) {
+                        return `${this.$t("Dormitory")} ${customAddress.dorm}`;
+                    } else
+                        return `${customAddress.city} - ${customAddress.region} - ${customAddress.postalCode}`;
+                        
                 } else if (prod.address.asProfile) {
                     let address = prod.sellerInfo.address;
                     if (address) {
