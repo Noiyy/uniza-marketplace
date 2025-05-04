@@ -168,6 +168,7 @@ export default {
 @media(max-width: 640px) { 
     .chat-wrapper {
         margin-top: 32px;
+        overflow-x: hidden;
     }
 
     .chat-heading-cont h1 {

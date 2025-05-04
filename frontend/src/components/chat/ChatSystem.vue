@@ -179,4 +179,39 @@ export default {
     opacity: 0.5;
 }
 
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .notification {
+        padding: 8px;
+        flex-direction: column;
+    }
+
+    .sale-info {
+        column-gap: 16px !important;
+        row-gap: 8px !important;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+
+    .item-date {
+        font-size: 13px;
+    }
+
+    .item-date .date-icon {
+        font-size: 16px;
+    }
+
+    .noti-heading {
+        gap: 12px !important;
+    }
+
+    .noti-body {
+        justify-content: flex-end;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

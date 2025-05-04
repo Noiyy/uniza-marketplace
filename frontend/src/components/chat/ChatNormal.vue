@@ -126,25 +126,27 @@
         <div class="chat-window d-flex flex-column" id="chatWindow">
             <div class="chat-window-heading d-flex flex-column gap-8" v-if="activeUser">
                 <div class="heading-cont d-flex justify-content-between align-items-center gap-24">
-                    <div class="d-flex gap-8 align-items-center">
-                        <div class="mobile-back-to-nav" v-if="IS_MOBILE" @click="mobileBackToNav()">
-                            back
+                    <div class="d-flex gap-16 align-items-center">
+                        <div class="mobile-back-to-nav d-flex align-items-center" v-if="IS_MOBILE" @click="mobileBackToNav()">
+                            <Icon icon="mdi:arrow-left-top" class="back-icon" />
                         </div>
 
-                        <router-link :to="`/user/${activeUser.data._id}`" class="user-avatar-wrapper d-flex gap-8 align-items-center">
-                            <div class="user-avatar-cont pos-relative">
-                                <div class="avatar-overlay"></div>
-
-                                <img :src="getAssetUrl(`img/userAvatars/${activeUser.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="activeUser.data.avatarPath">
-                                <div class="default-avatar-cont" v-else>
-                                    <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                        <div class="d-flex gap-8 align-items-center">
+                            <router-link :to="`/user/${activeUser.data._id}`" class="user-avatar-wrapper d-flex gap-8 align-items-center">
+                                <div class="user-avatar-cont pos-relative">
+                                    <div class="avatar-overlay"></div>
+    
+                                    <img :src="getAssetUrl(`img/userAvatars/${activeUser.data.avatarPath}`)" class="user-avatar" alt="User avatar" v-if="activeUser.data.avatarPath">
+                                    <div class="default-avatar-cont" v-else>
+                                        <Icon icon="akar-icons:person" class="default-avatar-icon" />
+                                    </div>
                                 </div>
-                            </div>
-                        </router-link>
-
-                        <h1 class="username gradient-text">
-                            {{ activeUser.data.username }}
-                        </h1>
+                            </router-link>
+    
+                            <h1 class="username gradient-text">
+                                {{ activeUser.data.username }}
+                            </h1>
+                        </div>
                     </div>
 
                     <div class="d-flex gap-8 align-items-center online-cont" :class="activeUser.isOnline ? 'online' : ''">
@@ -169,7 +171,7 @@
                             </div>
                         </template>
     
-                        <div class="no-messages d-flex flex-column align-items-center" v-if="!activeMessages[activeUser.data._id] || !activeMessages[activeUser.data._id].length">
+                        <div class="no-messages d-flex flex-column align-items-center text-center" v-if="!activeMessages[activeUser.data._id] || !activeMessages[activeUser.data._id].length">
                             {{ $t("NoMsgsInfo1") }}
                             <span> {{ $t("NoMsgsInfo2") }} </span>
                             <Icon icon="game-icons:capybara" class="no-messages-icon" />
@@ -419,6 +421,8 @@ export default {
 
             const chatWindow = document.getElementById("chatWindow");
             chatWindow.classList.remove("open");
+
+            this.openedChatUsers.forEach(usr => usr.openedWindow = false);
         },
 
         async setMessagesAsRead(msgs) {
@@ -1197,6 +1201,7 @@ export default {
         padding-bottom: 0;
         transition: right 0.3s ease-in-out;
         z-index: 2;
+        min-height: 65vh;
     }
 
     .chat-window.open {
@@ -1251,6 +1256,14 @@ export default {
 
     .chat-item {
         padding: 4px;
+    }
+
+    .mobile-back-to-nav {
+        font-size: 14px;
+    }
+
+    .mobile-back-to-nav .back-icon {
+        font-size: 18px;
     }
 }
 
