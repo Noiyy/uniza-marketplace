@@ -163,6 +163,26 @@ export default {
     top: -4px;
     right: 0;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .chat-wrapper {
+        margin-top: 32px;
+    }
+
+    .chat-heading-cont h1 {
+        font-size: 18px;
+    }
+
+    .chat-main {
+        margin-top: 12px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
 
 <style>

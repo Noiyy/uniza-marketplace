@@ -1,5 +1,5 @@
 <template>
-    <div class="chat d-flex gap-8">
+    <div class="chat d-flex gap-8 pos-relative">
         <div class="chat-nav-cont">
             <div class="chat-nav d-flex pos-relative">
                 <div class="pattern" :style="patternBgStyle"></div>
@@ -118,11 +118,19 @@
             </div>
         </div>
 
+        <div class="chat-mobile-unopen-info text-center" v-if="IS_MOBILE">
+            {{ $t("SelectChatInfo") }}
+        </div>
+
         <!-- Okno so správami -->
-        <div class="chat-window d-flex flex-column">
+        <div class="chat-window d-flex flex-column" id="chatWindow">
             <div class="chat-window-heading d-flex flex-column gap-8" v-if="activeUser">
                 <div class="heading-cont d-flex justify-content-between align-items-center gap-24">
                     <div class="d-flex gap-8 align-items-center">
+                        <div class="mobile-back-to-nav" v-if="IS_MOBILE" @click="mobileBackToNav()">
+                            back
+                        </div>
+
                         <router-link :to="`/user/${activeUser.data._id}`" class="user-avatar-wrapper d-flex gap-8 align-items-center">
                             <div class="user-avatar-cont pos-relative">
                                 <div class="avatar-overlay"></div>
@@ -398,7 +406,19 @@ export default {
             this.$nextTick(() => {
                 const chatMsgEl = document.querySelector(".chat-messages");
                 chatMsgEl.scrollTop = chatMsgEl.scrollHeight;
+
+                if (this.IS_MOBILE) {
+                    const chatWindow = document.getElementById("chatWindow");
+                    chatWindow.classList.add("open");
+                }
             });
+        },
+
+        mobileBackToNav() {
+            if (!this.IS_MOBILE) return;
+
+            const chatWindow = document.getElementById("chatWindow");
+            chatWindow.classList.remove("open");
         },
 
         async setMessagesAsRead(msgs) {
@@ -591,7 +611,8 @@ export default {
     computed: {
         ...mapGetters(
             {
-                getLoggedUser: "user/getUser"
+                getLoggedUser: "user/getUser",
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -1155,5 +1176,86 @@ export default {
 
 .request-info .btn {
     font-size: 13px;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+
+    .chat {
+        max-height: 70vh;
+        min-height: 65vh;
+    }
+    
+    .chat-window {
+        position: absolute;
+        right: -100%;
+        top: 0;
+        width: 100%;
+        background-color: var(--black);
+        color: var(--white);
+        padding: 8px;
+        padding-bottom: 0;
+        transition: right 0.3s ease-in-out;
+        z-index: 2;
+    }
+
+    .chat-window.open {
+        right: 0;
+    }
+
+    .chat-window .chat-input-wrapper {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    .chat-window .send-icon-cont {
+        width: 28px;
+        height: 28px;
+        font-size: 24px;
+        padding: 2px;
+    }
+
+    .chat-window .username {
+        font-size: 16px;
+    }
+
+    .chat-window .online-cont {
+        font-size: 14px;
+    }
+
+    .chat-window .user-avatar-cont, .chat-window .default-avatar-cont {
+        width: 40px;
+        height: 40px;
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    .chat-window .default-avatar-cont {
+        font-size: 24px;
+    }
+
+    .chat-bubble-msg {
+        font-size: 14px !important;
+        padding: 6px 12px !important;
+    }
+
+    .chat-mobile-unopen-info {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0.5;
+    }
+
+    .chat-item {
+        padding: 4px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
