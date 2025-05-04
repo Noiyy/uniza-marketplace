@@ -260,4 +260,16 @@ export default {
     stroke-width: 4;
     opacity: 1;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .quill-wrapper {
+        min-height: 200px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

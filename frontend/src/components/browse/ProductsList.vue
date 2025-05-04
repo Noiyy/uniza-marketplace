@@ -131,4 +131,16 @@ export default {
 .products-wrapper.grid.smaller {
     grid-template-columns: repeat(auto-fit, minmax(150px, 178px));
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .products-wrapper.grid.smaller {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

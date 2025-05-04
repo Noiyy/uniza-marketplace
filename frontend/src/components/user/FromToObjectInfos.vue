@@ -8,7 +8,9 @@
                 </div>
             </router-link>
     
-            <Icon icon="typcn:arrow-right-outline" class="arrow-icon" />
+            <div class="arrow-icon-cont">
+                <Icon icon="typcn:arrow-right-outline" class="arrow-icon" />
+            </div>
 
             <!-- to user -->
             <router-link :to="`/user/${toObj._id}`" class="toObj avatar-cont pos-relative" v-if="toObjType == 'user'">
@@ -184,5 +186,40 @@ export default {
     object-fit: initial;
     height: 75%;
     opacity: 0.2;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .images {
+        flex-direction: column;
+    }
+
+    .arrow-icon-cont {
+        transform: rotate(90deg);
+    }
+
+    .date-icon {
+        display: none;
+    }
+
+    .date-created-at {
+        font-size: 12px;
+    }
+
+    .avatar-cont, .default-avatar-cont {
+        width: 36px;
+        height: 36px;
+        max-width: 36px;
+        max-height: 36px;
+    }
+
+    .default-avatar-cont {
+        font-size: 20px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>

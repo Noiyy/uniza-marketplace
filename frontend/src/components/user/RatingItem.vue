@@ -268,4 +268,52 @@ export default {
 .rating-item.smaller .rating-description-cont {
     max-height: 36px;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .rating-item {
+        max-height: initial;
+        flex-direction: column;
+        gap: 8px !important;
+    }
+
+    .rating-item .main {
+        gap: 16px !important;
+        padding: 8px;
+    }
+
+    .rating-content {
+        flex: 1;    
+    }
+
+    .rating-values {
+        gap: 2px !important;
+        font-size: 14px;
+    }
+
+    .rating-heading {
+        gap: 12px !important;
+    }
+
+    .rating-title {
+        font-size: 14px;
+    }
+
+    .star-icon {
+        font-size: 16px;
+    }
+
+    .rating-description-cont {
+        max-height: 100px;
+    }
+
+    .rating-description {
+        font-size: 13px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

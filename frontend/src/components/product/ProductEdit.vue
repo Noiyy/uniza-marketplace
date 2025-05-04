@@ -18,163 +18,200 @@
             </div>
 
             <div class="product-main-edit d-flex gap-48">
-                <div class="images-edit flex-1">
-                    <div class="images-heading d-flex gap-32 justify-content-between align-items-center">
-                        <h2> {{ $t('Images') }} </h2>
-                        <div class="images-count montserrat"> {{ productImages ? productImages.length : 0 }} </div>
-                    </div>
-
-                    <VueDraggableNext :list="productImages" handle=".drag-icon"
-                        class="images-wrapper" :class="!loadedData ? 'loading' : ''">
-                        <template v-if="loadedData">
-                            <div v-for="(img, index) in productImages" :key="index" class="img-cont">
-                                <div class="main-img-tag" v-if="index == 0"> {{ $t("Main") }} </div>
-                                <div class="remove-img-cont" @click="removeImg(img, index)">
-                                    <Icon icon="material-symbols:close" class="remove-icon" />
-                                </div>
-
-                                <Icon icon="material-symbols:drag-pan" class="drag-icon" />
-    
-                                <img :src="img && img.url ? img.url : getAssetUrl(`img/products/${img}`)" class="img-fluid"  alt="product img" />
+                <div class="images-edit-cont flex-1">
+                    <a role="button" class="mobile-edit-collapser d-flex flex-column collapsed" v-if="IS_MOBILE"
+                        @click="mobileImagesShown = !mobileImagesShown" :class="mobileImagesShown ? 'collapseShown' : ''"
+                        data-bs-toggle="collapse" :href="`#imagesEdit`" aria-expanded="false" :aria-controls="`imagesEdit`">
+                        <div class="collapser-title d-flex gap-8 justify-content-between align-items-center">
+                            <h1> {{ $t('Images') }} </h1>
+                            <div class="chevron-icon-cont">
+                                <Icon icon="mdi:chevron-down" class="chevron-icon" />
                             </div>
+                        </div>
+                        <div class="line-divider"></div>
+                    </a>
+
+                    <div class="images-edit flex-1" :class="IS_MOBILE ? isAdd ? 'collapse show' : 'collapse' : ''" id="imagesEdit">
+                        <div class="images-heading d-flex gap-32 justify-content-between align-items-center">
+                            <h2> {{ IS_MOBILE ? '' : $t('Images') }} </h2>
+                            <div class="images-count montserrat"> {{ productImages ? productImages.length : 0 }} </div>
+                        </div>
     
-                            <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
-                                :title="$t('AddImage')"
-                                @submit.prevent="uploadImages" @click="triggerFileInput">
-                                <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
-                                    type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
-                                <div class="add-img-icon-cont">
-                                    <Icon icon="ic:baseline-plus" class="plus-icon" />
+                        <VueDraggableNext :list="productImages" handle=".drag-icon"
+                            class="images-wrapper" :class="!loadedData ? 'loading' : ''">
+                            <template v-if="loadedData">
+                                <div v-for="(img, index) in productImages" :key="index" class="img-cont">
+                                    <div class="main-img-tag" v-if="index == 0"> {{ $t("Main") }} </div>
+                                    <div class="remove-img-cont" @click="removeImg(img, index)">
+                                        <Icon icon="material-symbols:close" class="remove-icon" />
+                                    </div>
+    
+                                    <Icon icon="material-symbols:drag-pan" class="drag-icon" />
+        
+                                    <img :src="img && img.url ? img.url : getAssetUrl(`img/products/${img}`)" class="img-fluid"  alt="product img" />
                                 </div>
-                            </form>
-                        </template>
-                    </VueDraggableNext>
+        
+                                <form enctype="multipart/form-data" class="add-img-cont d-flex justify-content-center align-items-center"
+                                    :title="$t('AddImage')"
+                                    @submit.prevent="uploadImages" @click="triggerFileInput">
+                                    <input ref="imageInput" name="imageFiles" @change="onFileChange" style="display: none"
+                                        type="file" multiple accept=".jpg, .jpeg, .png, .webp" />
+                                    <div class="add-img-icon-cont">
+                                        <Icon icon="ic:baseline-plus" class="plus-icon" />
+                                    </div>
+                                </form>
+                            </template>
+                        </VueDraggableNext>
+                    </div>
                 </div>
-                <div class="info-edit flex-1 d-flex flex-column gap-32">
-                    <div class="input-cont d-flex flex-column gap-8">
-                        <div class="input-tag"> {{ $t('Title') }} </div>
-                        <input v-model="product.title" type="text" class="styled" :placeholder="$t('Title')">
-                    </div>
 
-                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> {{ ('Category') }} </div>
-                            <Multiselect
-                                v-model="localProductMainCtg"
-                                :options="mainCategories"
-                                :track-by="'_id'"
-                                :allow-empty="false"
-                                :label="'name'"
-                                :multiple="false"
-                                :show-labels="false"
-                                @update:modelValue="mainCtgChangeHandler"
-                            ></Multiselect>
-                        </div>
-
-                        <Icon icon="mdi:arrow-right" class="input-row-divider icon" />
-
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> {{ ('SubCategory') }} </div>
-                            <Multiselect
-                                v-model="localProductSubCtg"
-                                :options="subCategories"
-                                :track-by="'_id'"
-                                :allow-empty="true"
-                                :label="'name'"
-                                :multiple="false"
-                                :show-labels="false"
-                            ></Multiselect>
-                        </div>
-                    </div>
-
-                    <div class="input-row d-flex gap-24 align-items-center justify-content-between">
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <div class="input-tag"> {{ $t("Price") }} </div>
-                            <input v-model="productPrice" type="number" min="1" max="99999" class="styled" :placeholder="$t('Price')" @input="(e) => sanitizeInput(e, 'price')">
-                            <span class="price-currency"> € </span>
-                        </div>
-
-                        <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
-
-                        <div class="input-cont d-flex flex-column gap-8 flex-1">
-                            <Multiselect
-                                v-model="productSpecialPrice"
-                                :options="getSpecialPrices"
-                                :allow-empty="true"
-                                :multiple="false"
-                                :show-labels="false"
-                            ></Multiselect>
-                            <div class="input-tag"> {{ $t('SpecialPrice') }} </div>
-                        </div>
-                    </div>
-
-                    <div class="input-row-cont d-flex flex-column gap-24">
-                        <div>
-                            <Checkbox
-                                :text="$t('SameAddressInfo')"
-                                v-model:is-checked="product.address.asProfile"
-                            ></Checkbox>
-                        </div>
-
-                        <div class="input-row d-flex gap-24 align-items-center justify-content-between" :class="product.address.asProfile ? 'disabled' : ''">
-                            <div class="input-cont address-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> {{ $t("Address") }} </div>
-                                <Multiselect
-                                    :disabled="product.address.asProfile"
-                                    v-model="productAddress"
-                                    :options="filteredAddresses"
-                                    @search-change="onAddressSearchChange"
-                                    :internal-search="false"
-                                    :allow-empty="true"
-                                    :multiple="false"
-                                    :show-labels="false"
-                                    :track-by="'_id'"
-                                    >
-                                    <template #option="props">
-                                        {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
-                                    </template>
-                                    <template #singleLabel="props">
-                                        {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
-                                    </template>
-                                </Multiselect>
-                            </div>
-
-                            <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
-
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> {{ $t("Dorm") }} </div>
-                                <Multiselect
-                                    :disabled="product.address.asProfile"
-                                    v-model="productDorm"
-                                    :options="getDorms"
-                                    :allow-empty="true"
-                                    :multiple="false"
-                                    :show-labels="false"
-                                ></Multiselect>
+                <div class="main-info-cont flex-1">
+                    <a role="button" class="mobile-edit-collapser d-flex flex-column collapsed" v-if="IS_MOBILE"
+                        @click="mobileMainEditShown = !mobileMainEditShown" :class="mobileMainEditShown ? 'collapseShown' : ''"
+                        data-bs-toggle="collapse" :href="`#mainEdit`" aria-expanded="false" :aria-controls="`mainEdit`">
+                        <div class="collapser-title d-flex gap-8 justify-content-between align-items-center">
+                            <h1> {{ $t('MainInfo') }} </h1>
+                            <div class="chevron-icon-cont">
+                                <Icon icon="mdi:chevron-down" class="chevron-icon" />
                             </div>
                         </div>
-                    </div>
+                        <div class="line-divider"></div>
+                    </a>
 
-                    <div class="input-row-cont d-flex flex-column gap-24">
-                        <div>
-                            <Checkbox
-                                :text="$t('EndSaleOn0CountInfo')"
-                                v-model:is-checked="product.count.endSaleOnZero"
-                            ></Checkbox>
-                            
-                        </div>
-
-                        <div class="input-row d-flex gap-8 align-items-center justify-content-between">
-                            <div class="input-cont d-flex flex-column gap-8 flex-1">
-                                <div class="input-tag"> {{ $t('Count') }} </div>
-                                <input v-model="product.count.available" type="number" min="1" max="99999" class="styled" :placeholder="$t('Count')" @input="(e) => sanitizeInput(e)">
+                    <div class="main-info-edit" :class="IS_MOBILE ? isAdd ? 'collapse show' : 'collapse' : ''" id="mainEdit">
+                        <div class="info-edit d-flex flex-1 flex-column gap-32 collapse">
+                            <div class="input-cont d-flex flex-column gap-8">
+                                <div class="input-tag"> {{ $t('Title') }} </div>
+                                <input v-model="product.title" type="text" class="styled" :placeholder="$t('Title')">
                             </div>
-
-                            <div class="product-stats d-flex justify-content-end gap-8 flex-2">
-                                <template v-if="!isAdd">
-                                    {{ $t("Sold").toLowerCase() }}:
-                                    <span> {{ product.count.sold }} </span>
-                                </template>
+        
+                            <div class="input-row d-flex gap-24 align-items-center justify-content-between"
+                                :class="IS_MOBILE ? 'flex-column align-items-stretch' : ''">
+                                <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                    <div class="input-tag"> {{ ('Category') }} </div>
+                                    <Multiselect
+                                        v-model="localProductMainCtg"
+                                        :options="mainCategories"
+                                        :track-by="'_id'"
+                                        :allow-empty="false"
+                                        :label="'name'"
+                                        :multiple="false"
+                                        :show-labels="false"
+                                        @update:modelValue="mainCtgChangeHandler"
+                                    ></Multiselect>
+                                </div>
+        
+                                <Icon icon="mdi:arrow-right" class="input-row-divider icon" />
+        
+                                <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                    <div class="input-tag"> {{ ('SubCategory') }} </div>
+                                    <Multiselect
+                                        v-model="localProductSubCtg"
+                                        :options="subCategories"
+                                        :track-by="'_id'"
+                                        :allow-empty="true"
+                                        :label="'name'"
+                                        :multiple="false"
+                                        :show-labels="false"
+                                    ></Multiselect>
+                                </div>
+                            </div>
+        
+                            <div class="input-row d-flex gap-24 align-items-center justify-content-between"
+                                :class="IS_MOBILE ? 'flex-column align-items-stretch' : ''">
+                                <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                    <div class="input-tag"> {{ $t("Price") }} </div>
+                                    <input v-model="productPrice" type="number" min="1" max="99999" class="styled" :placeholder="$t('Price')" @input="(e) => sanitizeInput(e, 'price')">
+                                    <span class="price-currency"> € </span>
+                                </div>
+        
+                                <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
+        
+                                <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                    <Multiselect
+                                        v-model="productSpecialPrice"
+                                        :options="getSpecialPrices"
+                                        :allow-empty="true"
+                                        :multiple="false"
+                                        :show-labels="false"
+                                    ></Multiselect>
+                                    <div class="input-tag"> {{ $t('SpecialPrice') }} </div>
+                                </div>
+                            </div>
+        
+                            <div class="input-row-cont d-flex flex-column gap-24">
+                                <div>
+                                    <Checkbox
+                                        :text="$t('SameAddressInfo')"
+                                        v-model:is-checked="product.address.asProfile"
+                                    ></Checkbox>
+                                </div>
+        
+                                <!-- :class="IS_MOBILE ? 'flex-column align-items-stretch' : ''" -->
+                                <div class="input-row d-flex gap-24 align-items-center justify-content-between" 
+                                    :class="IS_MOBILE ? product.address.asProfile ? 
+                                        'flex-column align-items-stretch disabled' : 'flex-column align-items-stretch' : 
+                                        product.address.asProfile ? 'disabled' : ''">
+                                    <div class="input-cont address-cont d-flex flex-column gap-8 flex-1">
+                                        <div class="input-tag"> {{ $t("Address") }} </div>
+                                        <Multiselect
+                                            :disabled="product.address.asProfile"
+                                            v-model="productAddress"
+                                            :options="filteredAddresses"
+                                            @search-change="onAddressSearchChange"
+                                            :internal-search="false"
+                                            :allow-empty="true"
+                                            :multiple="false"
+                                            :show-labels="false"
+                                            :track-by="'_id'"
+                                            >
+                                            <template #option="props">
+                                                {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
+                                            </template>
+                                            <template #singleLabel="props">
+                                                {{ props.option.city }} - {{ props.option.region }} - {{ props.option.postalCode }}
+                                            </template>
+                                        </Multiselect>
+                                    </div>
+        
+                                    <span class="input-row-divider montserrat"> {{ $t("Or") }} </span>
+        
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                        <div class="input-tag"> {{ $t("Dorm") }} </div>
+                                        <Multiselect
+                                            :disabled="product.address.asProfile"
+                                            v-model="productDorm"
+                                            :options="getDorms"
+                                            :allow-empty="true"
+                                            :multiple="false"
+                                            :show-labels="false"
+                                        ></Multiselect>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="input-row-cont d-flex flex-column gap-24">
+                                <div>
+                                    <Checkbox
+                                        :text="$t('EndSaleOn0CountInfo')"
+                                        v-model:is-checked="product.count.endSaleOnZero"
+                                    ></Checkbox>
+                                    
+                                </div>
+        
+                                <div class="input-row d-flex gap-8 align-items-center justify-content-between">
+                                    <div class="input-cont d-flex flex-column gap-8 flex-1">
+                                        <div class="input-tag"> {{ $t('Count') }} </div>
+                                        <input v-model="product.count.available" type="number" min="1" max="99999" class="styled" :placeholder="$t('Count')" @input="(e) => sanitizeInput(e)">
+                                    </div>
+        
+                                    <div class="product-stats d-flex justify-content-end gap-8 flex-2">
+                                        <template v-if="!isAdd">
+                                            {{ $t("Sold").toLowerCase() }}:
+                                            <span> {{ product.count.sold }} </span>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -335,7 +372,10 @@ export default {
 
             allUsers: [],
             availableUsersSale: [],
-            selectedSaleData: null
+            selectedSaleData: null,
+
+            mobileImagesShown: false,
+            mobileMainEditShown: false,
         }
     },
 
@@ -1037,6 +1077,32 @@ export default {
 
     .images-wrapper {
         grid-auto-rows: 110px;
+    }
+
+    .mobile-edit-collapser {
+        background-color: var(--white-2a);
+        padding: 8px 12px;
+        margin-bottom: 4px;
+        color: var(--white);
+    }
+
+    .mobile-edit-collapser.collapseShown .chevron-icon-cont {
+        transform: rotate(180deg);
+    }
+
+    .mobile-edit-collapser h1 {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .mobile-edit-collapser .chevron-icon-cont { transition: transform 0.3s ease-in }
+
+    .mobile-edit-collapser .chevron-icon {
+        font-size: 24px;
+    }
+
+    .input-row-divider {
+        margin: 0 auto;
     }
 }
 

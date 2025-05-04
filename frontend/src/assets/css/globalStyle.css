@@ -273,6 +273,23 @@ input[type="number"] {
 
 /* SMALL - Mobile */
 @media(max-width: 640px) { 
+    .btn {
+        font-size: 14px;
+        padding: 4px 24px;
+    }
+
+    .btn-smaller {
+        padding: 2px 20px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
 
 }
 

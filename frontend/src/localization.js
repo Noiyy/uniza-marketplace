@@ -294,7 +294,8 @@ const i18nOptions = {
       FAQ5_title: "Čo ak mám problém s používateľom alebo produktom?",
       FAQ5_answer1: 'V prípade akéhokoľvek problému s používateľom alebo produktom je možné spraviť nahlásenie, kde svoj problém popíšete. Naši administrátori problémy čo najrýchlejšie vyriešia.',
       FAQ5_answer2: 'Ak to bude vhodné, tak dostanete správu od administrátora o vyriešení problému.',
-      LoginInfo: "Prihlás sa na používanie všetkých možností"
+      LoginInfo: "Prihlás sa na používanie všetkých možností",
+      MainInfo: "Hlavné informácie"
     },
     en: {
       Menu: "Menu",
@@ -588,7 +589,8 @@ const i18nOptions = {
       FAQ5_title: "What if there's a problem with a user/product?",
       FAQ5_answer1: 'In case of any problem with a user or a product, you can report it and describe your problem. Our administrators will solve problems as fast as they can.',
       FAQ5_answer2: 'If appropiate, you will get a message from an administrator about solving your problem.',
-      LoginInfo: "Login to use all features"
+      LoginInfo: "Login to use all features",
+      MainInfo: "Main info"
     },
   },
 };

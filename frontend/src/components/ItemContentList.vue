@@ -2,15 +2,27 @@
     <div class="item-content-list d-flex flex-column">
         <div class="list-heading d-flex flex-column gap-8">
             <div class="list-heading-content d-flex gap-16 justify-content-between">
-                <div class="list-title d-flex align-items-center gap-8">
-                    <h1 class="title"> {{ listTitle.toUpperCase() }} </h1>
+                <div class="list-title-cont d-flex justify-content-between"
+                    :class="IS_MOBILE ? mobileTitleReposSorter ? 'flex-1' : '' : ''">
+                    <div class="list-title d-flex align-items-center gap-8">
+                        <h1 class="title"> {{ listTitle.toUpperCase() }} </h1>
+    
+                        <span v-if="listAllItemsCount"> {{ listAllItemsCount }} </span>
+                    </div>
 
-                    <span v-if="listAllItemsCount"> {{ listAllItemsCount }} </span>
+                    <div class="mobile-sorter" v-if="IS_MOBILE && mobileTitleReposSorter">
+                        <ItemsSorter
+                            :option-callback="sorterOptionCallback"
+                            :selected-sort-filter="selectedSortFilter"
+                            :show-special-prices="showSorterSpecialPrices"
+                            :custom-filters="sorterCustomFilters"
+                        ></ItemsSorter>
+                    </div>
                 </div>
 
-                <div class="list-options d-flex gap-64 align-items-center" :class="listOptionsClass">
+                <div class="list-options d-flex gap-64 align-items-center" :class="`${listOptionsClass} ${IS_MOBILE && mobileTitleReposSorter ? 'flex-1 justify-content-start' : ''}`">
                     <slot name="heading-right">
-                        <ItemsSorter
+                        <ItemsSorter v-if="!IS_MOBILE || !mobileTitleReposSorter"
                             :option-callback="sorterOptionCallback"
                             :selected-sort-filter="selectedSortFilter"
                             :show-special-prices="showSorterSpecialPrices"
@@ -60,6 +72,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 import ItemsSorter from './ItemsSorter.vue';
 import { Icon } from '@iconify/vue';
 
@@ -124,6 +137,11 @@ export default {
             type: Number,
             default: 0
         },
+
+        mobileTitleReposSorter: {
+            type: Boolean,
+            default: false
+        }
     },
 
     components: {
@@ -142,6 +160,10 @@ export default {
     },
     
     computed: {
+        ...mapGetters({
+            IS_MOBILE: 'misc/getIsMobile',
+        }), 
+
         localSearchQuery: {
             get() { return this.searchQuery; },
             set(newValue) {
@@ -239,5 +261,45 @@ export default {
     font-size: 24px;
     opacity: 0.5;
     z-index: 1;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .list-heading-content {
+        flex-wrap: wrap;
+    }
+
+    .list-heading .title {
+        font-size: 18px;
+    }
+
+    .list-options {
+        gap: 16px !important;
+        flex-wrap: wrap;
+    }
+
+    .under-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .list-filters .filter-opt {
+        font-size: 13px;
+        padding: 4px 8px;
+    }
+
+    .list-filters .filter-opt span {
+        padding: 2px 8px;
+    }
+
+    .list-searchbar .search-icon {
+        font-size: 20px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>

@@ -224,4 +224,17 @@ export default {
 .admin-badge-small {
     margin-left: 8px;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .input-row {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>

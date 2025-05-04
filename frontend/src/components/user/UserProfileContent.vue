@@ -672,6 +672,54 @@ export default {
 .contact-info .btn {
     font-size: 14px;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .user-main-info {
+        flex-direction: column;
+        align-items: center !important;
+        gap: 16px !important;
+        margin-top: 40px;
+    }
+
+    .user-heading {
+        flex-direction: column;
+        gap: 8px !important;
+    }
+
+    .name h1 {
+        font-size: 24px;
+    }
+
+    .joined-on {
+        font-size: 14px;
+    }
+
+    .user-misc-info {
+        flex-wrap: wrap;
+        gap: 8px !important;
+    }
+
+    .rating-heading {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 2px !important;
+    }
+
+    .stats {
+        font-size: 12px;
+        gap: 12px !important;
+    }
+
+    .view-divider {
+        bottom: -28px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
 
 <style>

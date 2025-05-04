@@ -43,6 +43,7 @@
                 :list-options-class="'flex-row-reverse'"
                 :filterClickCallback="filterRatingsHandler"
                 :sorterOptionCallback="sortRatingsHandler"
+                :mobileTitleReposSorter="true"
                 @update:searchQuery="ratingsSearchHandler"
             >
                 <template #content>
@@ -136,7 +137,7 @@ export default {
             productsTypeFilter: "onSale",
             productsSortFilter: "latest",
             productsSearchQuery: "",
-            productsViewType: "list",
+            productsViewType: this.IS_MOBILE ? "list" : "grid",
 
             ratingsTypeFilter: "self",
             ratingsSortFilter: "latest",
@@ -250,7 +251,8 @@ export default {
     computed: {
         ...mapGetters(
             {
-                getLoggedUser: "user/getUser"
+                getLoggedUser: "user/getUser",
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -266,6 +268,8 @@ export default {
 
         this.getProductsData();
         this.getRatingsData();
+
+        this.productsViewType = this.IS_MOBILE ? "grid" : "list";
     },
 
     mounted() {
@@ -312,10 +316,30 @@ export default {
 .small-btns-wrapper .btn.primary:hover {
     border: 2px solid #25201D;
 }
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
 </style>
 
 <style>
 .user-products .products-wrapper, .user-ratings .ratings-wrapper {
-    padding: 0 32px;
+    padding: 0;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
