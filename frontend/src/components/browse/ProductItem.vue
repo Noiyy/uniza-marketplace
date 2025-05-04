@@ -166,7 +166,7 @@ export default {
     computed: {
         ...mapGetters(
             {
-
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -417,7 +417,43 @@ export default {
         font-size: 16px;
     }
 
+    .product-item-wrapper .item-id-info {
+        left: 0;
+    }
 
+    .list-item-controls {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        z-index: 2;
+        opacity: 0.75;
+    }
+
+    .user-avatar-wrapper {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 2;
+        opacity: 0.75;
+        padding: 4px;
+        background-color: rgba(0, 0, 0, 0.33);
+    }
+
+    .user-avatar-cont, .default-avatar-cont {
+        width: 32px;
+        height: 32px;
+        max-width: 32px;
+        max-height: 32px;
+    }
+
+    .default-avatar-cont {
+        font-size: 20px;
+    }
+
+    .user-name {
+        margin-top: 2px;
+        font-size: 14px;
+    }
 }
 
 /* MEDIUM - Tablet */

@@ -607,6 +607,12 @@ width */
   .nav-btns-wrapper .btn.nav-btn {
       padding: 2px 16px;
   }
+
+  .list-item-controls .btn-icon {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 20px !important;
+  }
 }
 
 /* MEDIUM - Tablet */

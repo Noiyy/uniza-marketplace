@@ -1,6 +1,6 @@
 <template>
     <div class="objs-info">
-        <div class="images d-flex align-items-center">
+        <div class="images d-flex align-items-center pos-relative">
             <router-link :to="`/user/${fromObj._id}`" class="fromObj avatar-cont pos-relative">
                 <img v-if="fromObj.avatarPath" :src="getAssetUrl(`img/userAvatars/${fromObj.avatarPath}`)" class="user-avatar" alt="User avatar" >
                 <div class="default-avatar-cont" v-else>
@@ -195,7 +195,15 @@ export default {
     }
 
     .arrow-icon-cont {
-        transform: rotate(90deg);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(90deg);
+        z-index: 2;
+    }
+
+    .arrow-icon {
+        font-size: 16px;
     }
 
     .date-icon {

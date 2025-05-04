@@ -165,4 +165,41 @@ export default {
     font-size: 20px;
 }
 
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .list-item-controls {
+        position: absolute;
+        bottom: 0px;
+        left: 8px;
+        z-index: 2;
+        opacity: 0.75;
+        flex-direction: row !important;
+    }
+
+    .report-description-cont {
+        max-height: 100px;
+    }
+
+    .report-item .main {
+        gap: 12px !important;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
+}
+</style>
+
+<style>
+/* SMALL - Mobile */
+@media(max-width: 640px) {
+    .report-item-wrapper .objs-info .images {
+        flex-direction: row !important;
+    }
+
+    .report-item-wrapper .objs-info .arrow-icon-cont {
+        transform: translate(-50%, -50%) !important;
+    }
+}
 </style>

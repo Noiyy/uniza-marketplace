@@ -36,12 +36,14 @@
                     </div>
                     <div class="user-ratings d-flex flex-column gap-8">
                         <div class="rating-values d-flex align-items-center gap-8">
-                            <Icon icon="material-symbols:star" class="star-icon" v-if="ratingAvg >= 1" />
-                            <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingAvg > 0" />
-                            <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
-                            <span class="rating-avg"> {{ ratingAvg ? ratingAvg : '0.0' }} </span>
+                            <div class="rating-values-main d-flex align-items-center gap-8">
+                                <Icon icon="material-symbols:star" class="star-icon" v-if="ratingAvg >= 1" />
+                                <Icon icon="material-symbols:star-half" class="star-icon" v-else-if="ratingAvg > 0" />
+                                <Icon icon="material-symbols:star-outline" class="star-icon" v-else />
+                                <span class="rating-avg"> {{ ratingAvg ? ratingAvg : '0.0' }} </span>
+                            </div>
     
-                            <span> (<span class="count">{{ userData.ownRatings.length }}</span> {{ $t("Ratings").toLowerCase() }}) </span>
+                            <span> (<span class="count">{{ userData.ownRatings.length }}</span>{{ IS_MOBILE ? '' : $t("Ratings").toLowerCase() }}) </span>
                         </div>
                         
                         <span class="rated-others">
@@ -159,7 +161,7 @@ export default {
     computed: {
         ...mapGetters(
             {
-
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -320,5 +322,68 @@ export default {
 
 .ban-overlay .ban-reason {
     color: var(--secondary);
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .list-item-controls {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        z-index: 2;
+        opacity: 0.75;
+    }
+
+    .user-ban-cont {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        z-index: 2;
+    }
+
+    .user-item {
+        max-height: initial;
+        gap: 12px !important;
+    }
+
+    .user-info {
+        flex-wrap: wrap;
+    }
+
+    .rating-values-main {
+        gap: 4px !important;
+    }
+
+    .user-info .info-cont .info-heading {
+        min-width: 91px;
+        font-size: 12px;
+        gap: 4px !important;
+    }
+
+    .star-icon {
+        font-size: 16px;
+    }
+
+    .rating-avg {
+        font-size: 14px;
+    }
+
+    .user-ratings span {
+        font-size: 13px;
+    }
+
+    .user-name {
+        font-size: 14px;
+    }
+
+    .user-info .info-cont .info-content {
+        font-size: 12px;
+        gap: 4px !important;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>

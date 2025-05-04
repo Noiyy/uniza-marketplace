@@ -1,5 +1,6 @@
 <template>
-    <div class="sale-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative">
+    <div class="sale-item-wrapper list-item-cont d-flex gap-16 justify-content-between align-items-center pos-relative"
+        :class="isInAdmin ? 'inAdmin' : ''">
         <div class="list-item-controls d-flex flex-column gap-8" v-if="isInAdmin">
             <button class="btn btn-icon" @click="showDeleteSale()">
                 <Icon icon="mdi:trash" class="control-icon" />
@@ -215,6 +216,22 @@ export default {
 
     .sold-info {
         font-size: 14px;
+    }
+
+    .sale-item-wrapper.inAdmin .item-info {
+        flex-wrap: wrap;
+    }
+
+    .sale-item-wrapper.inAdmin .history-item {
+        flex-direction: column;
+    }
+
+    .list-item-controls {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        z-index: 2;
+        opacity: 0.75;
     }
 }
 

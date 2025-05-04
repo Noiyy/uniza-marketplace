@@ -279,7 +279,8 @@ export default {
 
     .rating-item .main {
         gap: 16px !important;
-        padding: 8px;
+        padding: 8px !important;
+        padding-bottom: 0 !important;
     }
 
     .rating-content {
@@ -309,6 +310,20 @@ export default {
 
     .rating-description {
         font-size: 13px;
+    }
+
+    .list-item-controls {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        opacity: 0.75;
+        flex-direction: row !important;
+    }
+
+    .rating-item.smaller .rating-description-cont {
+        max-height: 64px;
     }
 }
 

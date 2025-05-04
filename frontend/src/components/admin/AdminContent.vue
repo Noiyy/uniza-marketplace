@@ -12,13 +12,15 @@
                             <div class="line-divider"></div>
                         </div>
 
-                        <nav class="admin-navbar nav-btns-wrapper d-flex">
-                            <a role="button" :href="`#${itm.href}`" class="btn nav-btn" v-for="itm in navItems" :key="itm.name"
-                                :class="navItemClasses(itm)" @click.prevent="adminNavItemClick(itm)">
-                                {{ itm.name }}
-                                <span class="new-indicator" v-if="itm.newCount"> {{ itm.newCount }} </span>
-                            </a>
-                        </nav>
+                        <div class="admin-navbar">
+                            <nav class="nav-btns-wrapper d-flex">
+                                <a role="button" :href="`#${itm.href}`" class="btn nav-btn" v-for="itm in navItems" :key="itm.name"
+                                    :class="navItemClasses(itm)" @click.prevent="adminNavItemClick(itm)">
+                                    {{ itm.name }}
+                                    <span class="new-indicator" v-if="itm.newCount"> {{ itm.newCount }} </span>
+                                </a>
+                            </nav>
+                        </div>
 
                         <div class="admin-items-content d-flex flex-column">
                             <div id="products" class="admin-section">
@@ -37,6 +39,7 @@
                                         <ProductsList
                                             :products="sortedProducts"
                                             :wrapper-class="'smaller'"
+                                            :activeViewType="IS_MOBILE ? 'grid' : 'list'"
                                             :is-in-admin="true"
                                         ></ProductsList>
                                     </template>
@@ -833,7 +836,7 @@ export default {
     computed: {
         ...mapGetters(
             {
-
+                IS_MOBILE: 'misc/getIsMobile',
             }
         ),
 
@@ -1038,5 +1041,26 @@ export default {
 
 .item-content-list {
     min-height: 500px;
+}
+
+/* SMALL - Mobile */
+@media(max-width: 640px) { 
+    .admin-heading-cont h1 {
+        font-size: 20px;
+    }
+
+    .nav-btns-wrapper {
+        background: transparent !important;
+    }
+
+    .admin-navbar {
+        overflow: auto;
+        border-radius: 8px;
+    }
+}
+
+/* MEDIUM - Tablet */
+@media(min-width: 641px) and (max-width: 992px) { 
+
 }
 </style>
